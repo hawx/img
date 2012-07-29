@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"math/rand"
 	"image"
 	"image/png"
+	"flag"
 )
 
 
@@ -12,18 +14,14 @@ func randBetween(a, b int) int {
 	return rand.Intn(b - a)
 }
 
-func readImage(path string) image.Image {
-	file, _ := os.Open(path)
-	defer file.Close()
-	img, _  := png.Decode(file)
+func readStdin() image.Image {
+	img, _ := png.Decode(os.Stdin)
 
 	return img
 }
 
-func writeImage(img image.Image, path string) {
-	file, _ := os.Create(path)
-	defer file.Close()
-	png.Encode(file, img)
+func writeStdout(img image.Image) {
+	png.Encode(os.Stdout, img)
 }
 
 func shuffle(img image.Image) image.Image {
@@ -84,8 +82,39 @@ func horizontalShuffle(img image.Image) image.Image {
 	return o
 }
 
+var vertical   = flag.Bool("v", false, "Use vertical shuffling only")
+var horizontal = flag.Bool("h", false, "Use horizontal shuffling only")
+
+var help = flag.Bool("help", false, "Display this help message")
+
 func main() {
-	i := readImage("image.png")
-	i  = horizontalShuffle(i)
-	writeImage(i, "output.png")
+	flag.Parse()
+
+	if *help {
+		msg := "Usage: shuffle [opts]\n" +
+			"\n" +
+			"  Shuffle takes a png file from STDIN, shuffles the pixels of the image,\n" +
+			"  and prints the result to STDOUT. This allows multiple utilities to be\n" +
+			"  easily composed.\n" +
+			"\n" +
+			"  -h            # Use horizontal shuffling only\n" +
+			"  -v            # Use vertical shuffling only\n" +
+			"  --help        # Display this help message\n" +
+			"\n"
+
+		fmt.Fprintf(os.Stderr, msg)
+		os.Exit(0)
+	}
+
+	i := readStdin()
+
+	if (*vertical && !*horizontal) {
+		i = verticalShuffle(i)
+	} else if (*horizontal && !*vertical) {
+		i = horizontalShuffle(i)
+	} else {
+		i = shuffle(i)
+	}
+
+	writeStdout(i)
 }
