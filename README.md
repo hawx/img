@@ -10,5 +10,5 @@ Requires Go 1.
 ``` bash
 $ go build shuffle.go
 $ ./shuffle --help
-$ cat input.png | ./shuffle -v > output.png
+$ ./shuffle -v < input.png > output.png
 ```
