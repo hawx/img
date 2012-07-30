@@ -33,10 +33,12 @@ $ ./pixelate --size 10x50 < input.png > output.png
 Implementation of the triangle filter from [pxl app][pxlapp], using the
 algorithm loosely described by [revdancatt][rev].
 
-Requires Ruby and the [chunky_png][cpng] gem.
+Requires Go 1.
 
 ``` bash
-$ ruby pxl.rb < input.png > output.png
+$ go build pxl.go
+$ ./pxl --help
+$ ./pxl 30 < input.png > output.png
 ```
 
 [pxlapp]: http://kohlberger.net/apps/pxl
