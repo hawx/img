@@ -16,6 +16,18 @@ $ ./shuffle --help
 $ ./shuffle -v < input.png > output.png
 ```
 
+## pixelate
+
+Pixelates an image. Use `--size HxW` to set pixel size used.
+
+Requires Go 1.
+
+``` bash
+$ go build pixelate.go
+$ ./pixelate --help
+$ ./pixelate --size 10x50 < input.png > output.png
+```
+
 ## pxl
 
 Implementation of the triangle filter from [pxl app][pxlapp], using the
