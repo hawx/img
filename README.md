@@ -1,4 +1,4 @@
-# Glytch
+# img
 
 A selection of image manipulation tools.
 
