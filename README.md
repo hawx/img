@@ -16,7 +16,7 @@ $ ./shuffle --help
 $ ./shuffle -v < input.png > output.png
 ```
 
-![Shuffle](http://github.com/hawx/glytch/raw/master/examples/shuffle.png)
+![Shuffle](http://github.com/hawx/img/raw/master/examples/shuffle.png)
 
 ## pixelate
 
@@ -30,7 +30,7 @@ $ ./pixelate --help
 $ ./pixelate --size 10x50 < input.png > output.png
 ```
 
-![Pixelate](http://github.com/hawx/glytch/raw/master/examples/pixelate.png)
+![Pixelate](http://github.com/hawx/img/raw/master/examples/pixelate.png)
 
 ## pxl
 
@@ -45,7 +45,22 @@ $ ./pxl --help
 $ ./pxl 30 < input.png > output.png
 ```
 
-![pxl](http://github.com/hawx/glytch/raw/master/examples/pxl.png)
+![pxl](http://github.com/hawx/img/raw/master/examples/pxl.png)
+
+## greyscale
+
+Creates a greyscale version of an image.
+
+Requires Go 1.
+
+``` bash
+$ go build greyscale.go
+$ ./greyscale --help
+$ ./greyscale --average < input.png > output.png
+```
+
+![Greyscale](http://github.com/hawx/img/raw/master/examples/greyscale.png)
+
 
 [pxlapp]: http://kohlberger.net/apps/pxl
 [rev]:    http://revdancatt.com/2012/03/31/the-pxl-effect-with-javascript-and-canvas-and-maths/
