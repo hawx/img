@@ -90,6 +90,14 @@ func luminosity(r, g, b uint32) uint8 {
 	return uint8(float32(r) * 0.21 + float32(g) * 0.71 + float32(b) * 0.07)
 }
 
+func maximal(r, g, b uint32) uint8 {
+	return uint8(max(r, g, b))
+}
+
+func minimal(r, g, b uint32) uint8 {
+	return uint8(min(r, g, b))
+}
+
 // Supposed photoshop luminosity method for greyscale.
 func photoshop(r, g, b uint32) uint8 {
 	return uint8(float32(r) * 0.299 + float32(g) * 0.587 + float32(b) * 0.114)
@@ -98,6 +106,8 @@ func photoshop(r, g, b uint32) uint8 {
 var averageM    = flag.Bool("average",    false, "Use average method")
 var lightnessM  = flag.Bool("lightness",  false, "Use lightness method")
 var luminosityM = flag.Bool("luminosity", false, "Use standard luminosity method")
+var maximalM    = flag.Bool("maximal",    false, "Use maximal decomposition")
+var minimalM    = flag.Bool("minimal",    false, "Use minimal decomposition")
 var photoshopM  = flag.Bool("photoshop",  false, "Use photoshop luminosity method (default)")
 
 var help = flag.Bool("help", false, "Display this help message")
@@ -113,7 +123,10 @@ func main() {
 			"\n" +
 			"  --average           # Use average method\n" +
 			"  --lightness         # Use lightness method\n" +
-			"  --luminosity        # Use luminosity method (default)\n" +
+			"  --luminosity        # Use standard luminosity method\n" +
+			"  --maximal           # Use maximal decompositon\n" +
+			"  --minimal           # Use minimal decompositon\n" +
+			"  --photoshop         # Use photoshop luminosity method (default)\n" +
 			"  --help              # Display this help message\n" +
 			"\n"
 
@@ -129,6 +142,10 @@ func main() {
     i = alterPixels(i, lightness)
 	} else if *luminosityM {
 		i = alterPixels(i, luminosity)
+	} else if *maximalM {
+		i = alterPixels(i, maximal)
+	} else if *minimalM {
+		i = alterPixels(i, minimal)
   } else {
     i = alterPixels(i, photoshop)
   }
