@@ -67,6 +67,18 @@ $ ./colourpixels --size 20x30 < input.png > output.png
 
 ![colourpixels](http://github.com/hawx/img/raw/master/examples/colourpixels.png)
 
+## contrast
+
+Adjusts the contrast of the given image.
+
+``` bash
+$ go build contrast.go
+$ ./contrast --help
+$ ./contrast -25 < input.png > output.png
+```
+
+![contrast](http://github.com/hawx/img/raw/master/examples/contrast.png)
+
 
 # Composition
 
