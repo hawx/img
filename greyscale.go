@@ -119,7 +119,7 @@ func main() {
 		msg := "Usage: greyscale [opts]\n" +
 			"\n" +
 			"  Takes a png file from STDIN and prints a greyscale version to STDOUT.\n" +
-			"  Can choose one of three different greyscaling methods.\n" +
+			"  Can choose one of the many greyscaling methods.\n" +
 			"\n" +
 			"  --average           # Use average method\n" +
 			"  --lightness         # Use lightness method\n" +
