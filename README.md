@@ -2,13 +2,12 @@
 
 A selection of image manipulation tools.
 
+Requires Go 1.
 
 ## shuffle
 
 Randomly shuffles pixels around the image. Use `-v` or `-h` to constrain it to
 vertical or horizontal shuffling, respectively.
-
-Requires Go 1.
 
 ``` bash
 $ go build shuffle.go
@@ -21,8 +20,6 @@ $ ./shuffle -v < input.png > output.png
 ## pixelate
 
 Pixelates an image. Use `--size HxW` to set pixel size used.
-
-Requires Go 1.
 
 ``` bash
 $ go build pixelate.go
@@ -37,8 +34,6 @@ $ ./pixelate --size 10x50 < input.png > output.png
 Implementation of the triangle filter from [pxl app][pxlapp], using the
 algorithm loosely described by [revdancatt][rev].
 
-Requires Go 1.
-
 ``` bash
 $ go build pxl.go
 $ ./pxl --help
@@ -51,8 +46,6 @@ $ ./pxl 30 < input.png > output.png
 
 Creates a greyscale version of an image.
 
-Requires Go 1.
-
 ``` bash
 $ go build greyscale.go
 $ ./greyscale --help
@@ -60,6 +53,19 @@ $ ./greyscale --average < input.png > output.png
 ```
 
 ![Greyscale](http://github.com/hawx/img/raw/master/examples/greyscale.png)
+
+## colourpixels
+
+Features a problematic pixelation algorithm where calculations overflow
+producing incorrect (but generally pretty) results.
+
+``` bash
+$ go build colourpixels.go
+$ ./colourpixels --help
+$ ./colourpixels --size 20x30 < input.png > output.png
+```
+
+![colourpixels](http://github.com/hawx/img/raw/master/examples/colourpixels.png)
 
 
 [pxlapp]: http://kohlberger.net/apps/pxl
