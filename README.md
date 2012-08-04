@@ -79,6 +79,18 @@ $ ./contrast -25 < input.png > output.png
 
 ![contrast](http://github.com/hawx/img/raw/master/examples/contrast.png)
 
+## brightness
+
+Adjusts the brightness of the given image.
+
+``` bash
+$ go build brightness.go
+$ ./brightness --help
+$ ./brightness -25 < input.png > output.png
+```
+
+![brightness](http://github.com/hawx/img/raw/master/examples/brightness.png)
+
 
 # Composition
 
