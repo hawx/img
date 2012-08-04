@@ -68,6 +68,18 @@ $ ./colourpixels --size 20x30 < input.png > output.png
 ![colourpixels](http://github.com/hawx/img/raw/master/examples/colourpixels.png)
 
 
+# Composition
+
+These tools have been created to do one task each, and to use standard
+input/output so that they can be easily composed. For example;
+
+``` bash
+$ < input.png ./colourpixels | ./pxl | ./greyscale --minimal > output.png
+```
+
+![Composed](http://github.com/hawx/img/raw/master/examples/composed.png)
+
+
 [pxlapp]: http://kohlberger.net/apps/pxl
 [rev]:    http://revdancatt.com/2012/03/31/the-pxl-effect-with-javascript-and-canvas-and-maths/
 [cpng]:   https://github.com/wvanbergen/chunky_png
