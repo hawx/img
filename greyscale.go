@@ -67,37 +67,38 @@ func alterPixels(img image.Image, f PixelAlterer) image.Image {
 	return o
 }
 
-/*
- Creates a greyscale version of +img+ using the average method, simply averages
- R, G and B values.
- */
-	func average(r, g, b uint32) uint8 {
+
+// Creates a greyscale version of +img+ using the average method, simply averages
+// R, G and B values.
+func average(r, g, b uint32) uint8 {
 	return uint8((r + g + b) / 3)
 }
 
-/*
- Creates a grayscale version of +img+ using the lightness method. That is, it
- averages the most prominent and least prominent colours.
- */
-	func lightness(r, g, b uint32) uint8 {
+// Creates a grayscale version of +img+ using the lightness method. That is, it
+// averages the most prominent and least prominent colours.
+func lightness(r, g, b uint32) uint8 {
 	maxi := max(r, g, b)
 	mini := min(r, g, b)
 
 	return uint8((maxi + mini) / 2)
 }
 
-/*
- Creates a greyscale version of +img+ using the luminosity method. This uses a
- weighted average to account for humans sensitivity to green above other colours.
- Formula is R * 0.21 + G * 0.71 + B * 0.07.
- */
-	func luminosity(r, g, b uint32) uint8 {
+// Creates a greyscale version of +img+ using the luminosity method. This uses a
+// weighted average to account for humans sensitivity to green above other colours.
+// Formula is R * 0.21 + G * 0.71 + B * 0.07.
+func luminosity(r, g, b uint32) uint8 {
 	return uint8(float32(r) * 0.21 + float32(g) * 0.71 + float32(b) * 0.07)
 }
 
-var averageM    = flag.Bool("average", false, "Use average method")
-var lightnessM  = flag.Bool("lightness", false, "Use lightness method")
-var luminosityM = flag.Bool("luminosity", false, "Use luminosity method (default)")
+// Supposed photoshop luminosity method for greyscale.
+func photoshop(r, g, b uint32) uint8 {
+	return uint8(float32(r) * 0.299 + float32(g) * 0.587 + float32(b) * 0.114)
+}
+
+var averageM    = flag.Bool("average",    false, "Use average method")
+var lightnessM  = flag.Bool("lightness",  false, "Use lightness method")
+var luminosityM = flag.Bool("luminosity", false, "Use standard luminosity method")
+var photoshopM  = flag.Bool("photoshop",  false, "Use photoshop luminosity method (default)")
 
 var help = flag.Bool("help", false, "Display this help message")
 
@@ -126,8 +127,10 @@ func main() {
 		i = alterPixels(i, average)
   } else if *lightnessM {
     i = alterPixels(i, lightness)
+	} else if *luminosityM {
+		i = alterPixels(i, luminosity)
   } else {
-    i = alterPixels(i, luminosity)
+    i = alterPixels(i, photoshop)
   }
 
 	writeStdout(i)
