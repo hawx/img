@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+if [ ! -d "built" ]; then
+  mkdir "built"
+fi
+
+for f in `git ls-files *.go`; do
+  echo "Building ${f%.*}"
+  go build "${f}"
+  mv "${f%.*}" "built/${f%.*}"
+done
