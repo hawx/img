@@ -29,6 +29,27 @@ func NormalisedRGBA(c color.Color) (rn, gn, bn, an uint32) {
 	return
 }
 
+func RatioRGBA(c color.Color) (rn, gn, bn, an float32) {
+	r, g, b, a := c.RGBA()
+
+	rn = float32(uint8(r)) / 255
+	gn = float32(uint8(g)) / 255
+	bn = float32(uint8(b)) / 255
+	an = float32(uint8(a)) / 255
+
+	return
+}
+
+func TruncateInt(n uint32) uint32 {
+	if n < 0 { return 0 } else if n > 255 { return 255 }
+	return n
+}
+
+func TruncateFloat(n float32) float32 {
+	if n < 0 { return 0 } else if n > 255 { return 255 }
+	return n
+}
+
 func Closeness(one, two color.Color) uint32 {
 	a, b, c, d := NormalisedRGBA(one)
 	w, x, y, z := NormalisedRGBA(two)
