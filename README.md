@@ -2,7 +2,14 @@
 
 A selection of image manipulation tools.
 
-Requires Go 1.
+Requires Go 1. Build all tools into `built/` by running,
+
+``` bash
+$ ./build
+```
+
+All tools respond to the `--help` flag, use it to get information on options
+that are supported.
 
 ## shuffle
 
@@ -10,8 +17,6 @@ Randomly shuffles pixels around the image. Use `-v` or `-h` to constrain it to
 vertical or horizontal shuffling, respectively.
 
 ``` bash
-$ go build shuffle.go
-$ ./shuffle --help
 $ ./shuffle -v < input.png > output.png
 ```
 
@@ -22,8 +27,6 @@ $ ./shuffle -v < input.png > output.png
 Pixelates an image. Use `--size HxW` to set pixel size used.
 
 ``` bash
-$ go build pixelate.go
-$ ./pixelate --help
 $ ./pixelate --size 10x50 < input.png > output.png
 ```
 
@@ -35,8 +38,6 @@ Implementation of the triangle filter from [pxl app][pxlapp], using the
 algorithm loosely described by [revdancatt][rev].
 
 ``` bash
-$ go build pxl.go
-$ ./pxl --help
 $ ./pxl 30 < input.png > output.png
 ```
 
@@ -47,8 +48,6 @@ $ ./pxl 30 < input.png > output.png
 Creates a greyscale version of an image.
 
 ``` bash
-$ go build greyscale.go
-$ ./greyscale --help
 $ ./greyscale --average < input.png > output.png
 ```
 
@@ -60,8 +59,6 @@ Features a problematic pixelation algorithm where calculations overflow
 producing incorrect (but generally pretty) results.
 
 ``` bash
-$ go build colourpixels.go
-$ ./colourpixels --help
 $ ./colourpixels --size 20x30 < input.png > output.png
 ```
 
@@ -72,8 +69,6 @@ $ ./colourpixels --size 20x30 < input.png > output.png
 Adjusts the contrast of the given image.
 
 ``` bash
-$ go build contrast.go
-$ ./contrast --help
 $ ./contrast -25 < input.png > output.png
 ```
 
@@ -84,13 +79,20 @@ $ ./contrast -25 < input.png > output.png
 Adjusts the brightness of the given image.
 
 ``` bash
-$ go build brightness.go
-$ ./brightness --help
 $ ./brightness -25 < input.png > output.png
 ```
 
 ![brightness](http://github.com/hawx/img/raw/master/examples/brightness.png)
 
+## hue
+
+Adjusts the hue of the given image.
+
+``` bash
+$ ./hue -1.34 < input.png > output.png
+```
+
+![hue](http://github.com/hawx/img/raw/master/examples/hue.png)
 
 # Composition
 
@@ -106,4 +108,3 @@ $ < input.png ./colourpixels | ./pxl | ./greyscale --minimal > output.png
 
 [pxlapp]: http://kohlberger.net/apps/pxl
 [rev]:    http://revdancatt.com/2012/03/31/the-pxl-effect-with-javascript-and-canvas-and-maths/
-[cpng]:   https://github.com/wvanbergen/chunky_png
