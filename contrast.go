@@ -1,23 +1,13 @@
 package main
 
 import (
+	"./utils"
 	"os"
 	"image"
-	"image/png"
 	"image/color"
 	"fmt"
 	"strconv"
 )
-
-func readStdin() image.Image {
-	img, _ := png.Decode(os.Stdin)
-
-	return img
-}
-
-func writeStdout(img image.Image) {
-	png.Encode(os.Stdout, img)
-}
 
 func adjustContrast(img image.Image, value float32) image.Image {
 	b := img.Bounds()
@@ -77,7 +67,7 @@ func main() {
 		value = float32(a)
 	}
 
-	i := readStdin()
+	i := utils.ReadStdin()
 	i  = adjustContrast(i, value)
-	writeStdout(i)
+	utils.WriteStdout(i)
 }

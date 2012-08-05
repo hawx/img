@@ -1,48 +1,13 @@
 package main
 
 import (
+	"./utils"
 	"os"
 	"image"
-	"image/png"
 	"image/color"
 	"flag"
 	"fmt"
 )
-
-
-func readStdin() image.Image {
-	img, _ := png.Decode(os.Stdin)
-
-	return img
-}
-
-func writeStdout(img image.Image) {
-	png.Encode(os.Stdout, img)
-}
-
-func min(ns... uint32) (n uint32) {
-	if len(ns) > 0 {
-		n = ns[0]
-	}
-	for i := 1; i < len(ns); i++ {
-		if ns[i] < n {
-			n = ns[i]
-		}
-	}
-	return
-}
-
-func max(ns... uint32) (n uint32) {
-	if len(ns) > 0 {
-		n = ns[0]
-	}
-	for i := 1; i < len(ns); i++ {
-		if ns[i] > n {
-			n = ns[i]
-		}
-	}
-	return
-}
 
 type PixelAlterer func(r, g, b uint32) uint8
 
@@ -52,13 +17,9 @@ func alterPixels(img image.Image, f PixelAlterer) image.Image {
 
 	for y := b.Min.Y; y < b.Max.Y; y++ {
 		for x := b.Min.X; x < b.Max.X; x++ {
-			r, g, b, a := img.At(x, y).RGBA()
+			r, g, b, a := utils.NormalisedRGBA(img.At(x, y))
 
-			rn := uint32(uint8(r))
-			gn := uint32(uint8(g))
-			bn := uint32(uint8(b))
-
-			grey := f(rn, gn, bn)
+			grey := f(r, g, b)
 
 			o.Set(x, y, color.RGBA{grey, grey, grey, uint8(a)})
 		}
@@ -77,8 +38,8 @@ func average(r, g, b uint32) uint8 {
 // Creates a grayscale version of +img+ using the lightness method. That is, it
 // averages the most prominent and least prominent colours.
 func lightness(r, g, b uint32) uint8 {
-	maxi := max(r, g, b)
-	mini := min(r, g, b)
+	maxi := utils.Max(r, g, b)
+	mini := utils.Min(r, g, b)
 
 	return uint8((maxi + mini) / 2)
 }
@@ -91,11 +52,11 @@ func luminosity(r, g, b uint32) uint8 {
 }
 
 func maximal(r, g, b uint32) uint8 {
-	return uint8(max(r, g, b))
+	return uint8(utils.Max(r, g, b))
 }
 
 func minimal(r, g, b uint32) uint8 {
-	return uint8(min(r, g, b))
+	return uint8(utils.Min(r, g, b))
 }
 
 // Supposed photoshop luminosity method for greyscale.
@@ -134,7 +95,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	i := readStdin()
+	i := utils.ReadStdin()
 
 	if *averageM {
 		i = alterPixels(i, average)
@@ -150,5 +111,5 @@ func main() {
     i = alterPixels(i, photoshop)
   }
 
-	writeStdout(i)
+	utils.WriteStdout(i)
 }

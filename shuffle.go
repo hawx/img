@@ -1,27 +1,17 @@
 package main
 
 import (
+	"./utils"
 	"fmt"
 	"os"
 	"math/rand"
 	"image"
-	"image/png"
 	"flag"
 )
 
 
 func randBetween(a, b int) int {
 	return rand.Intn(b - a)
-}
-
-func readStdin() image.Image {
-	img, _ := png.Decode(os.Stdin)
-
-	return img
-}
-
-func writeStdout(img image.Image) {
-	png.Encode(os.Stdout, img)
 }
 
 func shuffle(img image.Image) image.Image {
@@ -106,7 +96,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	i := readStdin()
+	i := utils.ReadStdin()
 
 	if (*vertical && !*horizontal) {
 		i = verticalShuffle(i)
@@ -116,5 +106,5 @@ func main() {
 		i = shuffle(i)
 	}
 
-	writeStdout(i)
+	utils.WriteStdout(i)
 }

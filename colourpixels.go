@@ -1,44 +1,15 @@
 package main
 
 import (
+	"./utils"
 	"os"
 	"image"
-	"image/png"
 	"image/color"
 	"fmt"
 	"flag"
 	"strconv"
 	"strings"
 )
-
-func readStdin() image.Image {
-	img, _ := png.Decode(os.Stdin)
-
-	return img
-}
-
-func writeStdout(img image.Image) {
-	png.Encode(os.Stdout, img)
-}
-
-func average(colors []color.Color, n int) color.Color {
-	red := 0; green := 0; blue := 0; alpha := 0
-
-	for i := 0; i < n; i++ {
-		r, g, b, a := colors[i].RGBA()
-		red   += int(r)
-		green += int(g)
-		blue  += int(b)
-		alpha += int(a)
-	}
-
-	ared   := uint8(red / n)
-	agreen := uint8(green / n)
-	ablue  := uint8(blue / n)
-	aalpha := uint8(alpha / n)
-
-	return color.RGBA{ared, agreen, ablue, aalpha}
-}
 
 func pxl(img image.Image, pixelHeight, pixelWidth int) image.Image {
 	b := img.Bounds()
@@ -59,18 +30,18 @@ func pxl(img image.Image, pixelHeight, pixelWidth int) image.Image {
 
 			// Within the box need to iterate over every point and add value to array
 			for x := 0; x < pixelWidth; x++ {
-					for y:= 0; y < pixelHeight; y++ {
+				for y:= 0; y < pixelHeight; y++ {
 
-						realX := col * pixelWidth + x
-						realY := row * pixelHeight + y
+					realX := col * pixelWidth + x
+					realY := row * pixelHeight + y
 
-						values[i] = img.At(realX, realY)
+					values[i] = img.At(realX, realY)
 
-						i++
-					}
+					i++
 				}
+			}
 
-				avg :=	average(values, i)
+			avg := utils.Average(values)
 
 			// Now to draw the new color
 			for x := 0; x < pixelWidth; x++ {
@@ -132,7 +103,7 @@ func main() {
 	}
 
 
-	i := readStdin()
+	i := utils.ReadStdin()
 	i  = pxl(i, pixelFlag.height, pixelFlag.width)
-	writeStdout(i)
+	utils.WriteStdout(i)
 }

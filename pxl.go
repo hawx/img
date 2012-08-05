@@ -1,66 +1,14 @@
 package main
 
 import (
+	"./utils"
 	"os"
 	"fmt"
 	"strconv"
 	"flag"
 	"image"
-	"image/png"
 	"image/color"
 )
-
-
-func readStdin() image.Image {
-	img, _ := png.Decode(os.Stdin)
-
-	return img
-}
-
-func writeStdout(img image.Image) {
-	png.Encode(os.Stdout, img)
-}
-
-func closeness(one, two color.Color) uint32 {
-	a, b, c, d := one.RGBA()
-	w, x, y, z := two.RGBA()
-
-	na := uint32(uint8(a))
-	nb := uint32(uint8(b))
-	nc := uint32(uint8(c))
-	nd := uint32(uint8(d))
-
-	nw := uint32(uint8(w))
-	nx := uint32(uint8(x))
-	ny := uint32(uint8(y))
-	nz := uint32(uint8(z))
-
-	return (na - nw) + (nb - nx) + (nc - ny) + (nd - nz)
-}
-
-func average(cs []color.Color) color.Color {
-	var red, green, blue, alpha uint32
-	red = 0; green = 0; blue = 0; alpha = 0
-
-	for i := 0; i < len(cs); i++ {
-		r, g, b, a := cs[i].RGBA()
-
-		// Need to do some crazy type conversions first
-		rn := uint32(uint8(r))
-		gn := uint32(uint8(g))
-		bn := uint32(uint8(b))
-		an := uint32(uint8(a))
-
-		red += rn; green += gn; blue += bn; alpha += an
-	}
-
-	return color.RGBA{
-		uint8(red   / uint32(len(cs))),
-		uint8(green / uint32(len(cs))),
-		uint8(blue  / uint32(len(cs))),
-		uint8(alpha / uint32(len(cs))),
-	}
-}
 
 func pxl(img image.Image, pixelSize int) image.Image {
 	pixelHeight := pixelSize
@@ -112,15 +60,15 @@ func pxl(img image.Image, pixelSize int) image.Image {
 				}
 			}
 
-			ato := average(to)
-			ari := average(ri)
-			abo := average(bo)
-			ale := average(le)
+			ato := utils.Average(to)
+			ari := utils.Average(ri)
+			abo := utils.Average(bo)
+			ale := utils.Average(le)
 
-			if closeness(ato, ari) > closeness(ato, ale) {
+			if utils.Closeness(ato, ari) > utils.Closeness(ato, ale) {
 
-				top_right := average([]color.Color{ato, ari})
-				bottom_left := average([]color.Color{abo, ale})
+				top_right   := utils.Average([]color.Color{ato, ari})
+				bottom_left := utils.Average([]color.Color{abo, ale})
 
 				for y := 0; y < pixelHeight; y++ {
 					for x := 0; x < pixelWidth; x++ {
@@ -141,8 +89,8 @@ func pxl(img image.Image, pixelSize int) image.Image {
 
 			} else {
 
-				top_left := average([]color.Color{ato, ale})
-				bottom_right := average([]color.Color{abo, ari})
+				top_left     := utils.Average([]color.Color{ato, ale})
+				bottom_right := utils.Average([]color.Color{abo, ari})
 
 				for y := 0; y < pixelHeight; y++ {
 					for x := 0; x < pixelWidth; x++ {
@@ -193,7 +141,7 @@ func main() {
 		pixelSize, _ = strconv.Atoi(os.Args[1])
 	}
 
-	i := readStdin()
+	i := utils.ReadStdin()
 	i  = pxl(i, pixelSize)
-	writeStdout(i)
+	utils.WriteStdout(i)
 }
