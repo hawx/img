@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-func brightness(img image.Image, value float32) image.Image {
+func brightness(img image.Image, value float64) image.Image {
 	b := img.Bounds()
 	o := image.NewRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
 
@@ -20,9 +20,9 @@ func brightness(img image.Image, value float32) image.Image {
 		for x := b.Min.X; x < b.Max.X; x++ {
 			r, g, b, a := img.At(x, y).RGBA()
 
-			rn := float32(uint8(r)) / 255
-			gn := float32(uint8(g)) / 255
-			bn := float32(uint8(b)) / 255
+			rn := float64(uint8(r)) / 255
+			gn := float64(uint8(g)) / 255
+			bn := float64(uint8(b)) / 255
 
 			rn  = (rn * value) * 255
 			gn  = (gn * value) * 255
@@ -58,14 +58,14 @@ func printHelp() {
 
 
 func main() {
-	value := float32(20.0)
+	value := float64(20.0)
 	if len(os.Args) > 1 {
 		if os.Args[1] == "--help" {
 			printHelp()
 		}
 
-		a, _ := strconv.ParseFloat(os.Args[1], 32)
-		value = float32(a)
+		a, _ := strconv.ParseFloat(os.Args[1], 64)
+		value = float64(a)
 	}
 
 	i := utils.ReadStdin()

@@ -48,7 +48,7 @@ func lightness(r, g, b uint32) uint8 {
 // weighted average to account for humans sensitivity to green above other colours.
 // Formula is R * 0.21 + G * 0.71 + B * 0.07.
 func luminosity(r, g, b uint32) uint8 {
-	return uint8(float32(r) * 0.21 + float32(g) * 0.71 + float32(b) * 0.07)
+	return uint8(float64(r) * 0.21 + float64(g) * 0.71 + float64(b) * 0.07)
 }
 
 func maximal(r, g, b uint32) uint8 {
@@ -61,7 +61,7 @@ func minimal(r, g, b uint32) uint8 {
 
 // Supposed photoshop luminosity method for greyscale.
 func photoshop(r, g, b uint32) uint8 {
-	return uint8(float32(r) * 0.299 + float32(g) * 0.587 + float32(b) * 0.114)
+	return uint8(float64(r) * 0.299 + float64(g) * 0.587 + float64(b) * 0.114)
 }
 
 var averageM    = flag.Bool("average",    false, "Use average method")
