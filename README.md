@@ -69,7 +69,7 @@ $ ./colourpixels --size 20x30 < input.png > output.png
 Adjusts the contrast of the given image.
 
 ``` bash
-$ ./contrast -25 < input.png > output.png
+$ ./contrast --by -25 < input.png > output.png
 ```
 
 ![contrast](http://github.com/hawx/img/raw/master/examples/contrast.png)
@@ -79,7 +79,7 @@ $ ./contrast -25 < input.png > output.png
 Adjusts the brightness of the given image.
 
 ``` bash
-$ ./brightness -25 < input.png > output.png
+$ ./brightness --by -25 < input.png > output.png
 ```
 
 ![brightness](http://github.com/hawx/img/raw/master/examples/brightness.png)
@@ -89,7 +89,7 @@ $ ./brightness -25 < input.png > output.png
 Adjusts the hue of the given image.
 
 ``` bash
-$ ./hue -1.34 < input.png > output.png
+$ ./hue --by -1.34 < input.png > output.png
 ```
 
 ![hue](http://github.com/hawx/img/raw/master/examples/hue.png)
