@@ -38,7 +38,7 @@ Implementation of the triangle filter from [pxl app][pxlapp], using the
 algorithm loosely described by [revdancatt][rev].
 
 ``` bash
-$ ./pxl 30 < input.png > output.png
+$ ./pxl --size 30x30 < input.png > output.png
 ```
 
 ![pxl](http://github.com/hawx/img/raw/master/examples/pxl.png)
