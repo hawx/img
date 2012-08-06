@@ -36,7 +36,7 @@ func pixelate(img image.Image, pixelHeight, pixelWidth int) image.Image {
 				}
 			}
 
-			avg := utils.Average(values)
+			avg := utils.Average(values...)
 
 			for y := 0; y < pixelHeight; y++ {
 				for x := 0; x < pixelWidth; x++ {

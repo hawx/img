@@ -60,15 +60,15 @@ func pxl(img image.Image, pixelSize int) image.Image {
 				}
 			}
 
-			ato := utils.Average(to)
-			ari := utils.Average(ri)
-			abo := utils.Average(bo)
-			ale := utils.Average(le)
+			ato := utils.Average(to...)
+			ari := utils.Average(ri...)
+			abo := utils.Average(bo...)
+			ale := utils.Average(le...)
 
 			if utils.Closeness(ato, ari) > utils.Closeness(ato, ale) {
 
-				top_right   := utils.Average([]color.Color{ato, ari})
-				bottom_left := utils.Average([]color.Color{abo, ale})
+				top_right   := utils.Average(ato, ari)
+				bottom_left := utils.Average(abo, ale)
 
 				for y := 0; y < pixelHeight; y++ {
 					for x := 0; x < pixelWidth; x++ {
@@ -89,8 +89,8 @@ func pxl(img image.Image, pixelSize int) image.Image {
 
 			} else {
 
-				top_left     := utils.Average([]color.Color{ato, ale})
-				bottom_right := utils.Average([]color.Color{abo, ari})
+				top_left     := utils.Average(ato, ale)
+				bottom_right := utils.Average(abo, ari)
 
 				for y := 0; y < pixelHeight; y++ {
 					for x := 0; x < pixelWidth; x++ {

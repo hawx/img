@@ -62,7 +62,7 @@ func Closeness(one, two color.Color) uint32 {
 	return (a - w) + (b - x) + (c - y) + (d - z)
 }
 
-func Average(cs []color.Color) color.Color {
+func Average(cs... color.Color) color.Color {
 	var red, green, blue, alpha uint32
 	red = 0; green = 0; blue = 0; alpha = 0
 

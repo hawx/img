@@ -41,7 +41,7 @@ func pxl(img image.Image, pixelHeight, pixelWidth int) image.Image {
 				}
 			}
 
-			avg := utils.Average(values)
+			avg := utils.Average(values...)
 
 			// Now to draw the new color
 			for x := 0; x < pixelWidth; x++ {
