@@ -6,34 +6,25 @@ import (
 	"image"
 	"image/color"
 	"fmt"
-	"strconv"
+	"flag"
 )
 
 func adjustContrast(img image.Image, value float64) image.Image {
-	b := img.Bounds()
-	o := image.NewRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
+	value  = (100 + value) / 100
+	value *= value
 
-	value = (100 + value) / 100
-	value = value * value
+	f := func(c color.Color) color.Color {
+		r,g,b,a := utils.RatioRGBA(c)
 
-	for y := b.Min.Y; y < b.Max.Y; y++ {
-		for x := b.Min.X; x < b.Max.X; x++ {
-			r, g, b, a := utils.RatioRGBA(img.At(x, y))
+		r = utils.Truncatef((((r - 0.5) * value) + 0.5) * 255)
+		g = utils.Truncatef((((g - 0.5) * value) + 0.5) * 255)
+		b = utils.Truncatef((((b - 0.5) * value) + 0.5) * 255)
+		a = a * 255
 
-			r = (((r - 0.5) * value) + 0.5) * 255
-			g = (((g - 0.5) * value) + 0.5) * 255
-			b = (((b - 0.5) * value) + 0.5) * 255
-			a = a * 255
-
-			r = utils.TruncateFloat(r)
-			g = utils.TruncateFloat(g)
-			b = utils.TruncateFloat(b)
-
-			o.Set(x, y, color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)})
-		}
+		return color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
 	}
 
-	return o
+	return utils.ChangePixels(img, f)
 }
 
 func printHelp() {
@@ -49,18 +40,17 @@ func printHelp() {
 	os.Exit(0)
 }
 
-func main() {
-	value := float64(15.0)
-	if len(os.Args) > 1 {
-		if os.Args[1] == "--help" {
-			printHelp()
-		}
+var help = flag.Bool("help", false, "Display this help message")
+var by   = flag.Float64("by", 15.0, "Amount to shift hue by")
 
-		a, _ := strconv.ParseFloat(os.Args[1], 64)
-		value = float64(a)
+func main() {
+	flag.Parse()
+
+	if *help {
+		printHelp()
 	}
 
 	i := utils.ReadStdin()
-	i  = adjustContrast(i, value)
+	i  = adjustContrast(i, *by)
 	utils.WriteStdout(i)
 }
