@@ -5,8 +5,6 @@ import (
 	"os"
 	"fmt"
 	"flag"
-	"strings"
-	"strconv"
 	"image"
 	"image/color"
 )
@@ -54,26 +52,8 @@ func pixelate(img image.Image, pixelHeight, pixelWidth int) image.Image {
 	return o
 }
 
-type pixel struct {
-	height, width int
-}
 
-func (p *pixel) String() string {
-	return fmt.Sprint(*p)
-}
-
-func (p *pixel) Set(value string) error {
-	parts := strings.Split(value, "x")
-
-	y, _ := strconv.Atoi(parts[0])
-	x, _ := strconv.Atoi(parts[1])
-
-	*p = pixel{y, x}
-
-	return nil
-}
-
-var pixelFlag pixel = pixel{20, 20}
+var pixelFlag utils.Pixel = utils.Pixel{20, 20}
 var help = flag.Bool("help", false, "Display this help message")
 
 func init() {
@@ -98,6 +78,6 @@ func main() {
 	}
 
 	i := utils.ReadStdin()
-	i  = pixelate(i, pixelFlag.height, pixelFlag.width)
+	i  = pixelate(i, pixelFlag.H, pixelFlag.W)
 	utils.WriteStdout(i)
 }

@@ -4,20 +4,17 @@ import (
 	"./utils"
 	"os"
 	"fmt"
-	"strconv"
 	"flag"
 	"image"
 	"image/color"
 )
 
-func pxl(img image.Image, pixelSize int) image.Image {
-	pixelHeight := pixelSize
-	pixelWidth  := pixelSize
-
+func pxl(img image.Image, pixelHeight, pixelWidth int) image.Image {
 	b := img.Bounds()
 
-	cols := b.Dx() / pixelWidth
-	rows := b.Dy() / pixelHeight
+	cols  := b.Dx() / pixelWidth
+	rows  := b.Dy() / pixelHeight
+	ratio := float64(pixelHeight) / float64(pixelWidth)
 
 	o := image.NewRGBA(image.Rect(0, 0, pixelWidth * cols, pixelHeight * rows))
 
@@ -37,22 +34,22 @@ func pxl(img image.Image, pixelSize int) image.Image {
 					realY := row * pixelHeight + y
 					realX := col * pixelWidth + x
 
-					y_origin := y - pixelHeight / 2
-					x_origin := x - pixelWidth / 2
+					y_origin := float64(y - pixelHeight / 2)
+					x_origin := float64(x - pixelWidth / 2)
 
-					if y_origin > x_origin && y_origin > -x_origin {
+					if y_origin > ratio * x_origin && y_origin > ratio * -x_origin {
 						tc++
 						to = append(to, img.At(realX, realY))
 
-					} else if y_origin < x_origin && y_origin > -x_origin {
+					} else if y_origin < ratio * x_origin && y_origin > ratio * -x_origin {
 						rc++
 						ri = append(ri, img.At(realX, realY))
 
-					} else if y_origin < x_origin && y_origin < -x_origin {
+					} else if y_origin < ratio * x_origin && y_origin < ratio * -x_origin {
 						bc++
 						bo = append(bo, img.At(realX, realY))
 
-					} else if y_origin > x_origin && y_origin < -x_origin {
+					} else if y_origin > ratio * x_origin && y_origin < ratio * -x_origin {
 						lc++
 						le = append(le, img.At(realX, realY))
 
@@ -76,10 +73,10 @@ func pxl(img image.Image, pixelSize int) image.Image {
 						realY := row * pixelHeight + y
 						realX := col * pixelWidth + x
 
-						y_origin := y - pixelHeight / 2
-						x_origin := x - pixelWidth / 2
+						y_origin := float64(y - pixelHeight / 2)
+						x_origin := float64(x - pixelWidth / 2)
 
-						if y_origin > x_origin {
+						if y_origin > ratio * x_origin {
 							o.Set(realX, realY, top_right)
 						} else {
 							o.Set(realX, realY, bottom_left)
@@ -98,10 +95,10 @@ func pxl(img image.Image, pixelSize int) image.Image {
 						realY := row * pixelHeight + y
 						realX := col * pixelWidth + x
 
-						y_origin := y - pixelHeight / 2
-						x_origin := x - pixelWidth / 2
+						y_origin := float64(y - pixelHeight / 2)
+						x_origin := float64(x - pixelWidth / 2)
 
-						if y_origin >= -x_origin {
+						if y_origin >= ratio * -x_origin {
 							o.Set(realX, realY, top_left)
 						} else {
 							o.Set(realX, realY, bottom_right)
@@ -118,7 +115,13 @@ func pxl(img image.Image, pixelSize int) image.Image {
 	return o
 }
 
+
+var pixelFlag utils.Pixel = utils.Pixel{20, 20}
 var help = flag.Bool("help", false, "Display this help message")
+
+func init() {
+	flag.Var(&pixelFlag, "size", "Size of pixel to pxl with")
+}
 
 func main() {
 	flag.Parse()
@@ -126,22 +129,18 @@ func main() {
 	if *help {
 		msg := "Usage: pxl [size]\n" +
 			"\n" +
-			"  Pixelate takes a png file from STDIN, and pixelates it into triangles.\n" +
+			"  Pxl takes a png file from STDIN, and pixelates it into triangles.\n" +
 			"  The result is printed to STDOUT.\n" +
 			"\n" +
-			"  --help        # Display this help message\n" +
+			"  --size HxW      # Size of pixel to use, defaults to 20x20\n" +
+			"  --help          # Display this help message\n" +
 			"\n"
 
 		fmt.Fprintf(os.Stderr, msg)
 		os.Exit(0)
 	}
 
-	pixelSize := 20
-	if len(os.Args) > 1 {
-		pixelSize, _ = strconv.Atoi(os.Args[1])
-	}
-
 	i := utils.ReadStdin()
-	i  = pxl(i, pixelSize)
+	i  = pxl(i, pixelFlag.H, pixelFlag.W)
 	utils.WriteStdout(i)
 }
