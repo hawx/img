@@ -94,6 +94,16 @@ $ ./hue --by -1.34 < input.png > output.png
 
 ![hue](http://github.com/hawx/img/raw/master/examples/hue.png)
 
+## saturation
+
+Adjusts the saturation of the given image.
+
+``` bash
+$ ./saturation --by 0.2 < input.png > output.png
+```
+
+![saturation](http://github.com/hawx/img/raw/master/examples/saturation.png)
+
 # Composition
 
 These tools have been created to do one task each, and to use standard
