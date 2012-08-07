@@ -24,7 +24,7 @@ func adjustContrast(img image.Image, value float64) image.Image {
 		return color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
 	}
 
-	return utils.ChangePixels(img, f)
+	return utils.EachPixel(img, f)
 }
 
 func printHelp() {

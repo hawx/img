@@ -128,7 +128,7 @@ func Maxf(ns... float64) (n float64) {
 	return
 }
 
-func ChangePixels(img image.Image, f func(c color.Color) color.Color) image.Image {
+func EachPixel(img image.Image, f func(c color.Color) color.Color) image.Image {
 	b := img.Bounds()
 	o := image.NewRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
 

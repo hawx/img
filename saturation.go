@@ -17,7 +17,7 @@ func saturationShift(img image.Image, amount float64) image.Image {
 		return utils.ToRGBA(h,s,l,a)
 	}
 
-	return utils.ChangePixels(img, f)
+	return utils.EachPixel(img, f)
 }
 
 func simplifiedSaturationShift(img image.Image, amount float64) image.Image {
@@ -27,7 +27,7 @@ func simplifiedSaturationShift(img image.Image, amount float64) image.Image {
 		return utils.ToSimplifiedRGBA(h,s,l,a)
 	}
 
-	return utils.ChangePixels(img, f)
+	return utils.EachPixel(img, f)
 }
 
 func printHelp() {
