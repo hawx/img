@@ -11,6 +11,26 @@ $ ./build
 All tools respond to the `--help` flag, use it to get information on options
 that are supported.
 
+## Conversion with 'from' and 'to'
+
+`from` takes an input image (jpeg, gif or png) and outputs a `.png` file.
+
+``` bash
+$ ./from image.jpg > image.png
+```
+
+`to` takes a png image and outputs some other file (jpeg or png).
+
+``` bash
+$ image.png < ./to image.jpg
+```
+
+These allow you to use other filetypes as input, and get different output:
+
+``` bash
+$ ./from input.jpg | ./greyscale | ./pxl | ./to output.jpg
+```
+
 ## shuffle
 
 Randomly shuffles pixels around the image. Use `-v` or `-h` to constrain it to
