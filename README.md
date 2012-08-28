@@ -124,6 +124,18 @@ $ ./saturation --by 0.2 < input.png > output.png
 
 ![saturation](http://github.com/hawx/img/raw/master/examples/saturation.png)
 
+## blend
+
+Allows you to blend two images together using a blend mode. Takes one image from
+STDIN (the base image, imagine the bottom layer in photoshop) and one image as
+an argument (the blend image, the layer above).
+
+``` bash
+$ < input.png ./blend --screen blend.png --opacity 0.3 > output.png
+```
+
+![blend](http://github.com/hawx/img/raw/master/examples/blend.png)
+
 # Composition
 
 These tools have been created to do one task each, and to use standard
