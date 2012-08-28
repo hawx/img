@@ -268,9 +268,18 @@ func addition(a, b image.Image) image.Image {
 
 func subtraction(a, b image.Image) image.Image {
 	f := func(c, d color.Color) color.Color {
-		return EachChannel(c, d, func(i, j uint32) uint32 {
-			return utils.Max(i - j, 0)
-		})
+		i, j, k, l := utils.NormalisedRGBA(c)
+		m, n, o, _ := utils.NormalisedRGBA(d)
+
+		r := utils.Truncate(i - m)
+		g := utils.Truncate(j - n)
+		b := utils.Truncate(k - o)
+
+		if m > i { r = 0 }
+		if n > j { g = 0 }
+		if o > k { b = 0 }
+
+		return color.RGBA{uint8(r), uint8(g), uint8(b), uint8(l)}
 	}
 
 	return BlendPixels(a, b, f)
