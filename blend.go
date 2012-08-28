@@ -87,32 +87,6 @@ func blend(a, b image.Image, opacity float64) image.Image {
 	return BlendPixels(a, b, f)
 }
 
-// +ib+ the base image
-// +is+ the blend image
-// +ir+ the result image from the blend operation
-/*
- func properBlend(ib, is, ir image.Image) image.Image {
-	bounds := ir.Bounds()
-	result := image.NewRGBA(image.Rect(0, 0, width, height))
-
-	for y := 0; y < bounds.Dy(); y++ {
-		for x := 0; x < bounds.Dx(); x++ {
-			cb := ib.At(x, y); cs := is.At(x, y); cr := ir.At(x, y)
-
-			rb, gb, bb, ab := utils.RatioRGBA(cb)
-			rs, gs, bs, as := utils.RatioRGBA(cs)
-			rr, gr, br, ar := utils.RatioRGBA(cr)
-
-			r := (1 - as/ar) * rb + as/ar * ((1 - ab) * rs + ab * rr)
-			g := (1 - as/ar) * gb + as/ar * ((1 - ab) * gs + ab * gr)
-			b := (1 - as/ar) * bb + as/ar * ((1 - ab) * bs + ab * br)
-			a := (1 - as/ar) * ab + as/ar * ((1 - ab) * as + ab * ar)
-
-		}
-	}
-}
- */
-
 
 // Selects the blend colour for each pixel
 func normal(a, b image.Image) image.Image {
