@@ -22,6 +22,17 @@ func Warn(s interface{}) {
 	fmt.Fprintln(os.Stderr, s)
 }
 
+func InverseColor(c color.Color) color.Color {
+	r, g, b, a := NormalisedRGBA(c)
+
+	return color.RGBA{
+		uint8(255 - r),
+		uint8(255 - g),
+		uint8(255 - b),
+		uint8(255 - a),
+	}
+}
+
 func NormalisedRGBA(c color.Color) (rn, gn, bn, an uint32) {
 	r, g, b, a := c.RGBA()
 
@@ -30,6 +41,17 @@ func NormalisedRGBA(c color.Color) (rn, gn, bn, an uint32) {
 	gn = uint32(uint8(g))
 	bn = uint32(uint8(b))
 	an = uint32(uint8(a))
+
+	return
+}
+
+func NormalisedRGBAf(c color.Color) (rn, gn, bn, an float64) {
+	r, g, b, a := c.RGBA()
+
+	rn = float64(uint8(r))
+	gn = float64(uint8(g))
+	bn = float64(uint8(b))
+	an = float64(uint8(a))
 
 	return
 }
