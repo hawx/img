@@ -211,11 +211,6 @@ func overlay(a, b image.Image) image.Image {
 
 func softLight(a, b image.Image) image.Image {
 	f := func(c, d color.Color) color.Color {
-		// return EachChannelf(c, d, func(i, j float64) float64 {
-			// rs := 255 - (((255 - j) * (255 - i)) / 255)
-			// return (((255 - i) * j + rs) / 255) * i
-		// })
-
 		return EachRatioChannel(c, d, func(i, j float64) float64 {
 			if j > 0.5 {
 				return (1 - (1 - i) * (1 - (j - 0.5))) * 255
@@ -446,7 +441,7 @@ func main() {
 	} else if *overlayM {
 		img = overlay(a, b)
 	} else if *softLightM {
-		img = softLight(a, b) // broken!
+		img = softLight(a, b)
 	} else if *hardLightM {
 		img = hardLight(a, b)
 
@@ -455,8 +450,7 @@ func main() {
 	} else if *additionM {
 		img = addition(a, b)
 	} else if *subtractionM {
-		img = subtraction(a, b) // broken!
-
+		img = subtraction(a, b)
 
 	} else if *hueM {
 		img = hue(a, b)
