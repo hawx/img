@@ -14,40 +14,70 @@ import (
 
 // http://docs.gimp.org/en/gimp-concepts-layer-modes.html
 
-func EachChannel(c, d color.Color, f (func(i, j uint32) uint32)) color.Color {
+type UIntMixer (func(i, j uint32) uint32)
+type FloatMixer (func (i, j float64) float64)
+
+// Applies +f+ to each colour channel. Passes channel value as uint32, between 0
+// and 255, it should return a value in the same range.
+func EachChannel(c, d color.Color, fs... UIntMixer) color.Color {
+	var f, q UIntMixer
+	switch len(fs) {
+	case 1:  f = fs[0]; q = fs[0]
+	case 2:  f = fs[0]; q = fs[1]
+	default: os.Exit(1)
+	}
+
 	i, j, k, l := utils.NormalisedRGBA(c)
 	m, n, o, p := utils.NormalisedRGBA(d)
 
 	r := utils.Truncate(f(i, m))
 	g := utils.Truncate(f(j, n))
 	b := utils.Truncate(f(k, o))
-	a := utils.Truncate(f(l, p))
+	a := utils.Truncate(q(l, p))
 
 	return color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
 }
 
-func EachChannelf(c, d color.Color, f (func(i, j float64) float64)) color.Color {
+// Same as EachChannel but passes values as floats, and expects a float in
+// return.
+func EachChannelf(c, d color.Color, fs... FloatMixer) color.Color {
+	var f, q FloatMixer
+	switch len(fs) {
+	case 1:  f = fs[0]; q = fs[0]
+	case 2:  f = fs[0]; q = fs[1]
+	default: os.Exit(1)
+	}
+
 	i, j, k, l := utils.NormalisedRGBAf(c)
 	m, n, o, p := utils.NormalisedRGBAf(d)
 
 	r := utils.Truncatef(f(i, m))
 	g := utils.Truncatef(f(j, n))
 	b := utils.Truncatef(f(k, o))
-	a := utils.Truncatef(f(l, p))
+	a := utils.Truncatef(q(l, p))
 
 	return color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
 }
 
-func EachRatioChannel(c, d color.Color, f (func(i, j float64) float64)) color.Color {
+// Applies +f+ to each colour channel. Passes channel values as float64, between
+// 0 and 1, expects returned value to be within the same range.
+func EachRatioChannel(c, d color.Color, fs... FloatMixer) color.Color {
+	var f, q FloatMixer
+	switch len(fs) {
+	case 1:  f = fs[0]; q = fs[0]
+	case 2:  f = fs[0]; q = fs[1]
+	default: os.Exit(1)
+	}
+
 	i, j, k, l := utils.RatioRGBA(c)
 	m, n, o, p := utils.RatioRGBA(d)
 
-	r := utils.Truncatef(f(i, m))
-	g := utils.Truncatef(f(j, n))
-	b := utils.Truncatef(f(k, o))
-	a := utils.Truncatef(f(l, p))
+	r := utils.Truncatef(f(i, m) * 255)
+	g := utils.Truncatef(f(j, n) * 255)
+	b := utils.Truncatef(f(k, o) * 255)
+	a := utils.Truncatef(q(l, p) * 255)
 
-	return color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
+	return color.NRGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
 }
 
 func BlendPixels(a, b image.Image, f func(c, d color.Color) color.Color) image.Image {
@@ -68,16 +98,31 @@ func BlendPixels(a, b image.Image, f func(c, d color.Color) color.Color) image.I
 }
 
 
+
+func fade(img image.Image, amount float64) image.Image {
+	f := func(c color.Color) color.Color {
+		r, g, b, a := utils.NormalisedRGBA(c)
+
+		return color.NRGBA{
+			uint8(float64(r)),
+			uint8(float64(g)),
+			uint8(float64(b)),
+			uint8(float64(a) * amount),
+		}
+	}
+
+	return utils.EachPixel(img, f)
+}
+
 func blend(a, b image.Image, opacity float64) image.Image {
 	f := func(c, d color.Color) color.Color {
 		return EachRatioChannel(c, d, func(i, j float64) float64 {
-			return (i * (1 - opacity) + j * opacity) * 255
+			return (i * (1 - opacity) + j * opacity)
 		})
 	}
 
 	return BlendPixels(a, b, f)
 }
-
 
 // Selects the blend colour for each pixel
 func normal(a, b image.Image) image.Image {
@@ -111,7 +156,7 @@ func darken(a, b image.Image) image.Image {
 func multiply(a, b image.Image) image.Image {
 	f := func(c, d color.Color) color.Color {
 		return EachRatioChannel(c, d, func(i, j float64) float64 {
-			return (i * 255) * j
+			return i * j
 		})
 	}
 
@@ -178,9 +223,9 @@ func softLight(a, b image.Image) image.Image {
 	f := func(c, d color.Color) color.Color {
 		return EachRatioChannel(c, d, func(i, j float64) float64 {
 			if j > 0.5 {
-				return (1 - (1 - i) * (1 - (j - 0.5))) * 255
+				return (1 - (1 - i) * (1 - (j - 0.5)))
 			}
-			return (i * (j + 0.5)) * 255
+			return (i * (j + 0.5))
 		})
 	}
 
