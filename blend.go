@@ -14,15 +14,6 @@ import (
 
 // http://docs.gimp.org/en/gimp-concepts-layer-modes.html
 
-func Lightness(c color.Color) uint8 {
-	r, g, b, _ := utils.NormalisedRGBA(c)
-
-	maxi := utils.Max(r, g, b)
-	mini := utils.Min(r, g, b)
-
-	return uint8((maxi + mini) / 2)
-}
-
 func EachChannel(c, d color.Color, f (func(i, j uint32) uint32)) color.Color {
 	i, j, k, l := utils.NormalisedRGBA(c)
 	m, n, o, p := utils.NormalisedRGBA(d)
