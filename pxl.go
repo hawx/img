@@ -15,6 +15,30 @@ const (
 	RIGHT
 )
 
+func halve(img image.Image, pixelHeight, pixelWidth int) image.Image {
+	b := img.Bounds()
+	o := image.NewRGBA(image.Rect(0, 0, b.Dx() / 2, b.Dy() / 2))
+
+	for y := 0; y < b.Dy() / 2; y++ {
+		for x := 0; x < b.Dx() / 2; x++ {
+			tl := img.At(x * 2, y * 2)
+			tr := img.At(x * 2 + 1, y * 2)
+			br := img.At(x * 2 + 1, y * 2 - 1)
+			bl := img.At(x * 2, y * 2 - 1)
+
+			if y % pixelHeight == 0 {
+				o.Set(x, y, tl)
+			} else if x % pixelWidth == 0 {
+				o.Set(x, y, tl)
+			} else {
+				o.Set(x, y, utils.Average(tl, tr, bl, br))
+			}
+		}
+	}
+
+	return o
+}
+
 func pxl(img image.Image, triangle, pixelHeight, pixelWidth int) image.Image {
 	b := img.Bounds()
 
@@ -22,7 +46,7 @@ func pxl(img image.Image, triangle, pixelHeight, pixelWidth int) image.Image {
 	rows  := b.Dy() / pixelHeight
 	ratio := float64(pixelHeight) / float64(pixelWidth)
 
-	o := image.NewRGBA(image.Rect(0, 0, pixelWidth * cols, pixelHeight * rows))
+	o := image.NewRGBA(image.Rect(0, 0, pixelWidth * cols * 2, pixelHeight * rows * 2))
 
 	for col := 0; col < cols; col++ {
 		for row := 0; row < rows; row++ {
@@ -74,14 +98,14 @@ func pxl(img image.Image, triangle, pixelHeight, pixelWidth int) image.Image {
 				top_right   := utils.Average(ato, ari)
 				bottom_left := utils.Average(abo, ale)
 
-				for y := 0; y < pixelHeight; y++ {
-					for x := 0; x < pixelWidth; x++ {
+				for y := 0; y < pixelHeight * 2; y++ {
+					for x := 0; x < pixelWidth * 2; x++ {
 
-						realY := row * pixelHeight + y
-						realX := col * pixelWidth + x
+						realY := row * pixelHeight * 2 + y
+						realX := col * pixelWidth * 2 + x
 
-						y_origin := float64(y - pixelHeight / 2)
-						x_origin := float64(x - pixelWidth / 2)
+						y_origin := float64(y - pixelHeight * 2 / 2)
+						x_origin := float64(x - pixelWidth * 2 / 2)
 
 						if y_origin > ratio * x_origin {
 							o.Set(realX, realY, top_right)
@@ -96,14 +120,14 @@ func pxl(img image.Image, triangle, pixelHeight, pixelWidth int) image.Image {
 				top_left     := utils.Average(ato, ale)
 				bottom_right := utils.Average(abo, ari)
 
-				for y := 0; y < pixelHeight; y++ {
-					for x := 0; x < pixelWidth; x++ {
+				for y := 0; y < pixelHeight * 2; y++ {
+					for x := 0; x < pixelWidth * 2; x++ {
 
-						realY := row * pixelHeight + y
-						realX := col * pixelWidth + x
+						realY := row * pixelHeight * 2 + y
+						realX := col * pixelWidth * 2 + x
 
-						y_origin := float64(y - pixelHeight / 2)
-						x_origin := float64(x - pixelWidth / 2)
+						y_origin := float64(y - pixelHeight * 2 / 2)
+						x_origin := float64(x - pixelWidth * 2 / 2)
 
 						if y_origin >= ratio * -x_origin {
 							o.Set(realX, realY, top_left)
@@ -119,7 +143,7 @@ func pxl(img image.Image, triangle, pixelHeight, pixelWidth int) image.Image {
 		}
 	}
 
-	return o
+	return halve(o, pixelHeight, pixelWidth)
 }
 
 
