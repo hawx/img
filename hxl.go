@@ -38,7 +38,7 @@ func hxl(img image.Image, pixelSize int) image.Image {
 
 	o := image.NewRGBA(image.Rect(0, 0, pixelWidth * cols * 2, pixelHeight * rows))
 
-	for col := -1; col < cols; col++ {
+	for col := 0; col < cols; col++ {
 		for row := 0; row < rows; row++ {
 
 			north := []color.Color{}
@@ -111,7 +111,7 @@ func hxl(img image.Image, pixelSize int) image.Image {
 	offsetY := pixelHeight / 2
 	offsetX := pixelWidth / 2
 
-	for col := 0; col < cols; col++ {
+	for col := -1; col < cols; col++ {
 		for row := -1; row < rows; row++ {
 
 			north := []color.Color{}
@@ -122,23 +122,26 @@ func hxl(img image.Image, pixelSize int) image.Image {
 
 					realY := row * pixelHeight + y + offsetY
 					realX := col * pixelWidth + x + offsetX
-					pixel := img.At(realX, realY)
 
-					y_origin := float64(y - pixelHeight / 2)
-					x_origin := float64(x - pixelWidth / 2)
+					if realX >= 0 && realX < b.Dx() {
+						pixel := img.At(realX, realY)
 
-					if x_origin > 0 && y_origin > x_origin {
-						// north-by-north-east
-						north = append(north, pixel)
-					} else if x_origin > 0 && y_origin < -x_origin {
-						// south-by-south-east
-						south = append(south, pixel)
-					} else if x_origin < 0 && y_origin < x_origin {
-						// south-by-south-west
-						south = append(south, pixel)
-					} else if x_origin < 0 && y_origin > -x_origin {
-						// north-by-north-west
-						north = append(north, pixel)
+						y_origin := float64(y - pixelHeight / 2)
+						x_origin := float64(x - pixelWidth / 2)
+
+						if x_origin > 0 && y_origin > x_origin {
+							// north-by-north-east
+							north = append(north, pixel)
+						} else if x_origin > 0 && y_origin < -x_origin {
+							// south-by-south-east
+							south = append(south, pixel)
+						} else if x_origin < 0 && y_origin < x_origin {
+							// south-by-south-west
+							south = append(south, pixel)
+						} else if x_origin < 0 && y_origin > -x_origin {
+							// north-by-north-west
+							north = append(north, pixel)
+						}
 					}
 				}
 			}
@@ -171,6 +174,7 @@ func hxl(img image.Image, pixelSize int) image.Image {
 						toSet = top
 					}
 
+					// This needs to set the left and right unpainted zones!
 					if toSet != nil {
 						o.Set(realX, realY, toSet)
 					}
