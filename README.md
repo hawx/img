@@ -63,6 +63,17 @@ $ ./pxl --size 30x30 < input.png > output.png
 
 ![pxl](http://github.com/hawx/img/raw/master/examples/pxl.png)
 
+## hxl
+
+An (almost; that is I'm not sure this is exactly the same) implementation of the
+equilateral triangle filter from [pxl app][pxlapp].
+
+``` bash
+$ ./hxl --width 50 < input.png > output.png
+```
+
+![hxl](http://github.com/hawx/img/raw/master/examples/hxl.png)
+
 ## greyscale
 
 Creates a greyscale version of an image.
