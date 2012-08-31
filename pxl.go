@@ -9,7 +9,13 @@ import (
 	"image/color"
 )
 
-func pxl(img image.Image, pixelHeight, pixelWidth int) image.Image {
+const (
+	BOTH = iota
+	LEFT
+	RIGHT
+)
+
+func pxl(img image.Image, triangle, pixelHeight, pixelWidth int) image.Image {
 	b := img.Bounds()
 
 	cols  := b.Dx() / pixelWidth
@@ -62,7 +68,8 @@ func pxl(img image.Image, pixelHeight, pixelWidth int) image.Image {
 			abo := utils.Average(bo...)
 			ale := utils.Average(le...)
 
-			if utils.Closeness(ato, ari) > utils.Closeness(ato, ale) {
+			if (triangle != LEFT) && (triangle == RIGHT ||
+				utils.Closeness(ato, ari) > utils.Closeness(ato, ale)) {
 
 				top_right   := utils.Average(ato, ari)
 				bottom_left := utils.Average(abo, ale)
@@ -117,21 +124,27 @@ func pxl(img image.Image, pixelHeight, pixelWidth int) image.Image {
 
 
 var pixelFlag utils.Pixel = utils.Pixel{20, 20}
-var help = flag.Bool("help", false, "Display this help message")
+var left  = flag.Bool("left", false, "Create only top-left/bottom-right triangles")
+var right = flag.Bool("right", false, "Create only top-right/bottom-left triangles")
+var both  = flag.Bool("both", false, "Create traingles based on closeness of colours (default)")
+var help  = flag.Bool("help", false, "Display this help message")
 
 func init() {
-	flag.Var(&pixelFlag, "size", "Size of pixel to pxl with")
+	flag.Var(&pixelFlag, "size", "Size of pixel to use, defaults to 20x20")
 }
 
 func main() {
 	flag.Parse()
 
 	if *help {
-		msg := "Usage: pxl [size]\n" +
+		msg := "Usage: pxl [opts]\n" +
 			"\n" +
 			"  Pxl takes a png file from STDIN, and pixelates it into triangles.\n" +
 			"  The result is printed to STDOUT.\n" +
 			"\n" +
+			"  --both          # Create triangles based on closeness of colours (default)\n" +
+			"  --left          # Create only top-left/bottom-right triangles\n" +
+			"  --right         # Create only top-right/bottom-left triangles\n" +
 			"  --size HxW      # Size of pixel to use, defaults to 20x20\n" +
 			"  --help          # Display this help message\n" +
 			"\n"
@@ -140,7 +153,11 @@ func main() {
 		os.Exit(0)
 	}
 
+	triangle := BOTH
+	if *left  { triangle = LEFT }
+	if *right { triangle = RIGHT}
+
 	i := utils.ReadStdin()
-	i  = pxl(i, pixelFlag.H, pixelFlag.W)
+	i  = pxl(i, triangle, pixelFlag.H, pixelFlag.W)
 	utils.WriteStdout(i)
 }
