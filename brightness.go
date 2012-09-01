@@ -1,30 +1,12 @@
 package main
 
 import (
+	"./brightness"
 	"./utils"
 	"os"
-	"image"
-	"image/color"
 	"fmt"
 	"flag"
 )
-
-func brightness(img image.Image, value float64) image.Image {
-	value  = (100 + value) / 100
-	value *= value
-
-	f := func(c color.Color) color.Color {
-		r, g, b, a := utils.RatioRGBA(c)
-
-		r = utils.Truncatef(r * value * 255)
-		g = utils.Truncatef(g * value * 255)
-		b = utils.Truncatef(b * value * 255)
-
-		return color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a * 255)}
-	}
-
-	return utils.EachPixel(img, f)
-}
 
 func printHelp() {
 	msg := "Usage: brightness [options]\n" +
@@ -32,7 +14,7 @@ func printHelp() {
 		"  Takes a png file from STDIN, adjusts the brightness using the value given\n" +
 		"  and prints the result to STDOUT.\n" +
 		"\n" +
-		"  --by          # Amount to adjust brightness by\n" +
+		"  --by          # Amount to adjust brightness by (default: 20.0)\n" +
 		"  --help        # Display this help message\n" +
 		"\n"
 
@@ -52,6 +34,6 @@ func main() {
 	}
 
 	i := utils.ReadStdin()
-	i  = brightness(i, *by)
+	i  = brightness.Adjust(i, *by)
 	utils.WriteStdout(i)
 }
