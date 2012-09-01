@@ -37,7 +37,7 @@ Randomly shuffles pixels around the image. Use `-v` or `-h` to constrain it to
 vertical or horizontal shuffling, respectively.
 
 ``` bash
-$ ./shuffle -v < input.png > output.png
+$ ./shuffle --vertical < input.png > output.png
 ```
 
 ![Shuffle](http://github.com/hawx/img/raw/master/examples/shuffle.png)
