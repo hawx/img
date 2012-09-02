@@ -86,6 +86,8 @@ func ToHSLA(c color.Color) (h,s,l,a float64) {
 }
 
 func ToRGBA(h,s,l,a float64) color.Color {
+	h = math.Mod(h, 360)
+
 	c := (1.0 - math.Abs(2.0 * l - 1.0)) * s
 
 	hdash := h / 60.0
