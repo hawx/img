@@ -84,17 +84,6 @@ $ ./greyscale --average < input.png > output.png
 
 ![Greyscale](http://github.com/hawx/img/raw/master/examples/greyscale.png)
 
-## colourpixels
-
-Features a problematic pixelation algorithm where calculations overflow
-producing incorrect (but generally pretty) results.
-
-``` bash
-$ ./colourpixels --size 20x30 < input.png > output.png
-```
-
-![colourpixels](http://github.com/hawx/img/raw/master/examples/colourpixels.png)
-
 ## contrast
 
 Adjusts the contrast of the given image.
