@@ -9,12 +9,12 @@ import (
 )
 
 func printHelp() {
-	msg := "Usage: hue [options]\n" +
+	msg := "Usage: lightness [options]\n" +
 		"\n" +
-		"  Takes a png file from STDIN, adjusts the hue by the value given and\n" +
+		"  Takes a png file from STDIN, adjusts the lightness by the value given and\n" +
 		"  prints the result to STDOUT.\n" +
 		"\n" +
-		"  --by             # Amount to shift hue by (default: 60.0)\n" +
+		"  --by             # Amount to shift lightness by (default: 0.1)\n" +
 		"  --help           # Display this help message\n" +
 		"\n"
 
@@ -23,7 +23,7 @@ func printHelp() {
 }
 
 var help = flag.Bool("help", false, "Display this help message")
-var by   = flag.Float64("by", 60.0, "Amount to shift hue by")
+var by   = flag.Float64("by", 0.1, "Amount to shift lightness by")
 
 func main() {
 	flag.Parse()
@@ -33,6 +33,6 @@ func main() {
 	}
 
 	i := utils.ReadStdin()
-	i  = hsl.Hue(i, *by)
+	i  = hsl.Lightness(i, *by)
 	utils.WriteStdout(i)
 }
