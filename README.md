@@ -104,15 +104,17 @@ $ ./brightness --by -25 < input.png > output.png
 
 ![brightness](http://github.com/hawx/img/raw/master/examples/brightness.png)
 
-## hue
+## hue, saturation and lightness
 
-Adjusts the hue of the given image.
+Adjust the hue, saturation and lightness of the an image.
 
 ``` bash
-$ ./hue --by -1.34 < input.png > output.png
+$ ./hue --by -30 < input.png > output.png
+$ ./saturation --by 0.3 < input.png > output.png
+$ ./lightness --by -0.07 < input.png > output.png
 ```
 
-![hue](http://github.com/hawx/img/raw/master/examples/hue.png)
+![hue](http://github.com/hawx/img/raw/master/examples/hsl.png)
 
 ## saturation
 
