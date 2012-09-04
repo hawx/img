@@ -1,10 +1,37 @@
 #!/usr/bin/env sh
 
-if [ ! -d "built" ]; then
-  mkdir "built"
-fi
+if [ $# == 1 ] && [ $1 == "examples" ]; then
+  for f in `git ls-files *.go`; do
+    if [ $f == "to.go" ] || [ $f == "from.go" ] || [ $f == "blend.go" ]; then
+      echo "skipping $f..."
+    else
+      echo "running $f..."
+      go run $f < "examples/original.png" | to "examples/${f%.*}.jpg"
+    fi
+  done
 
-for f in `git ls-files *.go`; do
-  echo "Building ${f%.*}"
-  go build -o "built/${f%.*}" "${f}"
-done
+  # run blend.go
+  echo "running blend.go..."
+  go run pxl.go < "examples/original.png" > "pxled.png"
+  go run blend.go "pxled.png" < "examples/original.png" | to "examples/blend.jpg"
+  rm "pxled.png"
+
+  # create composed image
+  echo "creating composed example..."
+  go run shuffle.go --horizontal < "examples/original.png" | go run hxl.go | go run hue.go --by -20 | to "examples/composed.jpg"
+
+  # create hsl composite image
+  echo "creating hsl image..."
+  montage examples/{hue,saturation,lightness}.jpg -geometry +5+0 "examples/hsl.jpg"
+  rm examples/{hue,saturation,lightness}.jpg
+
+else
+  if [ ! -d "built" ]; then
+    mkdir "built"
+  fi
+
+  for f in `git ls-files *.go`; do
+    echo "Building ${f%.*}"
+    go build -o "built/${f%.*}" "${f}"
+  done
+fi
