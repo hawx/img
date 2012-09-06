@@ -1,6 +1,7 @@
 package main
 
 import (
+	"./hsl"
 	"./utils"
 	"os"
 	"flag"
@@ -35,7 +36,7 @@ func EachChannel(c, d color.Color, fs... UIntMixer) color.Color {
 	b := utils.Truncate(f(k, o))
 	a := utils.Truncate(q(l, p))
 
-	return color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
+	return color.NRGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
 }
 
 // Same as EachChannel but passes values as floats, and expects a float in
@@ -56,7 +57,7 @@ func EachChannelf(c, d color.Color, fs... FloatMixer) color.Color {
 	b := utils.Truncatef(f(k, o))
 	a := utils.Truncatef(q(l, p))
 
-	return color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
+	return color.NRGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
 }
 
 // Applies +f+ to each colour channel. Passes channel values as float64, between
@@ -255,7 +256,7 @@ func difference(a, b image.Image) image.Image {
 		g := math.Abs(j - n)
 		b := math.Abs(k - o)
 
-		return color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
+		return color.NRGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
 	}
 
 	return BlendPixels(a, b, f)
@@ -284,7 +285,7 @@ func subtraction(a, b image.Image) image.Image {
 		if n > j { g = 0 }
 		if o > k { b = 0 }
 
-		return color.RGBA{uint8(r), uint8(g), uint8(b), uint8(l)}
+		return color.NRGBA{uint8(r), uint8(g), uint8(b), uint8(l)}
 	}
 
 	return BlendPixels(a, b, f)
@@ -293,10 +294,11 @@ func subtraction(a, b image.Image) image.Image {
 
 func hue(a, b image.Image) image.Image {
 	f := func(c, d color.Color) color.Color {
-		_, s, l, a := utils.ToHSLA(c)
-		h, _, _, _ := utils.ToHSLA(d)
+		i := hsl.HSLAModel.Convert(c).(hsl.HSLA)
+		j := hsl.HSLAModel.Convert(d).(hsl.HSLA)
+		i.H = j.H
 
-		return utils.ToRGBA(h, s, l, a)
+		return i
 	}
 
 	return BlendPixels(a, b, f)
@@ -304,10 +306,11 @@ func hue(a, b image.Image) image.Image {
 
 func saturation(a, b image.Image) image.Image {
 	f := func(c, d color.Color) color.Color {
-		h, _, l, a := utils.ToHSLA(c)
-		_, s, _, _ := utils.ToHSLA(d)
+		i := hsl.HSLAModel.Convert(c).(hsl.HSLA)
+		j := hsl.HSLAModel.Convert(d).(hsl.HSLA)
+		i.S = j.S
 
-		return utils.ToRGBA(h, s, l, a)
+		return i
 	}
 
 	return BlendPixels(a, b, f)
@@ -315,10 +318,12 @@ func saturation(a, b image.Image) image.Image {
 
 func colour(a, b image.Image) image.Image {
 	f := func(c, d color.Color) color.Color {
-		_, _, l, a := utils.ToHSLA(c)
-		h, s, _, _ := utils.ToHSLA(d)
+		i := hsl.HSLAModel.Convert(c).(hsl.HSLA)
+		j := hsl.HSLAModel.Convert(c).(hsl.HSLA)
+		i.H = j.H
+		i.S = j.S
 
-		return utils.ToRGBA(h, s, l, a)
+		return i
 	}
 
 	return BlendPixels(a, b, f)
@@ -326,10 +331,11 @@ func colour(a, b image.Image) image.Image {
 
 func luminosity(a, b image.Image) image.Image {
 	f := func(c, d color.Color) color.Color {
-		h, s, _, a := utils.ToHSLA(c)
-		_, _, l, _ := utils.ToHSLA(d)
+		i := hsl.HSLAModel.Convert(c).(hsl.HSLA)
+		j := hsl.HSLAModel.Convert(c).(hsl.HSLA)
+		i.L = j.L
 
-		return utils.ToRGBA(h, s, l, a)
+		return i
 	}
 
 	return BlendPixels(a, b, f)
@@ -385,40 +391,40 @@ func printHelp() {
 	os.Exit(0)
 }
 
-var (
-	help         = flag.Bool("help", false, "")
-	opacity      = flag.Float64("opacity", 0.5, "")
 
-	// BASIC
-	normalM      = flag.Bool("normal", false, "")
-	dissolveM    = flag.Bool("dissolve", false, "")
+var help         = flag.Bool("help", false, "")
+var opacity      = flag.Float64("opacity", 0.5, "")
 
-	// DARKEN
-	darkenM      = flag.Bool("darken", false, "")
-	multiplyM    = flag.Bool("multiply", false, "")
-	burnM        = flag.Bool("burn", false, "")
+// BASIC
+var normalM      = flag.Bool("normal", false, "")
+var	dissolveM    = flag.Bool("dissolve", false, "")
 
-	// LIGHTEN
-	lightenM     = flag.Bool("lighten", false, "")
-	screenM      = flag.Bool("screen", false, "")
-	dodgeM       = flag.Bool("dodge", false, "")
+// DARKEN
+var	darkenM      = flag.Bool("darken", false, "")
+var	multiplyM    = flag.Bool("multiply", false, "")
+var	burnM        = flag.Bool("burn", false, "")
 
-	// CONTRAST
-	overlayM     = flag.Bool("overlay", false, "")
-	softLightM   = flag.Bool("soft-light", false, "")
-	hardLightM   = flag.Bool("hard-light", false, "")
+// LIGHTEN
+var	lightenM     = flag.Bool("lighten", false, "")
+var	screenM      = flag.Bool("screen", false, "")
+var	dodgeM       = flag.Bool("dodge", false, "")
 
-	// COMPARATIVE
-	differenceM  = flag.Bool("difference", false, "")
-	additionM    = flag.Bool("addition", false, "")
-	subtractionM = flag.Bool("subtraction", false, "")
+// CONTRAST
+var	overlayM     = flag.Bool("overlay", false, "")
+var	softLightM   = flag.Bool("soft-light", false, "")
+var	hardLightM   = flag.Bool("hard-light", false, "")
 
-	// HSL
-	hueM         = flag.Bool("hue", false, "")
-	saturationM  = flag.Bool("saturation", false, "")
-	colorM       = flag.Bool("color", false, "")
-	luminosityM  = flag.Bool("luminosity", false, "")
-)
+// COMPARATIVE
+var	differenceM  = flag.Bool("difference", false, "")
+var	additionM    = flag.Bool("addition", false, "")
+var	subtractionM = flag.Bool("subtraction", false, "")
+
+// HSL
+var	hueM         = flag.Bool("hue", false, "")
+var	saturationM  = flag.Bool("saturation", false, "")
+var	colorM       = flag.Bool("color", false, "")
+var	luminosityM  = flag.Bool("luminosity", false, "")
+
 
 func main() {
 	flag.Parse()

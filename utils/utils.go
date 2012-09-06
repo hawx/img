@@ -25,7 +25,7 @@ func Warn(s interface{}) {
 func InverseColor(c color.Color) color.Color {
 	r, g, b, a := NormalisedRGBA(c)
 
-	return color.RGBA{
+	return color.NRGBA{
 		uint8(255 - r),
 		uint8(255 - g),
 		uint8(255 - b),
@@ -34,7 +34,9 @@ func InverseColor(c color.Color) color.Color {
 }
 
 func NormalisedRGBA(c color.Color) (rn, gn, bn, an uint32) {
-	r, g, b, a := c.RGBA()
+	// r, g, b, a := c.RGBA()
+	d := color.NRGBAModel.Convert(c).(color.NRGBA)
+	r := d.R; g := d.G; b := d.B; a := d.A
 
 	// Need to do some crazy type conversions first
 	rn = uint32(uint8(r))
@@ -46,23 +48,23 @@ func NormalisedRGBA(c color.Color) (rn, gn, bn, an uint32) {
 }
 
 func NormalisedRGBAf(c color.Color) (rn, gn, bn, an float64) {
-	r, g, b, a := c.RGBA()
+	r, g, b, a := NormalisedRGBA(c)
 
-	rn = float64(uint8(r))
-	gn = float64(uint8(g))
-	bn = float64(uint8(b))
-	an = float64(uint8(a))
+	rn = float64(r)
+	gn = float64(g)
+	bn = float64(b)
+	an = float64(a)
 
 	return
 }
 
 func RatioRGBA(c color.Color) (rn, gn, bn, an float64) {
-	r, g, b, a := c.RGBA()
+	r, g, b, a := NormalisedRGBAf(c)
 
-	rn = float64(uint8(r)) / 255
-	gn = float64(uint8(g)) / 255
-	bn = float64(uint8(b)) / 255
-	an = float64(uint8(a)) / 255
+	rn = r / 255
+	gn = g / 255
+	bn = b / 255
+	an = a / 255
 
 	return
 }
@@ -94,7 +96,7 @@ func Average(cs... color.Color) color.Color {
 		red += r; green += g; blue += b; alpha += a
 	}
 
-	return color.RGBA{
+	return color.NRGBA{
 		uint8(red   / uint32(len(cs))),
 		uint8(green / uint32(len(cs))),
 		uint8(blue  / uint32(len(cs))),

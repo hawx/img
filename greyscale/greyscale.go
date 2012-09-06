@@ -13,7 +13,7 @@ func alterPixels(img image.Image, f pixelAlterer) image.Image {
 		r, g, b, a := utils.NormalisedRGBA(c)
 		grey := uint8(f(r, g, b))
 
-		return color.RGBA{grey, grey, grey, uint8(a)}
+		return color.NRGBA{grey, grey, grey, uint8(a)}
 	})
 }
 

@@ -41,9 +41,9 @@ func (col HSLA) RGBA() (red, green, blue, alpha uint32) {
 
 	m := l - 0.5 * c
 
-	red   = uint32(utils.Truncatef((r + m) * 255)) << 8
-	green = uint32(utils.Truncatef((g + m) * 255)) << 8
-	blue  = uint32(utils.Truncatef((b + m) * 255)) << 8
+	red   = uint32(utils.Truncatef((r + m) * a * 255)) << 8
+	green = uint32(utils.Truncatef((g + m) * a * 255)) << 8
+	blue  = uint32(utils.Truncatef((b + m) * a * 255)) << 8
 	alpha = uint32(a * 255) << 8
 
 	return
@@ -110,6 +110,7 @@ func Saturation(img image.Image, amount float64) image.Image {
 	f := func(c color.Color) color.Color {
 		h := HSLAModel.Convert(c).(HSLA)
 		h.S += amount
+		if h.S > 1 { h.S = 1 }
 		return h
 	}
 
@@ -122,6 +123,7 @@ func Lightness(img image.Image, amount float64) image.Image {
 	f := func(c color.Color) color.Color {
 		h := HSLAModel.Convert(c).(HSLA)
 		h.L += amount
+		if h.L > 1 { h.L = 1 }
 		return h
 	}
 

@@ -19,7 +19,7 @@ func Adjust(img image.Image, value float64) image.Image {
 		b = utils.Truncatef((((b - 0.5) * value) + 0.5) * 255)
 		a = a * 255
 
-		return color.RGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
+		return color.NRGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
 	}
 
 	return utils.EachPixel(img, f)
