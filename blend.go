@@ -25,6 +25,7 @@ func printHelp() {
 		"\n" +
 		"  BASIC\n" +
 		"  --normal       # Paints pixels using <other> (default)\n" +
+		"  --dissolve     # Paints pixels from <other> randomly, depending on opacity\n" +
 		"\n" +
 		"  --help         # Display this help message\n" +
 		"\n"
@@ -35,10 +36,11 @@ func printHelp() {
 
 
 var help         = flag.Bool("help", false, "")
-var opacity      = flag.Float64("opacity", 0.5, "")
+var opacity      = flag.Float64("opacity", 1.0, "")
 
 // BASIC
 var normalM      = flag.Bool("normal", false, "")
+var dissolveM    = flag.Bool("dissolve", false, "")
 
 func main() {
 	flag.Parse()
@@ -55,6 +57,8 @@ func main() {
 
 	if *normalM {
 		img = blend.Normal(a, b)
+	} else if *dissolveM {
+		img = blend.Dissolve(a, b)
 	}
 
 	utils.WriteStdout(img)

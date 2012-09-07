@@ -2,6 +2,7 @@ package blend
 
 import (
 	"../utils"
+	"math/rand"
 	"image"
 	"image/color"
 )
@@ -40,6 +41,14 @@ func Fade(img image.Image, amount float64) image.Image {
 	return utils.EachPixel(img, f)
 }
 
+func ratioNRGBA(r, g, b, a float64) color.Color {
+	return color.NRGBA{
+		uint8(utils.Truncatef(r * 255)),
+		uint8(utils.Truncatef(g * 255)),
+		uint8(utils.Truncatef(b * 255)),
+		uint8(utils.Truncatef(a * 255)),
+	}
+}
 
 
 func normal(c, d color.Color) color.Color {
@@ -51,14 +60,27 @@ func normal(c, d color.Color) color.Color {
 	b := k * (l - p) + o * p
 	a := l + p
 
-	return color.NRGBA{
-		uint8(utils.Truncatef(r * 255)),
-		uint8(utils.Truncatef(g * 255)),
-		uint8(utils.Truncatef(b * 255)),
-		uint8(utils.Truncatef(a * 255)),
+	return ratioNRGBA(r, g, b, a)
+}
+
+func dissolve(c, d color.Color) color.Color {
+	var r, g, b, a float64
+	i, j, k, l := utils.RatioRGBA(c)
+	m, n, o, p := utils.RatioRGBA(d)
+
+	if rand.Float64() < p {
+		r = m; g = n; b = o; a = 1
+	} else {
+		r = i; g = j; b = k; a = utils.Maxf(l, p)
 	}
+
+	return ratioNRGBA(r, g, b, a)
 }
 
 func Normal(a, b image.Image) image.Image {
 	return BlendPixels(a, b, normal)
+}
+
+func Dissolve(a, b image.Image) image.Image {
+	return BlendPixels(a, b, dissolve)
 }
