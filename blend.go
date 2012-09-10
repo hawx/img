@@ -10,7 +10,9 @@ import (
 	"image/png"
 )
 
-
+func subhead(s string) string {
+	return "\033[90m" + s + "\033[0m"
+}
 
 func printHelp() {
 	msg := "Usage: compose <other> [opts]\n" +
@@ -23,34 +25,34 @@ func printHelp() {
 		"\n" +
 		"  --opacity      # Opacity of blended image layer (default: 0.5)\n" +
 		"\n" +
-		"  BASIC\n" +
+		subhead("  BASIC\n") +
 		"  --normal       # Paints pixels using <other> (default)\n" +
 		"  --dissolve     # Paints pixels from <other> randomly, depending on opacity\n" +
 		"\n" +
-		"  DARKEN\n" +
+		subhead("  DARKEN\n") +
 		"  --darken       # Selects the darkest value for each colour channel\n" +
 		"  --multiply     # Multiplies each colour channel\n" +
 		"  --burn         # Darkens the base colour to increase contrast\n" +
 		"  --darker       # Selects the darkest colour by comparing the sum of channels\n" +
 		"\n" +
-		"  LIGHTEN\n" +
+		subhead("  LIGHTEN\n") +
 		"  --lighten      # Selects the lightest value for each colour channel\n" +
 		"  --screen       # Multiples the inverse of each colour channel\n" +
 		"  --dodge        # Brightens the base colour to decrease contrast\n" +
 		"  --lighter      # Selects the lightest colour by comparing the sum of channels\n" +
 		"\n" +
-		"  CONTRAST\n" +
+		subhead("  CONTRAST\n") +
 		"  --overlay      # Multiplies or screens the colours, depending on the base colour\n" +
 		"  --soft-light   # Darkens or lightens the colours, depending on the blend colour\n" +
 		"  --hard-light   # Multiplies or screens the colours, depending on the blend colour\n" +
 		"\n" +
-		"  COMPARATIVE\n" +
+		subhead("  COMPARATIVE\n") +
 		"  --difference   # Finds the absolute difference between the base and blend colour\n" +
 		"  --exclusion    # Creates an effect similar to, but lower in contrast, than difference\n" +
 		"  --addition     # Adds the blend colour to the base colour\n" +
 		"  --subtraction  # Subtracts the blend colour from the base colour\n" +
 		"\n" +
-		"  HSL\n" +
+		subhead("  HSL\n") +
 		"  --hue          # Uses just the hue of the blend colour\n" +
 		"  --saturation   # Uses just the saturation of the blend colour\n" +
 		"  --color        # Uses just the hue and saturation of the blend colour\n" +
