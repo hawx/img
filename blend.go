@@ -3,6 +3,7 @@ package main
 import (
 	"./blend"
 	"./utils"
+	"strings"
 	"flag"
 	"os"
 	"fmt"
@@ -58,6 +59,7 @@ func printHelp() {
 		"  --color        # Uses just the hue and saturation of the blend colour\n" +
 		"  --luminosity   # Uses just the luminosity of the blend colour\n" +
 		"\n" +
+		"  --modes        # Lists all available modes\n" +
 		"  --help         # Display this help message\n" +
 		"\n"
 
@@ -65,8 +67,25 @@ func printHelp() {
 	os.Exit(0)
 }
 
+func printModes() {
+	modes := []string{
+		"normal", "dissolve",
+		"darken", "multiply", "burn", "darker",
+		"lighten", "screen", "dodge", "lighter",
+		"overlay", "soft-light", "hard-light",
+		"difference", "exclusion", "addition", "subtraction",
+		"hue", "saturation", "color", "luminosity",
+	}
+
+	msg := strings.Join(modes, "\n")
+
+	fmt.Fprintf(os.Stdout, msg + "\n")
+	os.Exit(0)
+}
+
 
 var help         = flag.Bool("help", false, "")
+var modes        = flag.Bool("modes", false, "")
 var opacity      = flag.Float64("opacity", 1.0, "")
 
 // BASIC
@@ -107,6 +126,7 @@ var	luminosityM  = flag.Bool("luminosity", false, "")
 func main() {
 	flag.Parse()
 	if *help { printHelp() }
+	if *modes { printModes() }
 
 	a := utils.ReadStdin()
 

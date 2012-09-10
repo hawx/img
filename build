@@ -12,9 +12,18 @@ if [ $# == 1 ] && [ $1 == "examples" ]; then
 
   # run blend.go
   echo "running blend.go..."
-  go run pxl.go < "examples/original.png" > "pxled.png"
-  go run blend.go "pxled.png" < "examples/original.png" | to "examples/blend.jpg"
-  rm "pxled.png"
+
+  if [ ! -d "blend-tmp" ]; then
+    mkdir "blend-tmp"
+  fi
+
+  for m in `go run blend.go --modes`; do
+    echo "  $m..."
+    go run blend.go --$m "examples/trans.png" < "examples/original.png" | to "blend-tmp/$m.jpg"
+  done
+
+  montage blend-tmp/*.jpg -geometry 134x200+4+3 "examples/blend.jpg"
+  rm -r "blend-tmp"
 
   # create composed image
   echo "creating composed example..."
