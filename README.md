@@ -123,7 +123,8 @@ STDIN (the base image, imagine the bottom layer in photoshop) and one image as
 an argument (the blend image, the layer above).
 
 ``` bash
-$ < input.png ./blend --screen blend.png --opacity 0.3 > output.png
+$ ./blend --modes
+$ ./blend --screen blend.png --opacity 0.3 < input.png > output.png
 ```
 
 ![blend](http://github.com/hawx/img/raw/master/examples/blend.jpg)
