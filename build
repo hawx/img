@@ -22,7 +22,8 @@ if [ $# == 1 ] && [ $1 == "examples" ]; then
     go run blend.go --$m "examples/trans.png" < "examples/original.png" | to "blend-tmp/$m.jpg"
   done
 
-  montage blend-tmp/*.jpg -geometry 134x200+4+3 "examples/blend.jpg"
+  modelist=blend-tmp/{$(echo `go run blend.go --modes` | sed 's/\ /,/g')}.jpg
+  eval montage -label "%t" $modelist -geometry 134x200+4+3 "examples/blend.jpg"
   rm -r "blend-tmp"
 
   # create composed image
