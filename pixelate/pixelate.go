@@ -1,3 +1,4 @@
+// Package pixelate implements various functions for pixelating images.
 package pixelate
 
 import (
@@ -6,7 +7,9 @@ import (
 	"image/color"
 )
 
-// Pixelates +img+ into large averaged pixels of size pixelHeight by pixelWidth.
+// Pixelate takes an Image and pixelates it into rectangles with the dimensions
+// given. The colour values in each region are averaged to produce the resulting
+// colours.
 func Pixelate(img image.Image, pixelHeight, pixelWidth int) image.Image {
 	b := img.Bounds()
 

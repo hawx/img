@@ -1,4 +1,5 @@
-package hsl
+// Package hsla implements the HSLA colour model.
+package hsla
 
 import (
 	"../utils"
@@ -8,6 +9,8 @@ import (
 )
 
 // HSLA represents a colour with hue, saturation, lightness and alpha channels.
+// All values are represented as floating point numbers with hue taking a value
+// between 0 and 360, and the rest between 0 and 1.
 type HSLA struct {
 	H, S, L, A float64
 }
@@ -93,8 +96,7 @@ func hslaModel(c color.Color) color.Color {
 }
 
 
-// Shifts the hue of +img+ by +amount+. This should be a value between 0 and
-// 360.
+// Hue shifts the hue of the Image by the amount given.
 func Hue(img image.Image, amount float64) image.Image {
 	f := func(c color.Color) color.Color {
 		h := HSLAModel.Convert(c).(HSLA)
@@ -105,7 +107,7 @@ func Hue(img image.Image, amount float64) image.Image {
 	return utils.EachPixel(img, f)
 }
 
-// Adjusts the saturation of +img+ by +amount+.
+// Saturation adjusts the saturation of the Image by the amount given.
 func Saturation(img image.Image, amount float64) image.Image {
 	f := func(c color.Color) color.Color {
 		h := HSLAModel.Convert(c).(HSLA)
@@ -117,8 +119,7 @@ func Saturation(img image.Image, amount float64) image.Image {
 	return utils.EachPixel(img, f)
 }
 
-// Adjusts the lightness of +img+ by +amount+. This produces slightly different
-// results to brightness.Adjust.
+// Lightness adjusts the lightness of the Image by the amount given.
 func Lightness(img image.Image, amount float64) image.Image {
 	f := func(c color.Color) color.Color {
 		h := HSLAModel.Convert(c).(HSLA)

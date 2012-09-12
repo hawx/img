@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./hsl"
+	"./hsla"
 	"./utils"
 	"fmt"
 	"os"
@@ -33,6 +33,6 @@ func main() {
 	}
 
 	i := utils.ReadStdin()
-	i  = hsl.Lightness(i, *by)
+	i  = hsla.Lightness(i, *by)
 	utils.WriteStdout(i)
 }

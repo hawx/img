@@ -1,16 +1,25 @@
+// Package blend implements various blending mode functions between two
+// images. These are modelled on those in Adobe Photoshop. Each function takes
+// as the first argument the "base image" and the second the "blend image", they
+// then return an image blending these in specific ways.
 package blend
 
 import (
 	"../utils"
-	"../hsl"
+	"../hsla"
 	"math"
 	"math/rand"
 	"image"
 	"image/color"
 )
 
+// Blender takes two colours (base and blend, respectively) and returns another
+// colour.
+type Blender (func (c, d color.Color) color.Color)
 
-func BlendPixels(a, b image.Image, f func(c, d color.Color) color.Color) image.Image {
+// BlendPixels takes the base and blend images and applies the given Blender to
+// each of their pixel pairs.
+func BlendPixels(a, b image.Image, f Blender) image.Image {
 	ba := a.Bounds(); bb := b.Bounds()
 	width  := int(utils.Min(uint32(ba.Dx()), uint32(bb.Dx())))
 	height := int(utils.Min(uint32(ba.Dy()), uint32(bb.Dy())))
@@ -53,7 +62,10 @@ func BlendPixels(a, b image.Image, f func(c, d color.Color) color.Color) image.I
 	return result
 }
 
-
+// Fade changes the opacity of the Image given by the amount given. The
+// resulting opacity is the product of the image's opacity and the amount, so a
+// value of 1 has no effect whilst a value of 0 makes the image fully
+// transparent.
 func Fade(img image.Image, amount float64) image.Image {
 	f := func(c color.Color) color.Color {
 		r, g, b, a := utils.NormalisedRGBA(c)
@@ -79,15 +91,15 @@ func ratioNRGBA(r, g, b, a float64) color.Color {
 }
 
 
-// Selects the blend image.
+// Normal selects the blend Image.
 func Normal(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
 		return d
 	})
 }
 
-// Randomly selects blend image pixels, based on their opacity.
-// BROKEN!
+// Dissolve randomly selects Blend image pixels, based on their opacity.
+// BUG(r): Doesn't properly blend images according to reference
 func Dissolve(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
 		if r,g,b,a := utils.RatioRGBA(d); rand.Float64() < a {
@@ -98,7 +110,7 @@ func Dissolve(a, b image.Image) image.Image {
 	})
 }
 
-// Selects the darkest value for each pixels' colour channels.
+// Darken selects the darkest value for each pixels' colour channels.
 func Darken(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
 		i, j, k, l := utils.RatioRGBA(c)
@@ -113,7 +125,7 @@ func Darken(a, b image.Image) image.Image {
 	})
 }
 
-// Multiplies the base and blend image colour channels.
+// Multiply multiplies the base and blend image colour channels.
 func Multiply(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
 		i, j, k, l := utils.RatioRGBA(c)
@@ -128,7 +140,7 @@ func Multiply(a, b image.Image) image.Image {
 	})
 }
 
-// Darkens the base colour to reflect the blend colour.
+// Burn darkens the base colour to reflect the blend colour.
 func Burn(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
 		i, j, k, l := utils.RatioRGBA(c)
@@ -143,7 +155,7 @@ func Burn(a, b image.Image) image.Image {
 	})
 }
 
-// Chooses the darkest colour by comparing the sum of the colour channels.
+// Darker chooses the darkest colour by comparing the sum of the colour channels.
 func Darker(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
 		i, j, k, _ := utils.RatioRGBA(c)
@@ -156,7 +168,7 @@ func Darker(a, b image.Image) image.Image {
 	})
 }
 
-// Selects the lighter of each pixels' colour channels.
+// Lightne selects the lighter of each pixels' colour channels.
 func Lighten(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
 		i, j, k, l := utils.RatioRGBA(c)
@@ -171,8 +183,8 @@ func Lighten(a, b image.Image) image.Image {
 	})
 }
 
-// Multiplies the complements of the base and blend colour channel values, then
-// complements the result.
+// Screen multiplies the complements of the base and blend colour channel
+// values, then complements the result.
 func Screen(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
 		i, j, k, l := utils.RatioRGBA(c)
@@ -187,7 +199,7 @@ func Screen(a, b image.Image) image.Image {
 	})
 }
 
-// Brightens the base colour to reflect the blend colour.
+// Dodge brightens the base colour to reflect the blend colour.
 func Dodge(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
 		i, j, k, l := utils.RatioRGBA(c)
@@ -202,7 +214,8 @@ func Dodge(a, b image.Image) image.Image {
 	})
 }
 
-// Chooses the lightest colour by comparing the sum of the colour channels.
+// Lighter chooses the lightest colour by comparing the sum of the colour
+// channels.
 func Lighter(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
 		i, j, k, _ := utils.RatioRGBA(c)
@@ -215,7 +228,7 @@ func Lighter(a, b image.Image) image.Image {
 	})
 }
 
-// Multiplies or screens the colours, depending on the base colour.
+// Overlay multiplies or screens the colours, depending on the base colour.
 func Overlay(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
 		i, j, k, l := utils.NormalisedRGBAf(c)
@@ -235,8 +248,8 @@ func Overlay(a, b image.Image) image.Image {
 	})
 }
 
-// Darkens or lightens the colours, depending on the blend colour. The effect is
-// similar to shining a soft spotlight on the image.
+// SoftLight darkens or lightens the colours, depending on the blend colour. The
+// effect is similar to shining a soft spotlight on the image.
 func SoftLight(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
 		i, j, k, l := utils.RatioRGBA(c)
@@ -258,8 +271,8 @@ func SoftLight(a, b image.Image) image.Image {
 	})
 }
 
-// Multiplies or screens the colours, depending on the blend colour. The effect
-// is similar to shining a harsh spotlight on the image.
+// HardLight multiplies or screens the colours, depending on the blend
+// colour. The effect is similar to shining a harsh spotlight on the image.
 func HardLight(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
 		i, j, k, l := utils.NormalisedRGBAf(c)
@@ -286,7 +299,7 @@ func HardLight(a, b image.Image) image.Image {
 	})
 }
 
-// Finds the absolute difference between the base and blend colours.
+// Difference finds the absolute difference between the base and blend colours.
 func Difference(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
 		i, j, k, l := utils.RatioRGBA(c)
@@ -301,7 +314,8 @@ func Difference(a, b image.Image) image.Image {
 	})
 }
 
-// Creates an effect similar to, but lower in contrast than, difference.
+// Exclusion creates an effect similar to, but lower in contrast than,
+// difference.
 func Exclusion(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
 		i, j, k, l := utils.RatioRGBA(c)
@@ -316,7 +330,7 @@ func Exclusion(a, b image.Image) image.Image {
 	})
 }
 
-// Adds the blend colour to the base colour. (aka. Linear Dodge)
+// Addition adds the blend colour to the base colour. (aka. Linear Dodge)
 func Addition(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
 		i, j, k, l := utils.NormalisedRGBA(c)
@@ -331,7 +345,7 @@ func Addition(a, b image.Image) image.Image {
 	})
 }
 
-// Subtracts the blend colour from the base colour.
+// Subtraction subtracts the blend colour from the base colour.
 func Subtraction(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
 		i, j, k, l := utils.NormalisedRGBA(c)
@@ -351,36 +365,36 @@ func Subtraction(a, b image.Image) image.Image {
 	})
 }
 
-// Uses the hue of the blend colour, with the saturation and luminosity of the
-// base colour.
+// Hue uses the hue of the blend colour, with the saturation and luminosity of
+// the base colour.
 func Hue(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
-		i := hsl.HSLAModel.Convert(c).(hsl.HSLA)
-		j := hsl.HSLAModel.Convert(d).(hsl.HSLA)
+		i := hsla.HSLAModel.Convert(c).(hsla.HSLA)
+		j := hsla.HSLAModel.Convert(d).(hsla.HSLA)
 		i.H = j.H
 
 		return i
 	})
 }
 
-// Uses the saturation of the blend colour, with the hue and luminosity of the
-// base colour.
+// Saturation uses the saturation of the blend colour, with the hue and
+// luminosity of the base colour.
 func Saturation(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
-		i := hsl.HSLAModel.Convert(c).(hsl.HSLA)
-		j := hsl.HSLAModel.Convert(d).(hsl.HSLA)
+		i := hsla.HSLAModel.Convert(c).(hsla.HSLA)
+		j := hsla.HSLAModel.Convert(d).(hsla.HSLA)
 		i.S = j.S
 
 		return i
 	})
 }
 
-// Uses the hue and saturation of the blend colour, with the luminosity of the
-// base colour.
+// Color uses the hue and saturation of the blend colour, with the luminosity of
+// the base colour.
 func Color(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
-		i := hsl.HSLAModel.Convert(c).(hsl.HSLA)
-		j := hsl.HSLAModel.Convert(d).(hsl.HSLA)
+		i := hsla.HSLAModel.Convert(c).(hsla.HSLA)
+		j := hsla.HSLAModel.Convert(d).(hsla.HSLA)
 		i.H = j.H
 		i.S = j.S
 
@@ -388,12 +402,12 @@ func Color(a, b image.Image) image.Image {
 	})
 }
 
-// Uses the luminosity of the blend colour, with the hue and saturation of the
-// base colour.
+// Luminosity uses the luminosity of the blend colour, with the hue and
+// saturation of the base colour.
 func Luminosity(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
-		i := hsl.HSLAModel.Convert(c).(hsl.HSLA)
-		j := hsl.HSLAModel.Convert(d).(hsl.HSLA)
+		i := hsla.HSLAModel.Convert(c).(hsla.HSLA)
+		j := hsla.HSLAModel.Convert(d).(hsla.HSLA)
 		i.L = j.L
 
 		return i

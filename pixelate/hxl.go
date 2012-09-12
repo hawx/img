@@ -24,13 +24,13 @@ func halveWidth(img image.Image) image.Image {
 	return o
 }
 
-// Pixelates +img+ into larger equilateral triangles, arranged into hexagonal
-// shapes, with bases +pixelSize+ wide.
-func Hxl(img image.Image, pixelSize int) image.Image {
+// Hxl pixelates the Image into equilateral triangles with the width
+// given. These are arranged into hexagonal shapes.
+func Hxl(img image.Image, width int) image.Image {
 	b := img.Bounds()
 
-	pixelHeight := pixelSize * 2
-	pixelWidth  := pixelSize
+	pixelHeight := width * 2
+	pixelWidth  := width
 
 	cols  := b.Dx() / pixelWidth
 	rows  := b.Dy() / pixelHeight

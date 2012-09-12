@@ -9,7 +9,7 @@ func randBetween(a, b int) int {
 	return rand.Intn(b - a)
 }
 
-// Shuffles the pixels in +img+ to new, randomly chosen positions.
+// Shuffle moves the pixels in the Image to new, randomly chosen positions.
 func Shuffle(img image.Image) image.Image {
 	b := img.Bounds()
 	o := image.NewRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
@@ -30,7 +30,7 @@ func Shuffle(img image.Image) image.Image {
 	return o
 }
 
-// Shuffles the pixels in +img+ along the vertical axis only.
+// Vertically shuffles the pixels in the Image along the vertical axis only.
 func Vertically(img image.Image) image.Image {
 	b := img.Bounds()
 	o := image.NewRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
@@ -50,7 +50,7 @@ func Vertically(img image.Image) image.Image {
 	return o
 }
 
-// Shuffles the pixels in +img+ along the horizontal axis only.
+// Horizontally shuffles the pixels in the Image along the horizontal axis only.
 func Horizontally(img image.Image) image.Image {
 	b := img.Bounds()
 	o := image.NewRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))

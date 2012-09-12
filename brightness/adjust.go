@@ -1,3 +1,5 @@
+// Package brightness implements a single function to adjust the brightness of
+// an image.
 package brightness
 
 import (
@@ -6,7 +8,7 @@ import (
 	"image/color"
 )
 
-// Adjusts the brightness of +img+ by the given +value+. A +value+ of 0 has no
+// Adjusts the brightness of the Image by the given value. A value of 0 has no
 // effect.
 func Adjust(img image.Image, value float64) image.Image {
 	value  = (100 + value) / 100

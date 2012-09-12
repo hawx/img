@@ -13,17 +13,11 @@ import (
 	"image/gif"
 )
 
-const (
-	GIF = iota
-	JPG
-	PNG
-)
-
 var extMap = map[string] int {
-	".gif":  GIF,
-	".jpg":  JPG,
-	".jpeg": JPG,
-	".png":  PNG,
+	".gif":  0,
+	".jpg":  1,
+	".jpeg": 1,
+	".png":  2,
 }
 
 func printHelp() {
@@ -50,9 +44,9 @@ func main() {
 	var img image.Image
 
 	switch extMap[filepath.Ext(path)] {
-	case PNG: img, _ = png.Decode(f)
-	case JPG: img, _ = jpeg.Decode(f)
-	case GIF: img, _ = gif.Decode(f)
+	case 2: img, _ = png.Decode(f)
+	case 1: img, _ = jpeg.Decode(f)
+	case 0: img, _ = gif.Decode(f)
 	}
 
 	utils.WriteStdout(img)

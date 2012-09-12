@@ -11,15 +11,10 @@ import (
 	"image/jpeg"
 )
 
-const (
-	JPG = iota
-	PNG
-)
-
 var extMap = map[string] int {
-	".jpg":  JPG,
-	".jpeg": JPG,
-	".png":  PNG,
+	".jpg":  0,
+	".jpeg": 0,
+	".png":  1,
 }
 
 func printHelp() {
@@ -48,10 +43,10 @@ func main() {
 	f, _ := os.Create(path)
 
 	switch extMap[filepath.Ext(path)] {
-	case PNG:
+	case 1:
 		png.Encode(f, img)
 
-	case JPG:
+	case 0:
 		opts  := jpeg.Options{*qual}
 		jpeg.Encode(f, img, &opts)
 	}

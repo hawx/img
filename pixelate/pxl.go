@@ -7,9 +7,10 @@ import (
 )
 
 const (
-	BOTH = iota
-	LEFT
-	RIGHT
+	// Triangle types for Pxl
+	BOTH = iota  // Decide base on closeness of colours in each quadrant
+	LEFT         // Create only left triangles
+	RIGHT        // Create only right triangles
 )
 
 func halve(img image.Image, pixelHeight, pixelWidth int) image.Image {
@@ -36,10 +37,9 @@ func halve(img image.Image, pixelHeight, pixelWidth int) image.Image {
 	return o
 }
 
-// Pixelates +img+ into right-angled triangles of size +pixelHeight+ by
-// +pixelWidth+. +triangle+ determines whether the direction of triangles is
-// determined by the closeness of colours (pixelate.BOTH), or only left
-// (pixelate.LEFT) or right (pixelate.RIGHT) triangles are made.
+// Pxl pixelates an Image into right-angled triangles with the dimensions
+// given. The triangle direction can be determined by passing the required value
+// as triangle; either BOTH, LEFT or RIGHT.
 func Pxl(img image.Image, triangle, pixelHeight, pixelWidth int) image.Image {
 	b := img.Bounds()
 
