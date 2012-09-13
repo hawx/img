@@ -5,6 +5,7 @@ A selection of image manipulation tools.
 Requires Go 1. Build all tools into `built/` by running,
 
 ``` bash
+$ git clone https://github.com/hawx/img.git
 $ ./build
 ```
 
@@ -139,6 +140,45 @@ $ < input.png ./shuffle --horizontal | ./hxl | ./hue --by -20 > output.png
 ```
 
 ![Composed](http://github.com/hawx/img/raw/master/examples/composed.jpg)
+
+
+# Notes on using the img package in go code
+
+It is possible to use img in go code programmatically, first run,
+
+``` bash
+$ go get github.com/hawx/img
+```
+
+It will show a list of errors which you can safely ignore (due to the current
+structure of img). Then simply use it in code.
+
+``` bash
+$ cat > greyscaler.go
+package main
+
+import (
+  "github.com/hawx/img/greyscale"
+  "os"
+  "image/png"
+)
+
+func main() {
+  file, _ := os.Open(os.Args[1])
+  img,  _ := png.Decode(file)
+
+  img = greyscale.Average(img)
+
+  out, _ := os.Create(os.Args[2])
+  png.Encode(out, img)
+}
+
+$ go build greyscaler.go
+$ ./greyscaler input.png output.png
+```
+
+To view documentation run `godoc -http=:8080` then navigate to
+<http://localhost:8080/pkg/github.com/hawx/img/>.
 
 
 [pxlapp]: http://kohlberger.net/apps/pxl
