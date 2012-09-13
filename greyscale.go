@@ -1,8 +1,8 @@
 package main
 
 import (
-	"./greyscale"
-	"./utils"
+	"github.com/hawx/img/greyscale"
+	"github.com/hawx/img/utils"
 	"os"
 	"flag"
 	"fmt"

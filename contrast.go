@@ -1,8 +1,8 @@
 package main
 
 import (
-	"./contrast"
-	"./utils"
+	"github.com/hawx/img/contrast"
+	"github.com/hawx/img/utils"
 	"os"
 	"fmt"
 	"flag"

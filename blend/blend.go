@@ -5,8 +5,8 @@
 package blend
 
 import (
-	"../utils"
-	"../hsla"
+	"github.com/hawx/img/utils"
+	"github.com/hawx/img/hsla"
 	"math"
 	"math/rand"
 	"image"

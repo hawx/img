@@ -1,8 +1,8 @@
 package main
 
 import (
-	"./shuffle"
-	"./utils"
+	"github.com/hawx/img/shuffle"
+	"github.com/hawx/img/utils"
 	"fmt"
 	"os"
 	"flag"

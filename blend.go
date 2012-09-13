@@ -1,8 +1,8 @@
 package main
 
 import (
-	"./blend"
-	"./utils"
+	"github.com/hawx/img/blend"
+	"github.com/hawx/img/utils"
 	"strings"
 	"flag"
 	"os"

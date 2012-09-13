@@ -1,8 +1,8 @@
 package main
 
 import (
-	"./brightness"
-	"./utils"
+	"github.com/hawx/img/brightness"
+	"github.com/hawx/img/utils"
 	"os"
 	"fmt"
 	"flag"

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./utils"
+	"github.com/hawx/img/utils"
 	"os"
 	"path/filepath"
 	"flag"

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"./hsla"
-	"./utils"
+	"github.com/hawx/img/hsla"
+	"github.com/hawx/img/utils"
 	"fmt"
 	"os"
 	"flag"

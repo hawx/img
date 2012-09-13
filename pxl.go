@@ -1,8 +1,8 @@
 package main
 
 import (
-	"./pixelate"
-	"./utils"
+	"github.com/hawx/img/pixelate"
+	"github.com/hawx/img/utils"
 	"os"
 	"fmt"
 	"flag"

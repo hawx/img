@@ -3,7 +3,7 @@
 package greyscale
 
 import (
-	"../utils"
+	"github.com/hawx/img/utils"
 	"image"
 	"image/color"
 )
