@@ -32,7 +32,7 @@ if [ $# == 1 ] && [ $1 == "examples" ]; then
 
   # create hsl composite image
   echo "creating hsl image..."
-  montage examples/{hue,saturation,lightness}.jpg -geometry +5+0 "examples/hsl.jpg"
+  montage -label "%t" examples/{hue,saturation,lightness}.jpg -geometry +5+0 "examples/hsl.jpg"
   rm examples/{hue,saturation,lightness}.jpg
 
 else
