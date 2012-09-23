@@ -3,46 +3,39 @@ package main
 import (
 	"github.com/hawx/img/pixelate"
 	"github.com/hawx/img/utils"
-	"os"
-	"fmt"
-	"flag"
 )
 
-var pixelFlag utils.Pixel = utils.Pixel{20, 20}
-var left  = flag.Bool("left", false, "Create only top-left/bottom-right triangles")
-var right = flag.Bool("right", false, "Create only top-right/bottom-left triangles")
-var both  = flag.Bool("both", false, "Create traingles based on closeness of colours (default)")
-var help  = flag.Bool("help", false, "Display this help message")
+var cmdPxl = &Command{
+	UsageLine: "pxl [options]",
+	Short:     "pxls image",
+Long: `
+  Pxl takes a png file from STDIN, pxls it by averaging the colour in large
+  rectangles, and prints the result to STDOUT
 
-func init() {
-	flag.Var(&pixelFlag, "size", "Size of pixel to use, defaults to 20x20")
+    --size [HxW]    # Size of pixel to pxl with (default: 20x20)
+    --left          # Use only left triangles
+    --right         # Use only right triangles
+`,
 }
 
-func main() {
-	flag.Parse()
+var pxlSize utils.Pixel = utils.Pixel{20, 20}
+var pxlLeft, pxlRight, pxlBoth bool
 
-	if *help {
-		msg := "Usage: pxl [opts]\n" +
-			"\n" +
-			"  Pxl takes a png file from STDIN, and pixelates it into triangles.\n" +
-			"  The result is printed to STDOUT.\n" +
-			"\n" +
-			"  --both          # Create triangles based on closeness of colours (default)\n" +
-			"  --left          # Create only top-left/bottom-right triangles\n" +
-			"  --right         # Create only top-right/bottom-left triangles\n" +
-			"  --size HxW      # Size of pixel to use, defaults to 20x20\n" +
-			"  --help          # Display this help message\n" +
-			"\n"
+func init() {
+	cmdPxl.Run = runPxl
 
-		fmt.Fprintf(os.Stderr, msg)
-		os.Exit(0)
-	}
+	cmdPxl.Flag.Var(&pxlSize, "size", "")
+	cmdPxl.Flag.BoolVar(&pxlLeft,  "left",  false, "")
+	cmdPxl.Flag.BoolVar(&pxlRight, "right", false, "")
+}
+
+func runPxl(cmd *Command, args []string) {
+	i := utils.ReadStdin()
 
 	triangle := pixelate.BOTH
-	if *left  { triangle = pixelate.LEFT }
-	if *right { triangle = pixelate.RIGHT}
+	if pxlLeft  { triangle = pixelate.LEFT }
+	if pxlRight { triangle = pixelate.RIGHT }
 
-	i := utils.ReadStdin()
-	i  = pixelate.Pxl(i, triangle, pixelFlag.H, pixelFlag.W)
+	i  = pixelate.Pxl(i, triangle, pxlSize.H, pxlSize.W)
 	utils.WriteStdout(i)
 }

@@ -3,36 +3,29 @@ package main
 import (
 	"github.com/hawx/img/hsla"
 	"github.com/hawx/img/utils"
-	"fmt"
-	"os"
-	"flag"
 )
 
-func printHelp() {
-	msg := "Usage: hue [options]\n" +
-		"\n" +
-		"  Takes a png file from STDIN, adjusts the hue by the value given and\n" +
-		"  prints the result to STDOUT.\n" +
-		"\n" +
-		"  --by             # Amount to shift hue by (default: 60.0)\n" +
-		"  --help           # Display this help message\n" +
-		"\n"
+var cmdHue = &Command{
+	UsageLine: "hue [options]",
+	Short:     "adjust image hue",
+Long: `
+  Hue takes a png file from STDIN, adjusts the hue and prints the result to
+  STDOUT.
 
-	fmt.Fprintf(os.Stderr, msg)
-	os.Exit(0)
+    --by [n]         # Amount to adjust hue by (default: 60.0)
+`,
 }
 
-var help = flag.Bool("help", false, "Display this help message")
-var by   = flag.Float64("by", 60.0, "Amount to shift hue by")
+var hueBy float64
 
-func main() {
-	flag.Parse()
+func init() {
+	cmdHue.Run = runHue
 
-	if *help {
-		printHelp()
-	}
+	cmdHue.Flag.Float64Var(&hueBy, "by", 60.0, "")
+}
 
+func runHue(cmd *Command, args []string) {
 	i := utils.ReadStdin()
-	i  = hsla.Hue(i, *by)
+	i  = hsla.Hue(i, hueBy)
 	utils.WriteStdout(i)
 }

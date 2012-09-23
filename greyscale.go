@@ -3,57 +3,53 @@ package main
 import (
 	"github.com/hawx/img/greyscale"
 	"github.com/hawx/img/utils"
-	"os"
-	"flag"
-	"fmt"
 )
 
-var averageM    = flag.Bool("average",    false, "Use average method")
-var lightnessM  = flag.Bool("lightness",  false, "Use lightness method")
-var luminosityM = flag.Bool("luminosity", false, "Use standard luminosity method")
-var maximalM    = flag.Bool("maximal",    false, "Use maximal decomposition")
-var minimalM    = flag.Bool("minimal",    false, "Use minimal decomposition")
-var photoshopM  = flag.Bool("photoshop",  false, "Use photoshop luminosity method (default)")
+var cmdGreyscale = &Command{
+	UsageLine: "greyscale [options]",
+	Short:     "convert image to greyscale",
+Long: `
+  Greyscale takes a png file from STDIN, and prints to STDOUT a greyscale version
 
-var help = flag.Bool("help", false, "Display this help message")
+    --average        # Use average method
+    --lightness      # Use lightness method
+    --luminosity     # Use standard luminosity method
+    --maximal        # Use maximal decomposition
+    --minimal        # Use minimal decomposition
+    --photoshop      # Use photoshop luminosity method (default)
+`,
+}
 
-func main() {
-	flag.Parse()
+var greyscaleAverage, greyscaleLightness, greyscaleLuminosity bool
+var greyscaleMaximal, greyscaleMinimal, greyscalePhotoshop bool
 
-	if *help {
-		msg := "Usage: greyscale [opts]\n" +
-			"\n" +
-			"  Takes a png file from STDIN and prints a greyscale version to STDOUT.\n" +
-			"  Can choose one of the many greyscaling methods.\n" +
-			"\n" +
-			"  --average           # Use average method\n" +
-			"  --lightness         # Use lightness method\n" +
-			"  --luminosity        # Use standard luminosity method\n" +
-			"  --maximal           # Use maximal decompositon\n" +
-			"  --minimal           # Use minimal decompositon\n" +
-			"  --photoshop         # Use photoshop luminosity method (default)\n" +
-			"  --help              # Display this help message\n" +
-			"\n"
+func init() {
+	cmdGreyscale.Run = runGreyscale
 
-		fmt.Fprintf(os.Stderr, msg)
-		os.Exit(0)
-	}
+	cmdGreyscale.Flag.BoolVar(&greyscaleAverage,    "average",    false, "")
+	cmdGreyscale.Flag.BoolVar(&greyscaleLightness,  "lightness",  false, "")
+	cmdGreyscale.Flag.BoolVar(&greyscaleLuminosity, "luminosity", false, "")
+	cmdGreyscale.Flag.BoolVar(&greyscaleMaximal,    "maximal",    false, "")
+	cmdGreyscale.Flag.BoolVar(&greyscaleMinimal,    "minimal",    false, "")
+	cmdGreyscale.Flag.BoolVar(&greyscalePhotoshop,  "photoshop",  false, "")
+}
 
+func runGreyscale(cmd *Command, args []string) {
 	i := utils.ReadStdin()
 
-	if *averageM {
+	if greyscaleAverage {
 		i = greyscale.Average(i)
-	} else if *lightnessM {
-    i = greyscale.Lightness(i)
-	} else if *luminosityM {
+	} else if greyscaleLightness {
+		i = greyscale.Lightness(i)
+	} else if greyscaleLuminosity {
 		i = greyscale.Luminosity(i)
-	} else if *maximalM {
+	} else if greyscaleMaximal {
 		i = greyscale.Maximal(i)
-	} else if *minimalM {
+	} else if greyscaleMinimal {
 		i = greyscale.Minimal(i)
-  } else {
+	} else {
 		i = greyscale.Photoshop(i)
-  }
+	}
 
 	utils.WriteStdout(i)
 }

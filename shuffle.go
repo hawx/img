@@ -3,40 +3,35 @@ package main
 import (
 	"github.com/hawx/img/shuffle"
 	"github.com/hawx/img/utils"
-	"fmt"
-	"os"
-	"flag"
 )
 
-var vertical   = flag.Bool("vertical", false, "Use vertical shuffling only")
-var horizontal = flag.Bool("horizontal", false, "Use horizontal shuffling only")
+var cmdShuffle = &Command{
+	UsageLine: "shuffle [options]",
+	Short:     "shuffles pixels of the image",
+Long: `
+  Shuffle takes an image, shuffles the pixels of the image, then prints the
+  result to STDOUT
 
-var help = flag.Bool("help", false, "Display this help message")
+    --horizontal     # Use horizontal shuffling only
+    --vertical       # Use vertical shuffling only
+`,
+}
 
-func main() {
-	flag.Parse()
+var shuffleVertical, shuffleHorizontal bool
 
-	if *help {
-		msg := "Usage: shuffle [opts]\n" +
-			"\n" +
-			"  Shuffle takes a png file from STDIN, shuffles the pixels of the image,\n" +
-			"  and prints the result to STDOUT. This allows multiple utilities to be\n" +
-			"  easily composed.\n" +
-			"\n" +
-			"  --horizontal     # Use horizontal shuffling only\n" +
-			"  --vertical       # Use vertical shuffling only\n" +
-			"  --help           # Display this help message\n" +
-			"\n"
+func init() {
+	cmdShuffle.Run = runShuffle
 
-		fmt.Fprintf(os.Stderr, msg)
-		os.Exit(0)
-	}
+	cmdShuffle.Flag.BoolVar(&shuffleVertical, "vertical", false, "")
+	cmdShuffle.Flag.BoolVar(&shuffleHorizontal, "horizontal", false, "")
+}
 
+func runShuffle(cmd *Command, args []string) {
 	i := utils.ReadStdin()
 
-	if (*vertical && !*horizontal) {
+	if (shuffleVertical && !shuffleHorizontal) {
 		i = shuffle.Vertically(i)
-	} else if (*horizontal && !*vertical) {
+	} else if (shuffleHorizontal && !shuffleVertical) {
 		i = shuffle.Horizontally(i)
 	} else {
 		i = shuffle.Shuffle(i)

@@ -3,36 +3,29 @@ package main
 import (
 	"github.com/hawx/img/hsla"
 	"github.com/hawx/img/utils"
-	"fmt"
-	"os"
-	"flag"
 )
 
-func printHelp() {
-	msg := "Usage: saturation [options]\n" +
-		"\n" +
-		"  Takes a png file from STDIN, adjusts the saturation by the value given and\n" +
-		"  prints the result to STDOUT.\n" +
-		"\n" +
-		"  --by             # Amount to shift saturation by (default: 0.1)\n" +
-		"  --help           # Display this help message\n" +
-		"\n"
+var cmdSaturation = &Command{
+	UsageLine: "saturation [options]",
+	Short:     "adjust image saturation",
+Long: `
+  Saturation takes a png file from STDIN, adjusts the saturation and prints the
+  result to STDOUT
 
-	fmt.Fprintf(os.Stderr, msg)
-	os.Exit(0)
+    --by [n]       # Amount to adjust saturation by (default: 0.1)
+`,
 }
 
-var help = flag.Bool("help", false, "Display this help message")
-var by   = flag.Float64("by", 0.1, "Amount to shift saturation by")
+var saturationBy float64
 
-func main() {
-	flag.Parse()
+func init() {
+	cmdSaturation.Run = runSaturation
 
-	if *help {
-		printHelp()
-	}
+	cmdSaturation.Flag.Float64Var(&saturationBy, "by", 0.1, "")
+}
 
+func runSaturation(cmd *Command, args []string) {
 	i := utils.ReadStdin()
-	i  = hsla.Saturation(i, *by)
+	i  = hsla.Saturation(i, saturationBy)
 	utils.WriteStdout(i)
 }

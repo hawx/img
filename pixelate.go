@@ -3,36 +3,29 @@ package main
 import (
 	"github.com/hawx/img/pixelate"
 	"github.com/hawx/img/utils"
-	"os"
-	"fmt"
-	"flag"
 )
 
-var pixelFlag utils.Pixel = utils.Pixel{20, 20}
-var help = flag.Bool("help", false, "Display this help message")
+var cmdPixelate = &Command{
+	UsageLine: "pixelate [options]",
+	Short:     "pixelates image",
+Long: `
+  Pixelate takes a png file from STDIN, pixelates it by averaging the colour in
+  large rectangles, and prints the result to STDOUT
 
-func init() {
-	flag.Var(&pixelFlag, "size", "Size of pixel to pixelate with")
+    --size [HxW]      # Size of pixel to pixelate with (default: 20x20)
+`,
 }
 
-func main() {
-	flag.Parse()
+var pixelateSize utils.Pixel = utils.Pixel{20, 20}
 
-	if *help {
-		msg := "Usage: pixelate [opts]\n" +
-			"\n" +
-			"  Pixelate takes a png file from STDIN, and pixelates it by averaging the,\n" +
-			"  colors in large areas. The result is printed to STDOUT.\n" +
-			"\n" +
-			"  --size HxW    # Set size of pixel to use, defaults to 20x20\n" +
-			"  --help        # Display this help message\n" +
-			"\n"
+func init() {
+	cmdPixelate.Run = runPixelate
 
-		fmt.Fprintf(os.Stderr, msg)
-		os.Exit(0)
-	}
+	cmdPixelate.Flag.Var(&pixelateSize, "size", "")
+}
 
+func runPixelate(cmd *Command, args []string) {
 	i := utils.ReadStdin()
-	i  = pixelate.Pixelate(i, pixelFlag.H, pixelFlag.W)
+	i  = pixelate.Pixelate(i, pixelateSize.H, pixelateSize.W)
 	utils.WriteStdout(i)
 }

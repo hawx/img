@@ -3,36 +3,29 @@ package main
 import (
 	"github.com/hawx/img/contrast"
 	"github.com/hawx/img/utils"
-	"os"
-	"fmt"
-	"flag"
 )
 
-func printHelp() {
-	msg := "Usage: contrast [value]\n" +
-		"\n" +
-		"  Takes a png file from STDIN, adjusts the contrast using the value given\n" +
-		"  and prints the result to STDOUT.\n" +
-		"\n" +
-		"  --by          # Amount to shift contrast by (default: 15.0)\n" +
-		"  --help        # Display this help message\n" +
-		"\n"
+var cmdContrast = &Command{
+	UsageLine: "contrast [options]",
+	Short:     "adjust image contrast",
+Long: `
+  Contrast takes a png file from STDIN, adjusts the contrast and prints the result
+  to STDOUT
 
-	fmt.Fprintf(os.Stderr, msg)
-	os.Exit(0)
+    --by [n]         # Amount to shift contrast by (default: 15.0)
+`,
 }
 
-var help = flag.Bool("help", false, "Display this help message")
-var by   = flag.Float64("by", 15.0, "Amount to shift contrast by")
+var contrastBy float64
 
-func main() {
-	flag.Parse()
+func init() {
+	cmdContrast.Run = runContrast
 
-	if *help {
-		printHelp()
-	}
+	cmdContrast.Flag.Float64Var(&contrastBy, "by", 15.0, "")
+}
 
+func runContrast(cmd *Command, args []string) {
 	i := utils.ReadStdin()
-	i  = contrast.Adjust(i, *by)
+	i  = contrast.Adjust(i, contrastBy)
 	utils.WriteStdout(i)
 }

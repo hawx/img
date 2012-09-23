@@ -3,32 +3,29 @@ package main
 import (
 	"github.com/hawx/img/pixelate"
 	"github.com/hawx/img/utils"
-	"os"
-	"fmt"
-	"flag"
 )
 
-var width = flag.Int("width", 20, "Width of the base of each triangle")
-var help  = flag.Bool("help", false, "Display this help message")
+var cmdHxl = &Command{
+	UsageLine: "hxl [options]",
+	Short:     "pixelates image into equilateral triangles",
+Long: `
+  Hxl takes a png file from STDIN, pixelates it into equilateral triangles
+  forming hexagons, and prints the result to STDOUT
 
-func main() {
-	flag.Parse()
+    --width [w]      # Width of the base of each triangle (default: 20)
+`,
+}
 
-	if *help {
-		msg := "Usage: hxl [opts]\n" +
-			"\n" +
-			"  Hxl takes a png file from STDIN, and pixelates it into triangles.\n" +
-			"  The result is printed to STDOUT.\n" +
-			"\n" +
-			"  --width <px>    # Width of the base of each triangle (default: 20)\n" +
-			"  --help          # Display this help message\n" +
-			"\n"
+var hxlWidth int
 
-		fmt.Fprintf(os.Stderr, msg)
-		os.Exit(0)
-	}
+func init() {
+	cmdHxl.Run = runHxl
 
+	cmdHxl.Flag.IntVar(&hxlWidth, "width", 20, "")
+}
+
+func runHxl(cmd *Command, args []string) {
 	i := utils.ReadStdin()
-	i  = pixelate.Hxl(i, *width)
+	i  = pixelate.Hxl(i, hxlWidth)
 	utils.WriteStdout(i)
 }
