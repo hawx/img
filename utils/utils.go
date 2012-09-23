@@ -10,10 +10,6 @@ import (
 
 // ReadStdin reads a png file from standard input.
 func ReadStdin() image.Image {
-	if s,_ := os.Stdin.Stat(); s.Size() == 0 {
-		fmt.Fprintln(os.Stderr, "Error: need to provide image by STDIN. See \"img help\".")
-		os.Exit(1)
-	}
 	img, _ := png.Decode(os.Stdin)
 
 	return img
