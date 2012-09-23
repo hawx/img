@@ -133,11 +133,10 @@ var usageTemplate = `Usage: img [command] [arguments]
 
     $ img greyscale < input.png > output.png
 
-  As standard input and output are used throughout commands can be easily
+  As standard input and output are used throughout, commands can be easily
   chained together using pipes (and parentheses for clarity),
 
     $ (img greyscale | img pxl | img contrast --by 0.05) < input.png > output.png
-
 
   Commands: {{range .}}{{if .Runnable}}
     {{.Name | printf "%-15s"}} # {{.Short}}{{end}}{{end}}
