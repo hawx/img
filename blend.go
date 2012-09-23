@@ -4,7 +4,6 @@ import (
 	"github.com/hawx/img/blend"
 	"github.com/hawx/img/utils"
 	"strings"
-	"flag"
 	"os"
 	"fmt"
 	"image"
@@ -111,7 +110,7 @@ func runBlend(cmd *Command, args []string) {
 
 	a := utils.ReadStdin()
 
-	path := flag.Args()[0]
+	path := args[0]
 	file, _ := os.Open(path)
 	b, _ := png.Decode(file)
 	var f (func(a, b image.Image) image.Image)
