@@ -19,7 +19,7 @@ vertical or horizontal shuffling, respectively.
 $ img shuffle --vertical < input.png > output.png
 ```
 
-![Shuffle](http://github.com/hawx/img/raw/master/examples/shuffle.jpg)
+![Shuffle](http://hawx.github.com/img/examples/shuffle.jpg)
 
 ## pixelate
 
@@ -29,7 +29,7 @@ Pixelates an image. Use `--size HxW` to set pixel size used.
 $ img pixelate --size 10x50 < input.png > output.png
 ```
 
-![Pixelate](http://github.com/hawx/img/raw/master/examples/pixelate.jpg)
+![Pixelate](http://hawx.github.com/img/examples/pixelate.jpg)
 
 ## pxl
 
@@ -40,7 +40,7 @@ algorithm loosely described by [revdancatt][rev].
 $ img pxl --size 30x30 < input.png > output.png
 ```
 
-![pxl](http://github.com/hawx/img/raw/master/examples/pxl.jpg)
+![pxl](http://hawx.github.com/img/examples/pxl.jpg)
 
 ## hxl
 
@@ -51,7 +51,7 @@ equilateral triangle filter from [pxl app][pxlapp].
 $ img hxl --width 50 < input.png > output.png
 ```
 
-![hxl](http://github.com/hawx/img/raw/master/examples/hxl.jpg)
+![hxl](http://hawx.github.com/img/examples/hxl.jpg)
 
 ## greyscale
 
@@ -61,7 +61,7 @@ Creates a greyscale version of an image.
 $ img greyscale --average < input.png > output.png
 ```
 
-![Greyscale](http://github.com/hawx/img/raw/master/examples/greyscale.jpg)
+![Greyscale](http://hawx.github.com/img/examples/greyscale.jpg)
 
 ## contrast
 
@@ -71,7 +71,7 @@ Adjusts the contrast of the given image.
 $ img contrast --by -25 < input.png > output.png
 ```
 
-![contrast](http://github.com/hawx/img/raw/master/examples/contrast.jpg)
+![contrast](http://hawx.github.com/img/examples/contrast.jpg)
 
 ## brightness
 
@@ -81,7 +81,7 @@ Adjusts the brightness of the given image.
 $ img brightness --by -25 < input.png > output.png
 ```
 
-![brightness](http://github.com/hawx/img/raw/master/examples/brightness.jpg)
+![brightness](http://hawx.github.com/img/examples/brightness.jpg)
 
 ## hue, saturation and lightness
 
@@ -93,7 +93,7 @@ $ img saturation --by 0.3 < input.png > output.png
 $ img lightness --by -0.07 < input.png > output.png
 ```
 
-![hsl](http://github.com/hawx/img/raw/master/examples/hsl.jpg)
+![hsl](http://hawx.github.com/img/examples/hsl.jpg)
 
 ## blend
 
@@ -105,7 +105,7 @@ an argument (the blend image, the layer above).
 $ img blend --screen blend.png --opacity 0.3 < input.png > output.png
 ```
 
-![blend](http://github.com/hawx/img/raw/master/examples/blend.jpg)
+![blend](http://hawx.github.com/img/examples/blend.jpg)
 
 # Composition
 
@@ -113,10 +113,10 @@ These tools have been created to do one task each, and to use standard
 input/output so that they can be easily composed. For example;
 
 ``` bash
-$ (./shuffle --horizontal | ./hxl | ./hue --by -20) < input.png > output.png
+$ (img shuffle --horizontal | img hxl | img hue --by -20) < input.png > output.png
 ```
 
-![Composed](http://github.com/hawx/img/raw/master/examples/composed.jpg)
+![Composed](http://hawx.github.com/img/examples/composed.jpg)
 
 
 # Notes on using the img package in go
