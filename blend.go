@@ -7,16 +7,19 @@ import (
 	"os"
 	"fmt"
 	"image"
-	"image/png"
+	_ "image/png"
+	_ "image/gif"
+	_ "image/jpeg"
 )
 
 var cmdBlend = &Command{
 	UsageLine: "blend <other> [options]",
 	Short:     "blends two images together",
 Long: `
-  Blend takes a png file from STDIN (referred to as the 'base image') and another
-  given as <other> (referred to as the 'blend image'), and blends them together
-  using the method selected producing a result image which is printed to STDOUT.
+  Blend takes an image file from STDIN (referred to as the 'base image') and
+  another given as <other> (referred to as the 'blend image'), and blends them
+  together using the method selected producing a result image which is printed
+  to STDOUT.
 
     --modes          # List all available modes
     --opacity [n]    # Opacity of blend image layer (default: 1.0)
@@ -112,7 +115,7 @@ func runBlend(cmd *Command, args []string) {
 
 	path := args[0]
 	file, _ := os.Open(path)
-	b, _ := png.Decode(file)
+	b, _, _ := image.Decode(file)
 	var f (func(a, b image.Image) image.Image)
 
 	b = blend.Fade(b, blendOpacity)
