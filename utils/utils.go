@@ -11,7 +11,7 @@ import (
 	_ "image/gif"
 )
 
-// ReadStdin reads a png file from standard input.
+// ReadStdin reads an image file from standard input.
 func ReadStdin() image.Image {
 	img, _, _ := image.Decode(os.Stdin)
 
