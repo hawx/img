@@ -9,7 +9,7 @@ var cmdContrast = &Command{
 	UsageLine: "contrast [options]",
 	Short:     "adjust image contrast",
 Long: `
-  Contrast takes a png file from STDIN, adjusts the contrast and prints the result
+  Contrast takes an image from STDIN, adjusts the contrast and prints the result
   to STDOUT
 
     --by [n]         # Amount to shift contrast by (default: 15.0)

@@ -9,7 +9,7 @@ var cmdGreyscale = &Command{
 	UsageLine: "greyscale [options]",
 	Short:     "convert image to greyscale",
 Long: `
-  Greyscale takes a png file from STDIN, and prints to STDOUT a greyscale version
+  Greyscale takes an image from STDIN, and prints to STDOUT a greyscale version
 
     --average        # Use average method
     --lightness      # Use lightness method

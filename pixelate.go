@@ -9,7 +9,7 @@ var cmdPixelate = &Command{
 	UsageLine: "pixelate [options]",
 	Short:     "pixelates image",
 Long: `
-  Pixelate takes a png file from STDIN, pixelates it by averaging the colour in
+  Pixelate takes an image from STDIN, pixelates it by averaging the colour in
   large rectangles, and prints the result to STDOUT
 
     --size [HxW]      # Size of pixel to pixelate with (default: 20x20)

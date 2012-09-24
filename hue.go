@@ -9,7 +9,7 @@ var cmdHue = &Command{
 	UsageLine: "hue [options]",
 	Short:     "adjust image hue",
 Long: `
-  Hue takes a png file from STDIN, adjusts the hue and prints the result to
+  Hue takes an image from STDIN, adjusts the hue and prints the result to
   STDOUT.
 
     --by [n]         # Amount to adjust hue by (default: 60.0)

@@ -1,6 +1,8 @@
 # img
 
-A selection of image manipulation tools.
+A selection of image manipulation tools. Each tool requires an input file from
+stdin, either `.png`, `.jpeg` or `.gif`. They always output a `.png` file,
+regardless of input type, using stdout.
 
 Requires Go 1. Install to `$GOPATH/bin` with,
 

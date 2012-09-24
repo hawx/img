@@ -9,7 +9,7 @@ var cmdPxl = &Command{
 	UsageLine: "pxl [options]",
 	Short:     "pxls image",
 Long: `
-  Pxl takes a png file from STDIN, pxls it by averaging the colour in large
+  Pxl takes an image from STDIN, pxls it by averaging the colour in large
   rectangles, and prints the result to STDOUT
 
     --size [HxW]    # Size of pixel to pxl with (default: 20x20)

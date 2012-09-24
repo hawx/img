@@ -9,7 +9,7 @@ var cmdLightness = &Command{
 	UsageLine: "lightness [options]",
 	Short:     "adjust image lightness",
 Long: `
-  Lightness takes a png file from STDIN, adjusts the lightness and prints the
+  Lightness takes an image from STDIN, adjusts the lightness and prints the
   result to STDOUT
 
     --by [n]         # Amount to adjust lightness by (default: 0.1)

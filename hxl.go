@@ -9,7 +9,7 @@ var cmdHxl = &Command{
 	UsageLine: "hxl [options]",
 	Short:     "pixelates image into equilateral triangles",
 Long: `
-  Hxl takes a png file from STDIN, pixelates it into equilateral triangles
+  Hxl takes an image from STDIN, pixelates it into equilateral triangles
   forming hexagons, and prints the result to STDOUT
 
     --width [w]      # Width of the base of each triangle (default: 20)

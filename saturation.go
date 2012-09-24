@@ -9,7 +9,7 @@ var cmdSaturation = &Command{
 	UsageLine: "saturation [options]",
 	Short:     "adjust image saturation",
 Long: `
-  Saturation takes a png file from STDIN, adjusts the saturation and prints the
+  Saturation takes an image from STDIN, adjusts the saturation and prints the
   result to STDOUT
 
     --by [n]       # Amount to adjust saturation by (default: 0.1)

@@ -9,7 +9,7 @@ var cmdBrightness = &Command{
 	UsageLine: "brightness [options]",
 	Short:     "adjust image brightness",
 Long: `
-  Brightness takes a png file from STDIN, adjusts the brightness and prints the
+  Brightness takes an image from STDIN, adjusts the brightness and prints the
   result to STDOUT
 
     --by [n]        # Amount to adjust brightness by (default: 15.0)
