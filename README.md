@@ -107,7 +107,7 @@ an argument (the blend image, the layer above).
 $ img blend --screen blend.png --opacity 0.3 < input.png > output.png
 ```
 
-![blend](http://hawx.github.com/img/examples/blend.jpg)
+![blend](http://hawx.github.com/img/examples/blend-modes.jpg)
 
 # Composition
 
