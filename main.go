@@ -67,6 +67,7 @@ var commands = []*Command{
 	cmdBlend,
 	cmdBrightness,
 	cmdContrast,
+	cmdGamma,
 	cmdGreyscale,
 	cmdHue,
 	cmdHxl,
