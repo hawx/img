@@ -9,10 +9,10 @@ var cmdGamma = &Command{
 	UsageLine: "gamma [options]",
 	Short:     "adjust image gamma",
 Long: `
-	Gamma takes an image from STDIN, adjusts the gamma and prints the result to
-	STDOUT
+  Gamma takes an image from STDIN, adjusts the gamma and prints the result to
+  STDOUT
 
-	  --by [n]       # Amount to adjust gamma by (default: 1.8)
+    --by [n]       # Amount to adjust gamma by (default: 1.8)
 `,
 }
 
