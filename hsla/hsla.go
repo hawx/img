@@ -95,36 +95,39 @@ func hslaModel(c color.Color) color.Color {
 	return HSLA{hue, saturation, lightness, a}
 }
 
+type floatForFloat (func(i float64) float64)
 
-// Hue shifts the hue of the Image by the amount given.
-func Hue(img image.Image, amount float64) image.Image {
+// Hue shifts the hue of the Image using the function given.
+func Hue(img image.Image, a floatForFloat) image.Image {
 	f := func(c color.Color) color.Color {
 		h := HSLAModel.Convert(c).(HSLA)
-		h.H += amount
+		h.H = math.Mod(a(h.H), 360)
 		return h
 	}
 
 	return utils.EachPixel(img, f)
 }
 
-// Saturation adjusts the saturation of the Image by the amount given.
-func Saturation(img image.Image, amount float64) image.Image {
+// Saturation adjusts the saturation of the Image using the function given.
+func Saturation(img image.Image, a floatForFloat) image.Image {
 	f := func(c color.Color) color.Color {
 		h := HSLAModel.Convert(c).(HSLA)
-		h.S += amount
+		h.S = a(h.S)
 		if h.S > 1 { h.S = 1 }
+		if h.S < 0 { h.S = 0 }
 		return h
 	}
 
 	return utils.EachPixel(img, f)
 }
 
-// Lightness adjusts the lightness of the Image by the amount given.
-func Lightness(img image.Image, amount float64) image.Image {
+// Lightness adjusts the lightness of the Image using the function given.
+func Lightness(img image.Image, a floatForFloat) image.Image {
 	f := func(c color.Color) color.Color {
 		h := HSLAModel.Convert(c).(HSLA)
-		h.L += amount
+		h.L = a(h.L)
 		if h.L > 1 { h.L = 1 }
+		if h.L < 0 { h.L = 0 }
 		return h
 	}
 

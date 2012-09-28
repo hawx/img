@@ -26,6 +26,8 @@ func init() {
 
 func runHue(cmd *Command, args []string) {
 	i := utils.ReadStdin()
-	i  = hsla.Hue(i, hueBy)
+	i  = hsla.Hue(i, func(i float64) float64 {
+		return i + hueBy
+	})
 	utils.WriteStdout(i)
 }
