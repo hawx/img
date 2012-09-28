@@ -76,6 +76,7 @@ var commands = []*Command{
 	cmdPxl,
 	cmdSaturation,
 	cmdShuffle,
+	cmdTint,
 }
 
 var exitStatus = 0
