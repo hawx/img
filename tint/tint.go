@@ -10,5 +10,5 @@ import (
 
 func Tint(img image.Image, with color.Color) image.Image {
 	blendLayer := image.NewUniform(with)
-	return blend.Normal(img, blendLayer)
+	return blend.LinearLight(img, blendLayer)
 }
