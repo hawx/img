@@ -32,23 +32,28 @@ Long: `
     --darken         # Selects the darkest value for each colour channel
     --multiply       # Multiples each colour channel
     --burn           # Darkens the base image to increase contrast
+    --linear-burn    # Adds the blend colour to the base colour, then subtracts white
     --darker         # Selects the darkest colour by comparing the sum of channels
 
     LIGHTEN
     --lighten        # Selects the lightest value for each colour channel
     --screen         # Multiples the inverse of each colour channel
     --dodge          # Brightens the base image to decrease contrast
+    --linear-dodge   # Adds the blend colour to the base colour
     --lighter        # Selects the lightest colour by comparing the sum of channels
 
     CONTRAST
     --overlay        # Multiplies or screens the colours, depending on the base colour
     --soft-light     # Darkens or lighten the colours, depending on the blend colour
     --hard-light     # Multiplies or screens the colours, depending on the blend colour
+    --vivid-light    # Burns or dodges the colours, depending on the blend colour
+    --linear-light   # Linear burns or dodges the colours, depending on the blend colour
+    --pin-light      # Replaces the colours, depending on the blend colour
+    --hard-mix       # Makes all pixels red, green, blue, white or black
 
     COMPARATIVE
     --difference     # Finds the absolute difference between the base and blend colour
     --exclusion      # Creates an effect similar to but lower in contrast than difference
-    --addition       # Adds the blend colour to the base colour
     --subtraction    # Subtracts the blend colour from the base colour
 
     HSL
@@ -61,9 +66,10 @@ Long: `
 
 var blendOpacity float64
 var blendNormal, blendDissolve bool
-var blendDarken, blendMultiply, blendBurn, blendDarker bool
-var blendLighten, blendScreen, blendDodge, blendLighter bool
-var blendOverlay, blendSoftLight, blendHardLight bool
+var blendDarken, blendMultiply, blendBurn, blendLinearBurn, blendDarker bool
+var blendLighten, blendScreen, blendDodge, blendLinearDodge, blendLighter bool
+var blendOverlay, blendSoftLight, blendHardLight, blendVividLight bool
+var blendLinearLight, blendPinLight, blendHardMix bool
 var blendDifference, blendExclusion, blendAddition, blendSubtraction bool
 var blendHue, blendSaturation, blendColor, blendLuminosity bool
 var blendModes bool
@@ -82,23 +88,29 @@ func init() {
   cmdBlend.Flag.BoolVar(&blendDarken, "darken", false, "")
   cmdBlend.Flag.BoolVar(&blendMultiply, "multiply", false, "")
   cmdBlend.Flag.BoolVar(&blendBurn, "burn", false, "")
+	cmdBlend.Flag.BoolVar(&blendLinearBurn, "linear-burn", false, "")
   cmdBlend.Flag.BoolVar(&blendDarker, "darker", false, "")
 
 	// LIGHTEN
   cmdBlend.Flag.BoolVar(&blendLighten, "lighten", false, "")
   cmdBlend.Flag.BoolVar(&blendScreen, "screen", false, "")
   cmdBlend.Flag.BoolVar(&blendDodge, "dodge", false, "")
+	cmdBlend.Flag.BoolVar(&blendLinearDodge, "linear-dodge", false, "")
   cmdBlend.Flag.BoolVar(&blendLighter, "lighter", false, "")
 
 	// CONTRAST
   cmdBlend.Flag.BoolVar(&blendOverlay, "overlay", false, "")
   cmdBlend.Flag.BoolVar(&blendSoftLight, "soft-light", false, "")
   cmdBlend.Flag.BoolVar(&blendHardLight, "hard-light", false, "")
+	cmdBlend.Flag.BoolVar(&blendVividLight, "vivid-light", false, "")
+	cmdBlend.Flag.BoolVar(&blendLinearLight, "linear-light", false, "")
+	cmdBlend.Flag.BoolVar(&blendPinLight, "pin-light", false, "")
+	cmdBlend.Flag.BoolVar(&blendHardMix, "hard-mix", false, "")
 
 	// COMPARATIVE
   cmdBlend.Flag.BoolVar(&blendDifference, "difference", false, "")
   cmdBlend.Flag.BoolVar(&blendExclusion, "exclusion", false, "")
-  cmdBlend.Flag.BoolVar(&blendAddition, "addition", false, "")
+  cmdBlend.Flag.BoolVar(&blendAddition, "addition", false, "") // leave as alias
   cmdBlend.Flag.BoolVar(&blendSubtraction, "subtraction", false, "")
 
 	// HSL
@@ -131,6 +143,8 @@ func runBlend(cmd *Command, args []string) {
 		f = blend.Multiply
 	} else if blendBurn {
 		f = blend.Burn
+	} else if blendLinearBurn {
+		f = blend.LinearBurn
 	} else if blendDarker {
 		f = blend.Darker
 
@@ -140,6 +154,8 @@ func runBlend(cmd *Command, args []string) {
 		f = blend.Screen
 	} else if blendDodge {
 		f = blend.Dodge
+	} else if blendLinearDodge {
+		f = blend.LinearDodge
 	} else if blendLighter {
 		f = blend.Lighter
 
@@ -149,6 +165,14 @@ func runBlend(cmd *Command, args []string) {
 		f = blend.SoftLight
 	} else if blendHardLight {
 		f = blend.HardLight
+	} else if blendVividLight {
+		f = blend.VividLight
+	} else if blendLinearLight {
+		f = blend.LinearLight
+	} else if blendPinLight {
+		f = blend.PinLight
+	} else if blendHardMix {
+		f = blend.HardMix
 
 	} else if blendDifference {
 		f = blend.Difference
@@ -178,9 +202,10 @@ func runBlend(cmd *Command, args []string) {
 func printModes() {
 	modes := []string{
 		"normal", "dissolve",
-		"darken", "multiply", "burn", "darker",
-		"lighten", "screen", "dodge", "lighter",
-		"overlay", "soft-light", "hard-light",
+		"darken", "multiply", "burn", "linear-burn", "darker",
+		"lighten", "screen", "dodge", "linear-dodge", "lighter",
+		"overlay", "soft-light", "hard-light", "vivid-light", "linear-light",
+		"pin-light", "hard-mix",
 		"difference", "exclusion", "addition", "subtraction",
 		"hue", "saturation", "color", "luminosity",
 	}

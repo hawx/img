@@ -155,6 +155,22 @@ func Burn(a, b image.Image) image.Image {
 	})
 }
 
+// LinearBurn adds the values of each colour channel together, then subtracts
+// white to produce a darker image.
+func LinearBurn(a, b image.Image) image.Image {
+	return BlendPixels(a, b, func (c, d color.Color) color.Color {
+		i, j, k, l := utils.RatioRGBA(c)
+		m, n, o, p := utils.RatioRGBA(d)
+
+		r := i + m - 1
+		g := j + n - 1
+		b := k + o - 1
+		a := p + l * (1 - p)
+
+		return ratioNRGBA(r, g, b, a)
+	})
+}
+
 // Darker chooses the darkest colour by comparing the sum of the colour channels.
 func Darker(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
@@ -212,6 +228,11 @@ func Dodge(a, b image.Image) image.Image {
 
 		return ratioNRGBA(r, g, b, a)
 	})
+}
+
+// LinearDodge adds the values for each colour channel together.
+func LinearDodge(a, b image.Image) image.Image {
+	return Addition(a, b)
 }
 
 // Lighter chooses the lightest colour by comparing the sum of the colour
@@ -296,6 +317,103 @@ func HardLight(a, b image.Image) image.Image {
 			uint8(utils.Truncatef(b)),
 			uint8(utils.Truncatef(a * 255)),
 		}
+	})
+}
+
+// VividLight combines Dodge and Burn. Dodge applies to lighter colours, and
+// Burn to darker.
+func VividLight(a, b image.Image) image.Image {
+	return BlendPixels(a, b, func (c, d color.Color) color.Color {
+		i, j, k, l := utils.RatioRGBA(c)
+		m, n, o, p := utils.RatioRGBA(d)
+
+		f := func(i, j float64) float64 {
+			if j > 0.5 {
+				return i / (2 * (1 - j))
+			}
+			return 1 - (1 - i) / (2 * j)
+		}
+
+		r := f(i, m)
+		g := f(j, n)
+		b := f(k, o)
+		a := p + l * (1 - p)
+
+		return ratioNRGBA(r, g, b, a)
+	})
+}
+
+// LinearLight lightens or darkens the image by changing the brightness. If the
+// blend colour is lighter, the image is lightened; if the blend colour is
+// darker, the image is darkened. It uses linear burn and linear dodge to darken
+// or lighten.
+func LinearLight(a, b image.Image) image.Image {
+	return BlendPixels(a, b, func (c, d color.Color) color.Color {
+		i, j, k, l := utils.RatioRGBA(c)
+		m, n, o, p := utils.RatioRGBA(d)
+
+		f := func(i, j float64) float64 {
+			if j > 0.5 {
+				return i + 2 * (j - 0.5)
+			}
+			return i + 2 * j - 1
+		}
+
+		r := f(i, m)
+		g := f(j, n)
+		b := f(k, o)
+		a := p + l * (1 - p)
+
+		return ratioNRGBA(r, g, b, a)
+	})
+}
+
+// PinLight replaces the colours, depending on the blend colour.
+func PinLight(a, b image.Image) image.Image {
+	return BlendPixels(a, b, func (c, d color.Color) color.Color {
+		i, j, k, l := utils.RatioRGBA(c)
+		m, n, o, p := utils.RatioRGBA(d)
+
+		f := func(i, j float64) float64 {
+			if i < 2 * j - 1 {
+				return 2 * j - 1
+			} else if i > 2 * j  {
+				return 2 * j
+			}
+			return i
+		}
+
+		r := f(i, m)
+		g := f(j, n)
+		b := f(k, o)
+		a := p + l * (1 - p)
+
+		return ratioNRGBA(r, g, b, a)
+	})
+}
+
+// HardMix adds the red, green and blue channel values of the blend colour to
+// the RGB values of the base colour. It sets any values greater than 255 to
+// 255, and anything less to 0. This therefore makes all pixels either red,
+// green, blue, white or black.
+func HardMix(a, b image.Image) image.Image {
+	return BlendPixels(a, b, func (c, d color.Color) color.Color {
+		i, j, k, l := utils.RatioRGBA(c)
+		m, n, o, p := utils.RatioRGBA(d)
+
+		f := func(i, j float64) float64 {
+			if j < 1 - i {
+				return 0
+			}
+			return 1
+		}
+
+		r := f(i, m)
+		g := f(j, n)
+		b := f(k, o)
+		a := p + l * (1 - p)
+
+		return ratioNRGBA(r, g, b, a)
 	})
 }
 
