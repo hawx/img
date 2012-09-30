@@ -98,16 +98,33 @@ func Normal(a, b image.Image) image.Image {
 	})
 }
 
-// Dissolve randomly selects Blend image pixels, based on their opacity.
-// BUG(r): Doesn't properly blend images according to reference
+// Dissolve randomly selects pixels from the blend image, depending on their
+// opacity. Blend pixels with higher opacities are more likely to be displayed.
 func Dissolve(a, b image.Image) image.Image {
-	return BlendPixels(a, b, func (c, d color.Color) color.Color {
-		if r,g,b,a := utils.RatioRGBA(d); rand.Float64() < a {
-			return ratioNRGBA(r, g, b, a)
+	ba := a.Bounds(); bb := b.Bounds()
+	width  := int(utils.Min(uint32(ba.Dx()), uint32(bb.Dx())))
+	height := int(utils.Min(uint32(ba.Dy()), uint32(bb.Dy())))
+
+	result := image.NewRGBA(image.Rect(0, 0, width, height))
+
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			// base colour
+			rb, gb, bb, ab := utils.RatioRGBA(a.At(x, y))
+			// blend colour
+			rs, gs, bs, as := utils.RatioRGBA(b.At(x, y))
+
+			toPaint := ratioNRGBA(rb, gb, bb, ab)
+
+			if rand.Float64() < as {
+				toPaint = ratioNRGBA(rs, gs, bs, 1)
+			}
+
+			result.Set(x, y, toPaint)
 		}
-		w,x,y,z := utils.RatioRGBA(c)
-		return ratioNRGBA(w, x, y, z)
-	})
+	}
+
+	return result
 }
 
 // Darken selects the darkest value for each pixels' colour channels.
