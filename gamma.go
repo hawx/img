@@ -12,20 +12,28 @@ Long: `
   Gamma takes an image from STDIN, adjusts the gamma and prints the result to
   STDOUT
 
-    --by [n]       # Amount to adjust gamma by (default: 1.8)
+    --auto         # Automatically alter gamma to "best" value (default)
+    --by [n]       # Amount to adjust gamma by
 `,
 }
 
+var gammaAuto bool
 var gammaBy float64
 
 func init() {
 	cmdGamma.Run = runGamma
 
+	cmdGamma.Flag.BoolVar(&gammaAuto, "auto", false, "")
 	cmdGamma.Flag.Float64Var(&gammaBy, "by", 1.8, "")
 }
 
 func runGamma(cmd *Command, args []string) {
 	i := utils.ReadStdin()
-	i  = gamma.Adjust(i, gammaBy)
+
+	if gammaAuto {
+		i = gamma.Auto(i)
+	} else {
+		i = gamma.Adjust(i, gammaBy)
+	}
 	utils.WriteStdout(i)
 }

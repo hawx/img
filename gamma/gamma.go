@@ -3,6 +3,7 @@ package gamma
 
 import (
 	"github.com/hawx/img/utils"
+	"github.com/hawx/img/greyscale"
 	"image"
 	"image/color"
 	"math"
@@ -22,4 +23,29 @@ func Adjust(img image.Image, value float64) image.Image {
 	}
 
 	return utils.EachPixel(img, f)
+}
+
+// Auto calculates the mean values of an image, then applies a gamma adjustment
+// so that the mean colour in the image has a value of half.
+func Auto(img image.Image) image.Image {
+	luma := greyscale.Luminosity(img)
+	greys := []uint32{}
+
+	b := luma.Bounds()
+	for y := b.Min.Y; y < b.Max.Y; y++ {
+		for x := b.Min.X; x < b.Max.X; x++ {
+			g,_,_,_ := utils.NormalisedRGBA(luma.At(x, y))
+			greys = append(greys, g)
+		}
+	}
+
+	var averageGrey uint32 = 0
+	for i := 0; i < len(greys); i++ {
+		averageGrey += greys[i]
+	}
+	averageGrey /= uint32(len(greys))
+
+	newGamma := 127.5 / float64(averageGrey)
+
+	return Adjust(img, newGamma)
 }
