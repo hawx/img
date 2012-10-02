@@ -19,6 +19,15 @@ func alterPixels(img image.Image, f pixelAlterer) image.Image {
 	})
 }
 
+// luminosityAlterer creates a function which scales the RGB channels by the
+// ratios given, returning the value r*rM + g*gM + b*bM.
+func luminosityAlterer(rM, gM, bM float64) pixelAlterer {
+	return func(r, g, b uint32) uint32 {
+		return uint32(float64(r) * rM + float64(g) * gM + float64(b) * bM)
+	}
+}
+
+
 
 // Average creates a greyscale version of the Image using the average method;
 // it simply averages the RGB values.
@@ -36,13 +45,11 @@ func Lightness(img image.Image) image.Image {
 	})
 }
 
-// Lightness creates a greyscale version of the Image using the luminosity
+// Luminosity creates a greyscale version of the Image using the luminosity
 // method. This uses a weighted average to account for human sensitivity to
 // green above other colours.  Formula is R * 0.21 + G * 0.71 + B * 0.07.
 func Luminosity(img image.Image) image.Image {
-	return alterPixels(img, func(r, g, b uint32) uint32 {
-		return uint32(float64(r) * 0.21 + float64(g) * 0.71 + float64(b) * 0.07)
-	})
+	return alterPixels(img, luminosityAlterer(0.21, 0.71, 0.07))
 }
 
 // Maximal creates a greyscale version of the Image by taking the maximum of the
@@ -63,11 +70,27 @@ func Minimal(img image.Image) image.Image {
 	})
 }
 
+// Red creates a greyscale version of the Image using the values of the red
+// channel.
+func Red(img image.Image) image.Image {
+	return alterPixels(img, luminosityAlterer(1, 0, 0))
+}
+
+// Green creates a greyscale version of the Image using the values of the green
+// channel.
+func Green(img image.Image) image.Image {
+	return alterPixels(img, luminosityAlterer(0, 1, 0))
+}
+
+// Blue creates a greyscale version of the Image using the values of the blue
+// channel.
+func Blue(img image.Image) image.Image {
+	return alterPixels(img, luminosityAlterer(0, 0, 1))
+}
+
 // Photoshop creates a greyscale version of the Image using the method
 // (supposedly) used by Adobe Photoshop. It is simply a variation on the
 // Luminosity method.
 func Photoshop(img image.Image) image.Image {
-	return alterPixels(img, func(r, g, b uint32) uint32 {
-		return uint32(float64(r) * 0.299 + float64(g) * 0.587 + float64(b) * 0.114)
-	})
+	return alterPixels(img, luminosityAlterer(0.299, 0.587, 0.114))
 }
