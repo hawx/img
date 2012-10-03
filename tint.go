@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"image/color"
 	"strconv"
-	"regexp"
+	"strings"
 	"errors"
 )
 
@@ -21,36 +21,89 @@ Long: `
 `,
 }
 
-type localRGBA struct {
+type localNRGBA struct {
 	R, G, B, A uint8
 }
 
-func (c *localRGBA) String() string {
+func (c *localNRGBA) String() string {
 	return fmt.Sprint(*c)
 }
 
-func (c *localRGBA) Set(value string) error {
-	hex := regexp.MustCompile("#[0-9a-fA-F]{8}")
-	// rgb := regexp.MustCompile("rgba\\((\\d{1,3},\\s*){3}\\d{1,3}\\)")
+func (c *localNRGBA) Set(value string) error {
+	if strings.HasPrefix(value, "#") {
+		parseHex := func(s string) uint8 {
+			r, _ := strconv.ParseInt(s, 16, 16)
+			return uint8(r)
+		}
 
-	if hex.MatchString(value) {
-		// We have a hex number
-		r, _ := strconv.ParseInt(value[1:3], 16, 16)
-		g, _ := strconv.ParseInt(value[3:5], 16, 16)
-		b, _ := strconv.ParseInt(value[5:7], 16, 16)
-		a, _ := strconv.ParseInt(value[7:9], 16, 16)
-		*c = localRGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
-	// } else if rgb.MatchString(value) {
-		// We have an rgba number
-		//*c = localRGBA{255, 0, 0, 255}
+		if len(value) == 4 {
+			r := parseHex(value[1:2] + value[1:2])
+			g := parseHex(value[2:3] + value[2:3])
+			b := parseHex(value[3:4] + value[3:4])
+			a := uint8(255)
+			*c = localNRGBA{r, g, b, a}
+
+		} else if len(value) == 5 {
+			r := parseHex(value[1:2] + value[1:2])
+			g := parseHex(value[2:3] + value[2:3])
+			b := parseHex(value[3:4] + value[3:4])
+			a := parseHex(value[4:5] + value[4:5])
+			*c = localNRGBA{r, g, b, a}
+
+		} else if len(value) == 7 {
+			r := parseHex(value[1:3])
+			g := parseHex(value[3:5])
+			b := parseHex(value[5:7])
+			a := uint8(255)
+			*c = localNRGBA{r, g, b, a}
+
+		} else if len(value) == 9 {
+			r := parseHex(value[1:3])
+			g := parseHex(value[3:5])
+			b := parseHex(value[5:7])
+			a := parseHex(value[7:9])
+			*c = localNRGBA{r, g, b, a}
+
+		} else {
+			return errors.New(`unknown hexadecimal format. Accepts:
+  #FFF                  3-digit hexadecimal (#RGB)
+  #FFFC                 4-digit hexadecimal (#RGBA)
+  #F0CDBB               6-digit hexadecimal (#RRGGBB)
+  #F0CDBBAC             8-digit hexadecimal (#RRGGBBAA)
+`)
+		}
+
+	} else if strings.HasPrefix(value, "rgb(") {
+		parts := strings.Split(value[4:len(value)-1], ",")
+		r, _ := strconv.Atoi(parts[0])
+		g, _ := strconv.Atoi(parts[1])
+		b, _ := strconv.Atoi(parts[2])
+		*c = localNRGBA{uint8(r), uint8(g), uint8(b), 255}
+
+	} else if strings.HasPrefix(value, "rgba(") {
+		parts := strings.Split(value[5:len(value)-1], ",")
+		r, _ := strconv.Atoi(parts[0])
+		g, _ := strconv.Atoi(parts[1])
+		b, _ := strconv.Atoi(parts[2])
+		a, _ := strconv.ParseFloat(parts[3], 32)
+		*c = localNRGBA{uint8(r), uint8(g), uint8(b), uint8(a * 255)}
+
 	} else {
-		return errors.New("unknown string format passed to with flag")
+		return errors.New(`unknown string format. Accepts:
+  #FFF                  3-digit hexadecimal (#RGB)
+  #FFFC                 4-digit hexadecimal (#RGBA)
+  #F0CDBB               6-digit hexadecimal (#RRGGBB)
+  #F0CDBBAC             8-digit hexadecimal (#RRGGBBAA)
+
+  rgb(100,50,10)        Red, green, blue (must not contain spaces)
+  rgba(100,50,10,.5)    Red, green, blue and alpha (must not contain spaces)
+`)
 	}
 
 	return nil
 }
 
-var tintWith localRGBA = localRGBA{255, 0, 0, 160}
+var tintWith localNRGBA = localNRGBA{255, 0, 0, 160}
 
 func init() {
 	cmdTint.Run = runTint
@@ -61,7 +114,7 @@ func init() {
 func runTint(cmd *Command, args []string) {
 	i := utils.ReadStdin()
 
-	tintColor := color.RGBA{
+	tintColor := color.NRGBA{
 		uint8(tintWith.R),
 		uint8(tintWith.G),
 		uint8(tintWith.B),
