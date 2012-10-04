@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/hawx/img/hsla"
 	"github.com/hawx/img/utils"
-	"flag"
 )
 
 var cmdLightness = &Command{
@@ -31,17 +30,11 @@ func init() {
 func runLightness(cmd *Command, args []string) {
 	i := utils.ReadStdin()
 
-	cmd.Flag.Visit(func (f *flag.Flag) {
-		if f == cmd.Flag.Lookup("by") {
-			i = hsla.Lightness(i, func(i float64) float64 {
-				return i + lightnessBy
-			})
-		} else { // default is ratio
-			i = hsla.Lightness(i, func(i float64) float64 {
-				return i * lightnessRatio
-			})
-		}
-	})
+	if utils.FlagVisited("by", cmd.Flag) {
+		i = hsla.Lightness(i, utils.Adder(lightnessBy))
+	} else {
+		i = hsla.Lightness(i, utils.Multiplier(lightnessRatio))
+	}
 
 	utils.WriteStdout(i)
 }

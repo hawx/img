@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/hawx/img/hsla"
 	"github.com/hawx/img/utils"
-	"flag"
 )
 
 var cmdSaturation = &Command{
@@ -31,17 +30,11 @@ func init() {
 func runSaturation(cmd *Command, args []string) {
 	i := utils.ReadStdin()
 
-	cmd.Flag.Visit(func (f *flag.Flag) {
-		if f == cmd.Flag.Lookup("by") {
-			i = hsla.Saturation(i, func(i float64) float64 {
-				return i + saturationBy
-			})
-		} else { // default is ratio
-			i = hsla.Saturation(i, func(i float64) float64 {
-				return i * saturationRatio
-			})
-		}
-	})
+	if utils.FlagVisited("by", cmd.Flag) {
+		i = hsla.Saturation(i, utils.Adder(saturationBy))
+	} else {
+		i = hsla.Saturation(i, utils.Multiplier(saturationRatio))
+	}
 
 	utils.WriteStdout(i)
 }

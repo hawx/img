@@ -15,6 +15,7 @@ type HSLA struct {
 	H, S, L, A float64
 }
 
+// BUG: Conversion is broken _somewhere_, check against IM results.
 func (col HSLA) RGBA() (red, green, blue, alpha uint32) {
 	h := col.H; s := col.S; l := col.L; a := col.A
 
@@ -95,13 +96,11 @@ func hslaModel(c color.Color) color.Color {
 	return HSLA{hue, saturation, lightness, a}
 }
 
-type floatForFloat (func(i float64) float64)
-
 // Hue shifts the hue of the Image using the function given.
-func Hue(img image.Image, a floatForFloat) image.Image {
+func Hue(img image.Image, adj utils.Adjuster) image.Image {
 	f := func(c color.Color) color.Color {
 		h := HSLAModel.Convert(c).(HSLA)
-		h.H = math.Mod(a(h.H), 360)
+		h.H = math.Mod(adj(h.H), 360)
 		return h
 	}
 
@@ -109,10 +108,10 @@ func Hue(img image.Image, a floatForFloat) image.Image {
 }
 
 // Saturation adjusts the saturation of the Image using the function given.
-func Saturation(img image.Image, a floatForFloat) image.Image {
+func Saturation(img image.Image, adj utils.Adjuster) image.Image {
 	f := func(c color.Color) color.Color {
 		h := HSLAModel.Convert(c).(HSLA)
-		h.S = a(h.S)
+		h.S = adj(h.S)
 		if h.S > 1 { h.S = 1 }
 		if h.S < 0 { h.S = 0 }
 		return h
@@ -122,10 +121,10 @@ func Saturation(img image.Image, a floatForFloat) image.Image {
 }
 
 // Lightness adjusts the lightness of the Image using the function given.
-func Lightness(img image.Image, a floatForFloat) image.Image {
+func Lightness(img image.Image, adj utils.Adjuster) image.Image {
 	f := func(c color.Color) color.Color {
 		h := HSLAModel.Convert(c).(HSLA)
-		h.L = a(h.L)
+		h.L = adj(h.L)
 		if h.L > 1 { h.L = 1 }
 		if h.L < 0 { h.L = 0 }
 		return h
