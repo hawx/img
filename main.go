@@ -50,8 +50,7 @@ func (c *Command) Name() string {
 }
 
 func (c *Command) Usage() {
-	fmt.Fprintf(os.Stderr, "usage: %s\n\n", c.UsageLine)
-	fmt.Fprintf(os.Stderr, "%s\n", strings.TrimSpace(c.Long))
+	tmpl(os.Stdout, helpTemplate, c)
 	os.Exit(2)
 }
 
@@ -150,55 +149,55 @@ var helpTemplate = `{{if .Runnable}}Usage: img {{.UsageLine}}
 {{end}}{{.Long}}
 `
 
-	func tmpl(w io.Writer, text string, data interface{}) {
-		t := template.New("top")
-		t.Funcs(template.FuncMap{"trim": strings.TrimSpace, "capitalize": capitalize})
-		template.Must(t.Parse(text))
-		if err := t.Execute(w, data); err != nil {
-			panic(err)
-		}
+func tmpl(w io.Writer, text string, data interface{}) {
+	t := template.New("top")
+	t.Funcs(template.FuncMap{"trim": strings.TrimSpace, "capitalize": capitalize})
+	template.Must(t.Parse(text))
+	if err := t.Execute(w, data); err != nil {
+		panic(err)
 	}
+}
 
-	func capitalize(s string) string {
-		if s == "" {
-			return s
-		}
-		r, n := utf8.DecodeRuneInString(s)
-		return string(unicode.ToTitle(r)) + s[n:]
+func capitalize(s string) string {
+	if s == "" {
+		return s
 	}
+	r, n := utf8.DecodeRuneInString(s)
+	return string(unicode.ToTitle(r)) + s[n:]
+}
 
-	func printUsage(w io.Writer) {
-		tmpl(w, usageTemplate, commands)
+func printUsage(w io.Writer) {
+	tmpl(w, usageTemplate, commands)
+}
+
+func usage() {
+	printUsage(os.Stderr)
+	os.Exit(2)
+}
+
+// help implements the 'help' command
+func help(args []string) {
+	if len(args) == 0 {
+		printUsage(os.Stdout)
+		return
 	}
-
-	func usage() {
-		printUsage(os.Stderr)
+	if len(args) != 1 {
+		fmt.Fprintf(os.Stderr, "Usage: img help command\n\nToo many arguments given.\n")
 		os.Exit(2)
 	}
 
-	// help implements the 'help' command
-	func help(args []string) {
-		if len(args) == 0 {
-			printUsage(os.Stdout)
+	arg := args[0]
+
+	for _, cmd := range commands {
+		if cmd.Name() == arg {
+				tmpl(os.Stdout, helpTemplate, cmd)
 			return
 		}
-		if len(args) != 1 {
-			fmt.Fprintf(os.Stderr, "usage: img help command\n\nToo many arguments given.\n")
-			os.Exit(2)
-		}
-
-		arg := args[0]
-
-		for _, cmd := range commands {
-			if cmd.Name() == arg {
-				tmpl(os.Stdout, helpTemplate, cmd)
-				return
-			}
-		}
-
-		fmt.Fprintf(os.Stderr, "Unknown help topic %#q. Run 'go help'.\n", arg)
-		os.Exit(2)
 	}
+
+	fmt.Fprintf(os.Stderr, "Unknown help topic %#q. Run 'go help'.\n", arg)
+	os.Exit(2)
+}
 
 
 func exit() {
