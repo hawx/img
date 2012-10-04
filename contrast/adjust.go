@@ -11,9 +11,6 @@ import (
 // Adjusts the contrast of the Image by the given value. A value of 0 has no
 // effect.
 func Adjust(img image.Image, value float64) image.Image {
-	value  = (100 + value) / 100
-	value *= value
-
 	f := func(c color.Color) color.Color {
 		r,g,b,a := utils.RatioRGBA(c)
 
