@@ -65,6 +65,7 @@ func (c *Command) Runnable() bool {
 var commands = []*Command{
 	cmdBlend,
 	cmdBrightness,
+	cmdChannel,
 	cmdContrast,
 	cmdGamma,
 	cmdGreyscale,
