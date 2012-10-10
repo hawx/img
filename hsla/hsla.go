@@ -104,7 +104,7 @@ func Hue(img image.Image, adj utils.Adjuster) image.Image {
 		return h
 	}
 
-	return utils.EachPixel(img, f)
+	return utils.MapColor(img, f)
 }
 
 // Saturation adjusts the saturation of the Image using the function given.
@@ -117,7 +117,7 @@ func Saturation(img image.Image, adj utils.Adjuster) image.Image {
 		return h
 	}
 
-	return utils.EachPixel(img, f)
+	return utils.MapColor(img, f)
 }
 
 // Lightness adjusts the lightness of the Image using the function given.
@@ -130,5 +130,5 @@ func Lightness(img image.Image, adj utils.Adjuster) image.Image {
 		return h
 	}
 
-	return utils.EachPixel(img, f)
+	return utils.MapColor(img, f)
 }

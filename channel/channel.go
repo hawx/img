@@ -15,7 +15,7 @@ func Red(img image.Image, adj utils.Adjuster) image.Image {
 		return color.NRGBA{uint8(r * 255), uint8(g * 255), uint8(b * 255), uint8(a * 255)}
 	}
 
-	return utils.EachPixel(img, f)
+	return utils.MapColor(img, f)
 }
 
 // Green applies the Adjuster to the green channel of each pixel in the Image.
@@ -27,7 +27,7 @@ func Green(img image.Image, adj utils.Adjuster) image.Image {
 		return color.NRGBA{uint8(r * 255), uint8(g * 255), uint8(b * 255), uint8(a * 255)}
 	}
 
-	return utils.EachPixel(img, f)
+	return utils.MapColor(img, f)
 }
 
 // Blue applies the Adjuster to the blue channel of each pixel in the Image.
@@ -39,7 +39,7 @@ func Blue(img image.Image, adj utils.Adjuster) image.Image {
 		return color.NRGBA{uint8(r * 255), uint8(g * 255), uint8(b * 255), uint8(a * 255)}
 	}
 
-	return utils.EachPixel(img, f)
+	return utils.MapColor(img, f)
 }
 
 // Alpha applies the Adjuster to the alpha channel of each pixel in the Image.
@@ -51,5 +51,5 @@ func Alpha(img image.Image, adj utils.Adjuster) image.Image {
 		return color.NRGBA{uint8(r * 255), uint8(g * 255), uint8(b * 255), uint8(a * 255)}
 	}
 
-	return utils.EachPixel(img, f)
+	return utils.MapColor(img, f)
 }

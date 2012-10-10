@@ -78,7 +78,7 @@ func Fade(img image.Image, amount float64) image.Image {
 		}
 	}
 
-	return utils.EachPixel(img, f)
+	return utils.MapColor(img, f)
 }
 
 func ratioNRGBA(r, g, b, a float64) color.Color {

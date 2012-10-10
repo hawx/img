@@ -164,9 +164,21 @@ func Maxf(ns... float64) (n float64) {
 	return
 }
 
-// EachPixel iterates through each pixel of the Image applies the function given
-// and draws the result to a new Image which is then returned.
-func EachPixel(img image.Image, f func(c color.Color) color.Color) image.Image {
+// EachColor iterates through each pixel of the Image, applying the function
+// to each colour.
+func EachColor(img image.Image, f func(c color.Color)) {
+	b := img.Bounds()
+
+	for y := b.Min.Y; y < b.Max.Y; y++ {
+		for x := b.Min.X; x < b.Max.X; x++ {
+			f(img.At(x, y))
+		}
+	}
+}
+
+// MapColor iterates through each pixel of the Image and applies the given
+// function, drawing the returned colour to a new Image which is then returned.
+func MapColor(img image.Image, f func(c color.Color) color.Color) image.Image {
 	b := img.Bounds()
 	o := image.NewRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
 
@@ -179,6 +191,8 @@ func EachPixel(img image.Image, f func(c color.Color) color.Color) image.Image {
 
 	return o
 }
+
+
 
 func FlagVisited(name string, flags flag.FlagSet) bool {
 	didFind := false

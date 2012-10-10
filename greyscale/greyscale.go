@@ -11,7 +11,7 @@ import (
 type pixelAlterer func(r, g, b uint32) uint32
 
 func alterPixels(img image.Image, f pixelAlterer) image.Image {
-	return utils.EachPixel(img, func(c color.Color) color.Color {
+	return utils.MapColor(img, func(c color.Color) color.Color {
 		r, g, b, a := utils.NormalisedRGBA(c)
 		grey := uint8(f(r, g, b))
 

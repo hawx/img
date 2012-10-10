@@ -19,5 +19,5 @@ func Adjust(img image.Image, adj utils.Adjuster) image.Image {
 		return color.NRGBA{uint8(r), uint8(g), uint8(b), uint8(a * 255)}
 	}
 
-	return utils.EachPixel(img, f)
+	return utils.MapColor(img, f)
 }
