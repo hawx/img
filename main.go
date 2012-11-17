@@ -71,6 +71,7 @@ var commands = []*Command{
 	cmdGreyscale,
 	cmdHue,
 	cmdHxl,
+	cmdLevels,
 	cmdLightness,
 	cmdPixelate,
 	cmdPxl,
