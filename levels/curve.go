@@ -61,7 +61,7 @@ func (c *Curve) Value(x float64) float64 {
 	}
 
 	// find the gradient
-	m := (left.Y - right.Y) / (left.X - right.Y)
+	m := (left.Y - right.Y) / (left.X - right.X)
 
 	// and finally, find the value
 	return (left.Y / 100.0) + (m * (x - (left.X / 100.0)))
