@@ -8,15 +8,15 @@ import (
 
 var cmdLevels = &Command{
 	UsageLine: "levels [options]",
-	Short:     "adjust image levels (and stuff)",
+	Short:     "adjust image levels",
 	Long: `
   Levels adjusts the levels of an image. You can set the black/white point or
   give points in a curve to use. It can act on all colour channels (default
   behaviour), or just those you want.
 
-    --red             # Only act on red channel
-    --green           # Only act on green channel
-    --blue            # Only act on blue channel
+    --red             # Act on red channel
+    --green           # Act on green channel
+    --blue            # Act on blue channel
 
     --auto            # Auto adjust levels to fit
     --auto-black      # Auto adjust black point to fit
@@ -26,7 +26,7 @@ var cmdLevels = &Command{
     --white [n]       # Set white point
 
     --curve [c]       # Set curve. Argument is a list of 'point,value' pairs
-                      # delimited by colons, eg. --curve 0,0:33,40:66,60:100,100
+                      # delimited by spaces, eg. --curve "0,0 33,40 66,60 100,100"
 `,
 }
 

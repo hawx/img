@@ -109,6 +109,17 @@ $ img blend --screen blend.png --opacity 0.3 < input.png > output.png
 
 ![blend](http://hawx.github.com/img/examples/blend-modes.jpg)
 
+## levels
+
+Allows you to alter the levels of an image. You can set (or auto set) white and
+black points, or pass a curve to use, along with the channels to act on.
+
+``` bash
+$ img levels --red --green --curve "0,20 50,40 100,100" < input.png > output.png
+```
+
+![levels](http://hawx.github.com/img/examples/levels.jpg)
+
 # Composition
 
 These tools have been created to do one task each, and to use standard
