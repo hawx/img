@@ -11,6 +11,9 @@ import (
 	"unicode"
 	"io"
 	"flag"
+	"os/exec"
+	"bytes"
+	"errors"
 )
 
 // NOTE: this is mainly ripped from the go command see
@@ -82,6 +85,7 @@ var commands = []*Command{
 
 var exitStatus = 0
 var exitMu sync.Mutex
+const PREFIX = "img-"
 
 func setExitStatus(n int) {
 	exitMu.Lock()
@@ -91,7 +95,58 @@ func setExitStatus(n int) {
 	exitMu.Unlock()
 }
 
+func nameOfExternal(path string) string {
+	parts := strings.Split(path, "/")
+	return parts[len(parts)-1]
+}
+
+func findExternalsIn(dir string) ([]string, error) {
+	found := []string{}
+
+	cmd := exec.Command("ls", dir)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+
+	err := cmd.Run()
+	if err != nil {
+		return found, err
+	}
+
+	for _, possible := range strings.Split(out.String(), "\n") {
+		if strings.HasPrefix(nameOfExternal(possible), "img-") {
+			found = append(found, dir + "/" + possible)
+		}
+	}
+
+	return found, nil
+}
+
+// Modified from Go's os/exec#LookPath
+func lookupExternals() ([]string, error) {
+	found := []string{}
+	pathenv := os.Getenv("PATH")
+
+	for _, dir := range strings.Split(pathenv, ":") {
+		if dir == "" {
+			// Unix shell semantics: path element "" means "."
+			dir = "."
+		}
+
+		if externals, err := findExternalsIn(dir); err == nil {
+			found = append(found, externals...)
+		}
+	}
+
+	return found, errors.New("executable file not found in $PATH")
+}
+
 func main() {
+
+	externals, err := lookupExternals()
+	if err != nil {
+		// handle error
+	}
+
 	flag.Usage = usage
 	flag.Parse()
 	log.SetFlags(0)
@@ -116,6 +171,21 @@ func main() {
 				args = cmd.Flag.Args()
 			}
 			cmd.Run(cmd, args)
+			exit()
+			return
+		}
+	}
+
+	for _, ext := range externals {
+		if nameOfExternal(ext) == PREFIX + args[0] {
+			// run the external command
+			cmd := exec.Command(ext, args[1:]...)
+			cmd.Stdin = os.Stdin
+			cmd.Stdout = os.Stdout
+			err := cmd.Run()
+			if err != nil {
+				// handle error
+			}
 			exit()
 			return
 		}
