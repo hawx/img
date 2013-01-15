@@ -63,6 +63,27 @@ func (c *Command) Runnable() bool {
 	return c.Run != nil
 }
 
+
+// An External is an external command, named "img-something".
+type External struct {
+	Name      string
+	Path      string
+	UsageLine string
+	Short     string
+	Long      string
+}
+
+func (e *External) Usage() {
+	tmpl(os.Stdout, externalHelpTemplate, e)
+	os.Exit(2)
+}
+
+func (e External) String() string {
+	return "External{" + e.Name + "}"
+}
+
+
+
 // Commands list the available commands and help topics.  The order here is the
 // order in which they are printed by 'img help'.
 var commands = []*Command{
@@ -82,6 +103,9 @@ var commands = []*Command{
 	cmdShuffle,
 	cmdTint,
 }
+
+// Will load these in main
+var externals = []*External{}
 
 var exitStatus = 0
 var exitMu sync.Mutex
@@ -121,9 +145,20 @@ func findExternalsIn(dir string) ([]string, error) {
 	return found, nil
 }
 
+func runExternal(ext string, flag string) string {
+	cmd := exec.Command(ext, flag)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err := cmd.Run()
+	if err != nil {
+		// handle error
+	}
+	return out.String()
+}
+
 // Modified from Go's os/exec#LookPath
-func lookupExternals() ([]string, error) {
-	found := []string{}
+func lookupExternals() ([]*External, error) {
+	found := []*External{}
 	pathenv := os.Getenv("PATH")
 
 	for _, dir := range strings.Split(pathenv, ":") {
@@ -132,8 +167,15 @@ func lookupExternals() ([]string, error) {
 			dir = "."
 		}
 
-		if externals, err := findExternalsIn(dir); err == nil {
-			found = append(found, externals...)
+		if exts, err := findExternalsIn(dir); err == nil {
+			for _, ext := range exts {
+				usage := runExternal(ext, "--usage")
+				short := runExternal(ext, "--short")
+				long  := runExternal(ext, "--long")
+				name  := nameOfExternal(ext)[4:]
+
+				found = append(found, &External{name, ext, usage, short, long})
+			}
 		}
 	}
 
@@ -141,17 +183,14 @@ func lookupExternals() ([]string, error) {
 }
 
 func main() {
-
-	externals, err := lookupExternals()
-	if err != nil {
-		// handle error
-	}
+	externals, _ = lookupExternals()
 
 	flag.Usage = usage
 	flag.Parse()
 	log.SetFlags(0)
 
 	args := flag.Args()
+
 	if len(args) < 1 {
 		usage()
 	}
@@ -177,9 +216,13 @@ func main() {
 	}
 
 	for _, ext := range externals {
-		if nameOfExternal(ext) == PREFIX + args[0] {
+		if ext.Name == args[0] {
+			if args[1] == "-h" || args[1] == "--help" {
+				ext.Usage()
+			}
+
 			// run the external command
-			cmd := exec.Command(ext, args[1:]...)
+			cmd := exec.Command(ext.Path, args[1:]...)
 			cmd.Stdin = os.Stdin
 			cmd.Stdout = os.Stdout
 			err := cmd.Run()
@@ -211,14 +254,20 @@ var usageTemplate = `Usage: img [command] [arguments]
 
     $ (img greyscale | img pxl | img contrast --by 0.05) < input.png > output.png
 
-  Commands: {{range .}}{{if .Runnable}}
+  Commands: {{range .Commands}}{{if .Runnable}}
     {{.Name | printf "%-15s"}} # {{.Short}}{{end}}{{end}}
 
+  External Commands: {{range .Externals}}
+    {{.Name | printf "%-15s"}} # {{.Short}}{{end}}
 Use "img help [command]" for more information about a command.
 `
 
 var helpTemplate = `{{if .Runnable}}Usage: img {{.UsageLine}}
 {{end}}{{.Long}}
+`
+
+var externalHelpTemplate = `Usage: img {{.UsageLine}}
+{{.Long}}
 `
 
 func tmpl(w io.Writer, text string, data interface{}) {
@@ -238,8 +287,14 @@ func capitalize(s string) string {
 	return string(unicode.ToTitle(r)) + s[n:]
 }
 
+type CommandsAndExternals struct {
+	Commands  []*Command
+	Externals []*External
+}
+
 func printUsage(w io.Writer) {
-	tmpl(w, usageTemplate, commands)
+	fmt.Println(externals)
+	tmpl(w, usageTemplate, CommandsAndExternals{commands, externals})
 }
 
 func usage() {
@@ -262,7 +317,14 @@ func help(args []string) {
 
 	for _, cmd := range commands {
 		if cmd.Name() == arg {
-				tmpl(os.Stdout, helpTemplate, cmd)
+			tmpl(os.Stdout, helpTemplate, cmd)
+			return
+		}
+	}
+
+	for _, ext := range externals {
+		if ext.Name == arg {
+			tmpl(os.Stdout, externalHelpTemplate, ext)
 			return
 		}
 	}
