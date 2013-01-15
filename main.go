@@ -257,8 +257,8 @@ var usageTemplate = `Usage: img [command] [arguments]
   Commands: {{range .Commands}}{{if .Runnable}}
     {{.Name | printf "%-15s"}} # {{.Short}}{{end}}{{end}}
 
-  External Commands: {{range .Externals}}
-    {{.Name | printf "%-15s"}} # {{.Short}}{{end}}
+  {{if .HasExternals}}External Commands: {{range .Externals}}
+    {{.Name | printf "%-15s"}} # {{.Short}}{{end}}{{end}}
 Use "img help [command]" for more information about a command.
 `
 
@@ -291,6 +291,11 @@ type CommandsAndExternals struct {
 	Commands  []*Command
 	Externals []*External
 }
+
+func (c CommandsAndExternals) HasExternals() bool {
+	return len(c.Externals) > 0
+}
+
 
 func printUsage(w io.Writer) {
 	fmt.Println(externals)
