@@ -48,6 +48,12 @@ func runChannel(cmd *Command, args []string) {
 		adj = utils.Multiplier(channelRatio)
 	}
 
+	if !(channelRed || channelGreen || channelBlue || channelAlpha) {
+		channelRed   = true
+		channelGreen = true
+		channelBlue  = true
+	}
+
 	if channelRed   { i = channel.Red(i, adj) }
 	if channelGreen { i = channel.Green(i, adj) }
 	if channelBlue  { i = channel.Blue(i, adj) }
