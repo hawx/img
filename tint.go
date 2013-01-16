@@ -17,7 +17,7 @@ Long: `
   Tint takes an image and tints it using the specified colour, the result is
   printed to STDOUT
 
-	  --with [colour]       # Colour to tint with (default: #FF0000A0)
+    --with [colour]       # Colour to tint with (default: #FF0000A0)
 `,
 }
 
