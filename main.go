@@ -217,14 +217,15 @@ func main() {
 
 	for _, ext := range externals {
 		if ext.Name == args[0] {
-			if args[1] == "-h" || args[1] == "--help" {
+			if len(args) > 1 && (args[1] == "-h" || args[1] == "--help") {
 				ext.Usage()
 			}
 
 			// run the external command
 			cmd := exec.Command(ext.Path, args[1:]...)
-			cmd.Stdin = os.Stdin
+			cmd.Stdin  = os.Stdin
 			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
 			err := cmd.Run()
 			if err != nil {
 				// handle error
