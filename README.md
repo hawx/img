@@ -132,6 +132,66 @@ $ (img shuffle --horizontal | img hxl | img hue --by -20) < input.png > output.p
 ![Composed](http://hawx.github.com/img/examples/composed.jpg)
 
 
+
+# External scripts
+
+It is possible to extend `img` with external scripts. They must be named
+`img-something`, and be somewhere on your `$PATH`. They must also respond to the
+flags `--usage`, `--short` and `--long` so they can be integrated into `img
+help`.
+
+As an example of an external script, here is `img-lomo`, that applies a
+lomography effect detailed in [Lomography, UNIX Style][tao].  It makes use of
+[imagemagick][im] to generate a mask, then blends the images with img.
+
+``` bash
+#!/usr/bin/env sh
+
+function usage {
+  echo "lomo [options]"
+}
+
+function short {
+  echo "Applies a simple lomo effect to the image."
+}
+
+function long {
+  echo "  Applies a simple lomo effect to the image, boosting it's
+  saturation and composing with a black edged mask."
+}
+
+case "$1" in
+  --usage ) usage
+    exit
+    ;;
+  --short ) short
+    exit
+    ;;
+  --long ) long
+    exit
+    ;;
+esac
+
+# Using the method described on:
+# http://the.taoofmac.com/space/blog/2005/08/23/2359
+
+# generate a mask using imagemagick
+convert -size 80x60 xc:black \
+        -fill white -draw 'rectangle 1,1 78,58' \
+        -gaussian 7x15 +matte lomo_mask.png
+mogrify -resize 800x600 -gaussian 0x5 lomo_mask.png
+
+# then put it together with img
+(
+  img contrast --ratio 1.2 |
+  img saturation --ratio 1.2 |
+  img blend --multiply --fit lomo_mask.png
+)
+
+# delete the mask
+rm lomo_mask.png
+```
+
 # Notes on using the img package in go
 
 You can easily use img in programmatically as well,
@@ -168,3 +228,5 @@ To view documentation run `godoc -http=:8080` then navigate to
 [pxlapp]: http://kohlberger.net/apps/pxl
 [rev]:    http://revdancatt.com/2012/03/31/the-pxl-effect-with-javascript-and-canvas-and-maths/
 [docs]:   http://go.pkgdoc.org/github.com/hawx/img
+[tao]:    http://the.taoofmac.com/space/blog/2005/08/23/2359
+[im]:     http://www.imagemagick.org
