@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/nfnt/resize"
 	"github.com/hawx/img/blend"
 	"github.com/hawx/img/utils"
 	"strings"
@@ -23,6 +24,7 @@ Long: `
 
     --modes          # List all available modes
     --opacity [n]    # Opacity of blend image layer (default: 1.0)
+    --fit            # Fit the blend layer to the base layer, may result in loss of quality
 
     BASIC
     --normal         # Selects the blend image (default)
@@ -64,6 +66,7 @@ Long: `
 `,
 }
 
+var blendModes, blendFit bool
 var blendOpacity float64
 var blendNormal, blendDissolve bool
 var blendDarken, blendMultiply, blendBurn, blendLinearBurn, blendDarker bool
@@ -72,13 +75,13 @@ var blendOverlay, blendSoftLight, blendHardLight, blendVividLight bool
 var blendLinearLight, blendPinLight, blendHardMix bool
 var blendDifference, blendExclusion, blendAddition, blendSubtraction bool
 var blendHue, blendSaturation, blendColor, blendLuminosity bool
-var blendModes bool
 
 func init() {
 	cmdBlend.Run = runBlend
 
 	cmdBlend.Flag.BoolVar(&blendModes, "modes", false, "")
   cmdBlend.Flag.Float64Var(&blendOpacity, "opacity", 1.0, "")
+	cmdBlend.Flag.BoolVar(&blendFit, "fit", false, "")
 
 	// BASIC
   cmdBlend.Flag.BoolVar(&blendNormal, "normal", false, "")
@@ -127,10 +130,26 @@ func runBlend(cmd *Command, args []string) {
 
 	path := args[0]
 	file, _ := os.Open(path)
+	defer file.Close()
 	b, _, _ := image.Decode(file)
 	var f (func(a, b image.Image) image.Image)
 
 	b = blend.Fade(b, blendOpacity)
+
+	if blendFit {
+		ab := a.Bounds()
+		bb := b.Bounds()
+
+		// Need to work this out better, see
+		// http://www.codinghorror.com/blog/2007/07/better-image-resizing.html
+		if bb.Dx() < ab.Dx() || bb.Dy() < ab.Dy() {
+			// b is going to get BIGGER
+			b = resize.Resize(uint(ab.Dx()), uint(ab.Dy()), b, resize.Bilinear)
+		} else {
+			// b is going to get SMALLER
+			b = resize.Resize(uint(ab.Dx()), uint(ab.Dy()), b, resize.Bicubic)
+		}
+	}
 
 	if blendNormal {
 		f = blend.Normal
