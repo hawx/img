@@ -152,12 +152,12 @@ function usage {
 }
 
 function short {
-  echo "Applies a simple lomo effect to the image."
+  echo "applies a simple lomo effect to the image."
 }
 
 function long {
-  echo "  Applies a simple lomo effect to the image, boosting it's
-  saturation and composing with a black edged mask."
+  echo "  Applies a simple lomo effect to the image, boosting its saturation and
+  composing with a black edged mask."
 }
 
 case "$1" in
@@ -191,6 +191,8 @@ mogrify -resize 800x600 -gaussian 0x5 lomo_mask.png
 # delete the mask
 rm lomo_mask.png
 ```
+
+See [this gist](https://gist.github.com/4566266) for a pure Go rewrite of this.
 
 # Notes on using the img package in go
 
