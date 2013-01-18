@@ -258,8 +258,8 @@ var usageTemplate = `Usage: img [command] [arguments]
   Commands: {{range .Commands}}{{if .Runnable}}
     {{.Name | printf "%-15s"}} # {{.Short}}{{end}}{{end}}
 
-  {{if .HasExternals}}External Commands: {{range .Externals}}
-    {{.Name | printf "%-15s"}} # {{.Short}}{{end}}{{end}}
+  {{if .HasExternals}}External Commands:
+{{range .Externals}}{{.Name | printf "    %-15s"}} # {{.Short}}{{end}}{{end}}
 Use "img help [command]" for more information about a command.
 `
 
@@ -299,7 +299,6 @@ func (c CommandsAndExternals) HasExternals() bool {
 
 
 func printUsage(w io.Writer) {
-	fmt.Println(externals)
 	tmpl(w, usageTemplate, CommandsAndExternals{commands, externals})
 }
 
