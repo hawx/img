@@ -26,8 +26,8 @@ func WriteStdout(img image.Image) {
 }
 
 // Warn prints a message to standard error
-func Warn(s interface{}) {
-	fmt.Fprintln(os.Stderr, s)
+func Warn(s... interface{}) {
+	fmt.Fprintln(os.Stderr, s...)
 }
 
 // NormalisedRGBA returns the RGBA colour channel values of a Color in a
