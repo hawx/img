@@ -88,6 +88,7 @@ func (e External) String() string {
 // order in which they are printed by 'img help'.
 var commands = []*Command{
 	cmdBlend,
+	cmdBlur,
 	cmdBrightness,
 	cmdChannel,
 	cmdContrast,
