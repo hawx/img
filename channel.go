@@ -9,7 +9,6 @@ var cmdChannel = &Command{
 	UsageLine: "channel [options]",
 	Short:     "adjust the value of each colour channel individually",
 Long: `
-
   Channel allows you to adjust the value of each colour channel (red, green,
   blue or alpha) individually.
 
