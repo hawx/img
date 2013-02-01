@@ -8,11 +8,11 @@ import (
 	"os"
 )
 
-type BlurStyle float64
+type Style float64
 
 const (
 	// Ignore edges, may leave them semi-transparent
-	IGNORE BlurStyle = iota
+	IGNORE Style = iota
 	// Clamp edges, may leave them looking unblurred
 	CLAMP
 	// Wrap edges, may change colour of edges
@@ -128,7 +128,7 @@ func (k Kernel) Mid() image.Point {
 	return image.Pt((k.Width() - 1) / 2, (k.Height() - 1) / 2)
 }
 
-func Convolve(in image.Image, weights Kernel, style BlurStyle) image.Image {
+func Convolve(in image.Image, weights Kernel, style Style) image.Image {
 	bnds := in.Bounds()
 	mid := weights.Mid()
 	o := image.NewRGBA(bnds)
@@ -203,21 +203,21 @@ func Convolve(in image.Image, weights Kernel, style BlurStyle) image.Image {
 }
 
 // Perform a convolution with two Kernels in succession.
-func Convolve2(in image.Image, a, b Kernel, style BlurStyle) image.Image {
+func Convolve2(in image.Image, a, b Kernel, style Style) image.Image {
 	return Convolve(Convolve(in, a, style), b, style)
 }
 
 
-func Box(in image.Image, size utils.Pixel) image.Image {
+func Box(in image.Image, size utils.Pixel, style Style) image.Image {
 	f := func(n int) float64 { return 1.0 }
 
 	tall := NewVerticalKernel(size.H, f).Normalised()
 	wide := NewHorizontalKernel(size.W, f).Normalised()
 
-	return Convolve2(in, tall, wide, CLAMP)
+	return Convolve2(in, tall, wide, style)
 }
 
-func Gaussian(in image.Image, size utils.Pixel, sigma float64) image.Image {
+func Gaussian(in image.Image, size utils.Pixel, sigma float64, style Style) image.Image {
 	f := func(n int) float64 {
 		return math.Exp( -float64(n*n) / (2 * sigma*sigma) )
 	}
@@ -225,5 +225,5 @@ func Gaussian(in image.Image, size utils.Pixel, sigma float64) image.Image {
 	tall := NewVerticalKernel(size.H, f).Normalised()
 	wide := NewHorizontalKernel(size.W, f).Normalised()
 
-	return Convolve2(in, tall, wide, CLAMP)
+	return Convolve2(in, tall, wide, style)
 }
