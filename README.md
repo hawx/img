@@ -12,90 +12,6 @@ $ go install github.com/hawx/img
 
 Use `go help` and `go help [command]` for information.
 
-## shuffle
-
-Randomly shuffles pixels around the image. Use `-v` or `-h` to constrain it to
-vertical or horizontal shuffling, respectively.
-
-``` bash
-$ img shuffle --vertical < input.png > output.png
-```
-
-![Shuffle](http://hawx.github.com/img/examples/shuffle.jpg)
-
-## pixelate
-
-Pixelates an image. Use `--size HxW` to set pixel size used.
-
-``` bash
-$ img pixelate --size 10x50 < input.png > output.png
-```
-
-![Pixelate](http://hawx.github.com/img/examples/pixelate.jpg)
-
-## pxl
-
-Implementation of the triangle filter from [pxl app][pxlapp], using the
-algorithm loosely described by [revdancatt][rev].
-
-``` bash
-$ img pxl --size 30x30 < input.png > output.png
-```
-
-![pxl](http://hawx.github.com/img/examples/pxl.jpg)
-
-## hxl
-
-An (almost; that is I'm not sure this is exactly the same) implementation of the
-equilateral triangle filter from [pxl app][pxlapp].
-
-``` bash
-$ img hxl --width 50 < input.png > output.png
-```
-
-![hxl](http://hawx.github.com/img/examples/hxl.jpg)
-
-## greyscale
-
-Creates a greyscale version of an image.
-
-``` bash
-$ img greyscale --average < input.png > output.png
-```
-
-![Greyscale](http://hawx.github.com/img/examples/greyscale.jpg)
-
-## contrast
-
-Adjusts the contrast of the given image.
-
-``` bash
-$ img contrast --by -25 < input.png > output.png
-```
-
-![contrast](http://hawx.github.com/img/examples/contrast.jpg)
-
-## brightness
-
-Adjusts the brightness of the given image.
-
-``` bash
-$ img brightness --by -25 < input.png > output.png
-```
-
-![brightness](http://hawx.github.com/img/examples/brightness.jpg)
-
-## hue, saturation and lightness
-
-Adjust the hue, saturation and lightness of the an image.
-
-``` bash
-$ img hue --by -30 < input.png > output.png
-$ img saturation --by 0.3 < input.png > output.png
-$ img lightness --by -0.07 < input.png > output.png
-```
-
-![hsl](http://hawx.github.com/img/examples/hsl.jpg)
 
 ## blend
 
@@ -109,6 +25,96 @@ $ img blend --screen blend.png --opacity 0.3 < input.png > output.png
 
 ![blend](http://hawx.github.com/img/examples/blend-modes.jpg)
 
+
+## blur
+
+Tool to blur images. Can do a Gaussian or Box blur.
+
+``` bash
+$ img blur --style wrap --box --radius 30 < input.png > output.ong
+```
+
+![blur](http://hawx.github.com/img/examples/blur.jpg)
+
+
+## brightness
+
+Adjusts the brightness of the given image.
+
+``` bash
+$ img brightness --by -25 < input.png > output.png
+```
+
+![brightness](http://hawx.github.com/img/examples/brightness.jpg)
+
+
+## channel
+
+Adjust the value of each colour channel individually.
+
+``` bash
+$ img channel --red --green --ratio 1.1 < input.png > output.png
+```
+
+![channel](http://hawx.github.com/img/examples/channel.jpg)
+
+
+## contrast
+
+Adjusts the contrast of the given image.
+
+``` bash
+$ img contrast --by -25 < input.png > output.png
+```
+
+![contrast](http://hawx.github.com/img/examples/contrast.jpg)
+
+
+## gamma
+
+Perform gamma correction on an image.
+
+``` bash
+$ img gamma < input.png > output.png
+```
+
+![gamma](http://hawx.github.com/img/examples/gamma.jpg)
+
+
+## greyscale
+
+Creates a greyscale version of an image.
+
+``` bash
+$ img greyscale --average < input.png > output.png
+```
+
+![greyscale](http://hawx.github.com/img/examples/greyscale.jpg)
+
+
+## hue
+
+Adjust the hue of the image.
+
+``` bash
+$ img hue --by -30 < input.png > output.png
+```
+
+![hue](http://hawx.github.com/img/examples/hue.jpg)
+
+
+## hxl
+
+An (almost; that is I'm not sure this is exactly the same) implementation of the
+equilateral triangle filter from [pxl app][pxlapp].
+
+``` bash
+$ img hxl --width 50 < input.png > output.png
+```
+
+![hxl](http://hawx.github.com/img/examples/hxl.jpg)
+
+
 ## levels
 
 Allows you to alter the levels of an image. You can set (or auto set) white and
@@ -120,6 +126,75 @@ $ img levels --red --green --curve "0,20 50,40 100,100" < input.png > output.png
 
 ![levels](http://hawx.github.com/img/examples/levels.jpg)
 
+
+## lightness
+
+Adjust the lightness of an image.
+
+``` bash
+$ img lightness --by -0.07 < input.png > output.png
+```
+
+![lightness](http://hawx.github.com/img/examples/lightness.jpg)
+
+
+## pixelate
+
+Pixelates an image. Use `--size HxW` to set pixel size used.
+
+``` bash
+$ img pixelate --size 10x50 < input.png > output.png
+```
+
+![pixelate](http://hawx.github.com/img/examples/pixelate.jpg)
+
+
+## pxl
+
+Implementation of the triangle filter from [pxl app][pxlapp], using the
+algorithm loosely described by [revdancatt][rev].
+
+``` bash
+$ img pxl --size 30x30 < input.png > output.png
+```
+
+![pxl](http://hawx.github.com/img/examples/pxl.jpg)
+
+
+## saturation
+
+Adjust the saturation of an image.
+
+``` bash
+$ img saturation --by 0.3 < input.png > output.png
+```
+
+![saturation](http://hawx.github.com/img/examples/saturation.jpg)
+
+
+## shuffle
+
+Randomly shuffles pixels around the image. Use `-v` or `-h` to constrain it to
+vertical or horizontal shuffling, respectively.
+
+``` bash
+$ img shuffle --vertical < input.png > output.png
+```
+
+![shuffle](http://hawx.github.com/img/examples/shuffle.jpg)
+
+
+## tint
+
+Tint an image with a colour.
+
+``` bash
+$ img tint --with '#222b6d33' < input.png > output.png
+```
+
+![tint](http://hawx.github.com/img/examples/tint.jpg)
+
+
 # Composition
 
 These tools have been created to do one task each, and to use standard
@@ -130,7 +205,6 @@ $ (img shuffle --horizontal | img hxl | img hue --by -20) < input.png > output.p
 ```
 
 ![Composed](http://hawx.github.com/img/examples/composed.jpg)
-
 
 
 # External scripts
