@@ -2,7 +2,9 @@ package channel
 
 import (
 	"github.com/hawx/img/utils"
+	"github.com/hawx/img/hsla"
 	"image/color"
+	"math"
 )
 
 // Red applies the Adjuster to the red channel of each pixel in the Image.
@@ -50,5 +52,42 @@ func AlphaC(adj utils.Adjuster) utils.Composable {
 		a = adj(a)
 		if a > 1 { a = 1 } else if a < 0 { a = 0 }
 		return color.NRGBA{uint8(r * 255), uint8(g * 255), uint8(b * 255), uint8(a * 255)}
+	}
+}
+
+// Hue shifts the hue of the Image using the function given.
+var Hue = utils.MapAdjuster(HueC)
+
+func HueC(adj utils.Adjuster) utils.Composable {
+	return func(c color.Color) color.Color {
+		h := hsla.HSLAModel.Convert(c).(hsla.HSLA)
+		h.H = math.Mod(adj(h.H), 360)
+		return h
+	}
+}
+
+// Saturation adjusts the saturation of the Image using the function given.
+var Saturation = utils.MapAdjuster(SaturationC)
+
+func SaturationC(adj utils.Adjuster) utils.Composable {
+	return func(c color.Color) color.Color {
+		h := hsla.HSLAModel.Convert(c).(hsla.HSLA)
+		h.S = adj(h.S)
+		if h.S > 1 { h.S = 1 }
+		if h.S < 0 { h.S = 0 }
+		return h
+	}
+}
+
+// Lightness adjusts the lightness of the Image using the function given.
+var Lightness = utils.MapAdjuster(LightnessC)
+
+func LightnessC(adj utils.Adjuster) utils.Composable {
+	return func(c color.Color) color.Color {
+		h := hsla.HSLAModel.Convert(c).(hsla.HSLA)
+		h.L = adj(h.L)
+		if h.L > 1 { h.L = 1 }
+		if h.L < 0 { h.L = 0 }
+		return h
 	}
 }

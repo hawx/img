@@ -94,13 +94,10 @@ var commands = []*Command{
 	cmdContrast,
 	cmdGamma,
 	cmdGreyscale,
-	cmdHue,
 	cmdHxl,
 	cmdLevels,
-	cmdLightness,
 	cmdPixelate,
 	cmdPxl,
-	cmdSaturation,
 	cmdShuffle,
 	cmdTint,
 }

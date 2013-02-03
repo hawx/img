@@ -10,11 +10,16 @@ var cmdChannel = &Command{
 	Short:     "adjust the value of each colour channel individually",
 Long: `
   Channel allows you to adjust the value of each colour channel (red, green,
-  blue or alpha) individually.
+  blue or alpha) individually. Defaults to red, green and blue.
 
     --red             # Apply changes to red channel
     --green           # Apply changes to green channel
     --blue            # Apply changes to blue channel
+
+    --hue             # Apply changes to hue channel
+    --saturation      # Apply changes to saturation channel
+    --lightness       # Apply changes to lightness channel
+
     --alpha           # Apply changes to alpha channel
 
     --by [n]          # Amount to adjust value by
@@ -22,19 +27,26 @@ Long: `
 `,
 }
 
-var channelRed, channelGreen, channelBlue, channelAlpha bool
+var channelRed, channelGreen, channelBlue bool
+var channelHue, channelSaturation, channelLightness bool
+var channelAlpha bool
 var channelBy, channelRatio float64
 
 func init() {
 	cmdChannel.Run = runChannel
 
-	cmdChannel.Flag.BoolVar(&channelRed, "red", false, "")
-	cmdChannel.Flag.BoolVar(&channelGreen, "green", false, "")
-	cmdChannel.Flag.BoolVar(&channelBlue, "blue", false, "")
-	cmdChannel.Flag.BoolVar(&channelAlpha, "alpha", false, "")
+	cmdChannel.Flag.BoolVar(&channelRed,        "red", false, "")
+	cmdChannel.Flag.BoolVar(&channelGreen,      "green", false, "")
+	cmdChannel.Flag.BoolVar(&channelBlue,       "blue", false, "")
 
-	cmdChannel.Flag.Float64Var(&channelBy, "by", 0.1, "")
-	cmdChannel.Flag.Float64Var(&channelRatio, "ratio", 1.2, "")
+	cmdChannel.Flag.BoolVar(&channelHue,        "hue", false, "")
+	cmdChannel.Flag.BoolVar(&channelSaturation, "saturation", false, "")
+	cmdChannel.Flag.BoolVar(&channelLightness,  "lightness", false, "")
+
+	cmdChannel.Flag.BoolVar(&channelAlpha,      "alpha", false, "")
+
+	cmdChannel.Flag.Float64Var(&channelBy,      "by", 0.1, "")
+	cmdChannel.Flag.Float64Var(&channelRatio,   "ratio", 1.2, "")
 }
 
 func runChannel(cmd *Command, args []string) {
@@ -47,16 +59,21 @@ func runChannel(cmd *Command, args []string) {
 		adj = utils.Multiplier(channelRatio)
 	}
 
-	if !(channelRed || channelGreen || channelBlue || channelAlpha) {
+	if !(channelRed || channelGreen || channelBlue || channelHue || channelSaturation || channelLightness || channelAlpha) {
 		channelRed   = true
 		channelGreen = true
 		channelBlue  = true
 	}
 
-	if channelRed   { i = channel.Red(i, adj) }
-	if channelGreen { i = channel.Green(i, adj) }
-	if channelBlue  { i = channel.Blue(i, adj) }
-	if channelAlpha { i = channel.Alpha(i, adj) }
+	if channelRed        { i = channel.Red(i, adj) }
+	if channelGreen      { i = channel.Green(i, adj) }
+	if channelBlue       { i = channel.Blue(i, adj) }
+
+	if channelHue        { i = channel.Hue(i, adj) }
+	if channelSaturation { i = channel.Saturation(i, adj) }
+	if channelLightness  { i = channel.Lightness(i, adj) }
+
+	if channelAlpha      { i = channel.Alpha(i, adj) }
 
 	utils.WriteStdout(i)
 }
