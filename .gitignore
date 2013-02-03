@@ -1,3 +1,6 @@
 built
 img
+generate
 *.png
+_*
+*._*
