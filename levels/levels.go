@@ -66,28 +66,40 @@ func AutoBlack(img image.Image, ch Channel) image.Image {
 }
 
 func SetBlack(img image.Image, ch Channel, darkest float64) image.Image {
-	return utils.MapColor(img, func(c color.Color) color.Color {
+	return utils.MapColor(img, SetBlackC(ch, darkest))
+}
+
+func SetBlackC(ch Channel, darkest float64) utils.Composable {
+	return func(c color.Color) color.Color {
 		v := ch.Get(c)
 		v  = linearScale(v, darkest, 1)
 
 		return ch.Set(c, v)
-	})
+	}
 }
 
 func SetWhite(img image.Image, ch Channel, lightest float64) image.Image {
-	return utils.MapColor(img, func(c color.Color) color.Color {
+	return utils.MapColor(img, SetWhiteC(ch, lightest))
+}
+
+func SetWhiteC(ch Channel, lightest float64) utils.Composable {
+	return func(c color.Color) color.Color {
 		v := ch.Get(c)
 		v  = linearScale(v, 0, lightest)
 
 		return ch.Set(c, v)
-	})
+	}
 }
 
 func SetCurve(img image.Image, ch Channel, curve *Curve) image.Image {
-	return utils.MapColor(img, func(c color.Color) color.Color {
+	return utils.MapColor(img, SetCurveC(ch, curve))
+}
+
+func SetCurveC(ch Channel, curve *Curve) utils.Composable {
+	return func(c color.Color) color.Color {
 		v := ch.Get(c)
 		v  = curve.Value(v)
 
 		return ch.Set(c, v)
-	})
+	}
 }

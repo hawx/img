@@ -193,7 +193,6 @@ func MapColor(img image.Image, f func(c color.Color) color.Color) image.Image {
 }
 
 
-
 func FlagVisited(name string, flags flag.FlagSet) bool {
 	didFind := false
 	toFind  := flags.Lookup(name)
@@ -224,5 +223,44 @@ func Adder(with float64) Adjuster {
 func Multiplier(ratio float64) Adjuster {
 	return func(i float64) float64 {
 		return i * ratio
+	}
+}
+
+// Composable is a function which can be composed with another function of the
+// same type. It transforms a Color into another Color.
+type Composable func(color.Color) color.Color
+
+// Map takes a Composable function, and returns a function which acts on Images.
+func Map(f func() Composable) func(image.Image) image.Image {
+	return func(img image.Image) image.Image {
+		return MapColor(img, f())
+	}
+}
+
+// MapAdjuster takes a Composable function and an Adjuster, and returns a
+// function which acts on Images.
+func MapAdjuster(f func(Adjuster) Composable) func(image.Image, Adjuster) image.Image {
+	return func(img image.Image, adj Adjuster) image.Image {
+		return MapColor(img, f(adj))
+	}
+}
+
+// Compose takes a variable list of Composable functions and returns a single
+// Composable function which performs each of them sequentially. For example,
+//
+//   var f Composable = Compose(
+//     greyscale.BlueC(),
+//     brightness.AdjustC(utils.Adder(0.05)),
+//   )
+//
+//   // Only loops through image once!
+//   img = MapColors(img, f)
+//
+func Compose(fs... Composable) Composable {
+	return func(c color.Color) color.Color {
+		for _, f := range fs {
+			c = f(c)
+		}
+		return c
 	}
 }

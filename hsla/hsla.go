@@ -3,7 +3,6 @@ package hsla
 
 import (
 	"github.com/hawx/img/utils"
-	"image"
 	"image/color"
 	"math"
 )
@@ -97,38 +96,38 @@ func hslaModel(c color.Color) color.Color {
 }
 
 // Hue shifts the hue of the Image using the function given.
-func Hue(img image.Image, adj utils.Adjuster) image.Image {
-	f := func(c color.Color) color.Color {
+var Hue = utils.MapAdjuster(HueC)
+
+func HueC(adj utils.Adjuster) utils.Composable {
+	return func(c color.Color) color.Color {
 		h := HSLAModel.Convert(c).(HSLA)
 		h.H = math.Mod(adj(h.H), 360)
 		return h
 	}
-
-	return utils.MapColor(img, f)
 }
 
 // Saturation adjusts the saturation of the Image using the function given.
-func Saturation(img image.Image, adj utils.Adjuster) image.Image {
-	f := func(c color.Color) color.Color {
+var Saturation = utils.MapAdjuster(SaturationC)
+
+func SaturationC(adj utils.Adjuster) utils.Composable {
+	return func(c color.Color) color.Color {
 		h := HSLAModel.Convert(c).(HSLA)
 		h.S = adj(h.S)
 		if h.S > 1 { h.S = 1 }
 		if h.S < 0 { h.S = 0 }
 		return h
 	}
-
-	return utils.MapColor(img, f)
 }
 
 // Lightness adjusts the lightness of the Image using the function given.
-func Lightness(img image.Image, adj utils.Adjuster) image.Image {
-	f := func(c color.Color) color.Color {
+var Lightness = utils.MapAdjuster(LightnessC)
+
+func LightnessC(adj utils.Adjuster) utils.Composable {
+	return func(c color.Color) color.Color {
 		h := HSLAModel.Convert(c).(HSLA)
 		h.L = adj(h.L)
 		if h.L > 1 { h.L = 1 }
 		if h.L < 0 { h.L = 0 }
 		return h
 	}
-
-	return utils.MapColor(img, f)
 }

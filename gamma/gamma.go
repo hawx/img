@@ -12,7 +12,11 @@ import (
 // Adjusts the gamma of the Image by the given value. A value less than 1.0
 // darkens the image, whilst a gamma of greater than 1.0 lightens an image.
 func Adjust(img image.Image, value float64) image.Image {
-	f := func(c color.Color) color.Color {
+	return utils.MapColor(img, AdjustC(value))
+}
+
+func AdjustC(value float64) utils.Composable {
+	return func(c color.Color) color.Color {
 		r, g, b, a := utils.RatioRGBA(c)
 
 		r = utils.Truncatef(math.Pow(r, 1/value) * 255)
@@ -21,8 +25,6 @@ func Adjust(img image.Image, value float64) image.Image {
 
 		return color.NRGBA{uint8(r), uint8(g), uint8(b), uint8(a * 255)}
 	}
-
-	return utils.MapColor(img, f)
 }
 
 // Auto calculates the mean values of an image, then applies a gamma adjustment

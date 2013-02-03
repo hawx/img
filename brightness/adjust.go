@@ -4,12 +4,13 @@ package brightness
 
 import (
 	"github.com/hawx/img/utils"
-	"image"
 	"image/color"
 )
 
-func Adjust(img image.Image, adj utils.Adjuster) image.Image {
-	f := func(c color.Color) color.Color {
+var Adjust = utils.MapAdjuster(AdjustC)
+
+func AdjustC(adj utils.Adjuster) utils.Composable {
+	return func(c color.Color) color.Color {
 		r, g, b, a := utils.RatioRGBA(c)
 
 		r = utils.Truncatef(adj(r) * 255)
@@ -18,6 +19,4 @@ func Adjust(img image.Image, adj utils.Adjuster) image.Image {
 
 		return color.NRGBA{uint8(r), uint8(g), uint8(b), uint8(a * 255)}
 	}
-
-	return utils.MapColor(img, f)
 }

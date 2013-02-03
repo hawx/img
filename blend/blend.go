@@ -17,6 +17,35 @@ import (
 // colour.
 type Blender (func (c, d color.Color) color.Color)
 
+// cb is backdrop colour, cs is source (blend layer) colour
+func BlendPixel(cb, cs color.Color, f Blender) color.Color {
+	// Uses methods described in "PDF Reference, Third Edition" from Adobe
+	//  see: http://www.adobe.com/devnet/pdf/pdf_reference_archive.html
+
+	// result colour
+	cr := f(cb, cs)
+
+	rb, gb, bb, ab := utils.RatioRGBA(cb)
+	rs, gs, bs, as := utils.RatioRGBA(cs)
+	rr, gr, br, _  := utils.RatioRGBA(cr)
+
+	// Color compositing formula, expanded form. (Section 7.2.5)
+	red   := ((1 - as) * ab * rb) + ((1 - ab) * as * rs) + (ab * as * rr)
+	green := ((1 - as) * ab * gb) + ((1 - ab) * as * gs) + (ab * as * gr)
+	blue  := ((1 - as) * ab * bb) + ((1 - ab) * as * bs) + (ab * as * br)
+
+	// Union function. (Section 7.2.6)
+	alpha := ab + as - (ab * as)
+
+	return color.RGBA{
+		uint8(utils.Truncatef(red * 255)),
+		uint8(utils.Truncatef(green * 255)),
+		uint8(utils.Truncatef(blue * 255)),
+		uint8(utils.Truncatef(alpha * 255)),
+	}
+}
+
+
 // BlendPixels takes the base and blend images and applies the given Blender to
 // each of their pixel pairs.
 func BlendPixels(a, b image.Image, f Blender) image.Image {
