@@ -92,17 +92,6 @@ $ img greyscale --average < input.png > output.png
 ![greyscale](http://hawx.github.com/img/examples/greyscale.jpg)
 
 
-## hue
-
-Adjust the hue of the image.
-
-``` bash
-$ img hue --by -30 < input.png > output.png
-```
-
-![hue](http://hawx.github.com/img/examples/hue.jpg)
-
-
 ## hxl
 
 An (almost; that is I'm not sure this is exactly the same) implementation of the
@@ -127,17 +116,6 @@ $ img levels --red --green --curve "0,20 50,40 100,100" < input.png > output.png
 ![levels](http://hawx.github.com/img/examples/levels.jpg)
 
 
-## lightness
-
-Adjust the lightness of an image.
-
-``` bash
-$ img lightness --by -0.07 < input.png > output.png
-```
-
-![lightness](http://hawx.github.com/img/examples/lightness.jpg)
-
-
 ## pixelate
 
 Pixelates an image. Use `--size HxW` to set pixel size used.
@@ -159,17 +137,6 @@ $ img pxl --size 30x30 < input.png > output.png
 ```
 
 ![pxl](http://hawx.github.com/img/examples/pxl.jpg)
-
-
-## saturation
-
-Adjust the saturation of an image.
-
-``` bash
-$ img saturation --by 0.3 < input.png > output.png
-```
-
-![saturation](http://hawx.github.com/img/examples/saturation.jpg)
 
 
 ## shuffle
