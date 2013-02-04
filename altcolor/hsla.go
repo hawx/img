@@ -1,5 +1,4 @@
-// Package hsla implements the HSLA colour model.
-package hsla
+package altcolor
 
 import (
 	"github.com/hawx/img/utils"
