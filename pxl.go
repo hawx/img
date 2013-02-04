@@ -12,21 +12,24 @@ Long: `
   Pxl takes an image from STDIN, pxls it by averaging the colour in large
   rectangles, and prints the result to STDOUT
 
-    --size [HxW]    # Size of pixel to pxl with (default: 20x20)
+    --alias         # Do not use antialiasing
     --left          # Use only left triangles
     --right         # Use only right triangles
+    --size [HxW]    # Size of pixel to pxl with (default: 20x20)
 `,
 }
 
+var pxlAlias bool
 var pxlSize utils.Pixel = utils.Pixel{20, 20}
 var pxlLeft, pxlRight, pxlBoth bool
 
 func init() {
 	cmdPxl.Run = runPxl
 
-	cmdPxl.Flag.Var(&pxlSize, "size", "")
+	cmdPxl.Flag.BoolVar(&pxlAlias, "alias", false, "")
 	cmdPxl.Flag.BoolVar(&pxlLeft,  "left",  false, "")
 	cmdPxl.Flag.BoolVar(&pxlRight, "right", false, "")
+	cmdPxl.Flag.Var(&pxlSize, "size", "")
 }
 
 func runPxl(cmd *Command, args []string) {
@@ -36,6 +39,6 @@ func runPxl(cmd *Command, args []string) {
 	if pxlLeft  { triangle = pixelate.LEFT }
 	if pxlRight { triangle = pixelate.RIGHT }
 
-	i  = pixelate.Pxl(i, triangle, pxlSize.H, pxlSize.W)
+	i  = pixelate.Pxl(i, triangle, pxlSize.H, pxlSize.W, pxlAlias)
 	utils.WriteStdout(i)
 }
