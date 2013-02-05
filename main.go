@@ -89,7 +89,6 @@ func (e External) String() string {
 var commands = []*Command{
 	cmdBlend,
 	cmdBlur,
-	cmdBrightness,
 	cmdChannel,
 	cmdContrast,
 	cmdGamma,
