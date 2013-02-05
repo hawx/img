@@ -6,7 +6,7 @@ package blend
 
 import (
 	"github.com/hawx/img/utils"
-	"github.com/hawx/img/hsla"
+	"github.com/hawx/img/altcolor"
 	"math"
 	"math/rand"
 	"image"
@@ -533,8 +533,8 @@ func Subtraction(a, b image.Image) image.Image {
 // the base colour.
 func Hue(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
-		i := hsla.HSLAModel.Convert(c).(hsla.HSLA)
-		j := hsla.HSLAModel.Convert(d).(hsla.HSLA)
+		i := altcolor.HSLAModel.Convert(c).(altcolor.HSLA)
+		j := altcolor.HSLAModel.Convert(d).(altcolor.HSLA)
 		i.H = j.H
 
 		return i
@@ -545,8 +545,8 @@ func Hue(a, b image.Image) image.Image {
 // luminosity of the base colour.
 func Saturation(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
-		i := hsla.HSLAModel.Convert(c).(hsla.HSLA)
-		j := hsla.HSLAModel.Convert(d).(hsla.HSLA)
+		i := altcolor.HSLAModel.Convert(c).(altcolor.HSLA)
+		j := altcolor.HSLAModel.Convert(d).(altcolor.HSLA)
 		i.S = j.S
 
 		return i
@@ -557,8 +557,8 @@ func Saturation(a, b image.Image) image.Image {
 // the base colour.
 func Color(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
-		i := hsla.HSLAModel.Convert(c).(hsla.HSLA)
-		j := hsla.HSLAModel.Convert(d).(hsla.HSLA)
+		i := altcolor.HSLAModel.Convert(c).(altcolor.HSLA)
+		j := altcolor.HSLAModel.Convert(d).(altcolor.HSLA)
 		i.H = j.H
 		i.S = j.S
 
@@ -570,8 +570,8 @@ func Color(a, b image.Image) image.Image {
 // saturation of the base colour.
 func Luminosity(a, b image.Image) image.Image {
 	return BlendPixels(a, b, func (c, d color.Color) color.Color {
-		i := hsla.HSLAModel.Convert(c).(hsla.HSLA)
-		j := hsla.HSLAModel.Convert(d).(hsla.HSLA)
+		i := altcolor.HSLAModel.Convert(c).(altcolor.HSLA)
+		j := altcolor.HSLAModel.Convert(d).(altcolor.HSLA)
 		i.L = j.L
 
 		return i

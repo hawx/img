@@ -2,7 +2,7 @@ package channel
 
 import (
 	"github.com/hawx/img/utils"
-	"github.com/hawx/img/hsla"
+	"github.com/hawx/img/altcolor"
 	"image/color"
 	"math"
 )
@@ -60,7 +60,7 @@ var Hue = utils.MapAdjuster(HueC)
 
 func HueC(adj utils.Adjuster) utils.Composable {
 	return func(c color.Color) color.Color {
-		h := hsla.HSLAModel.Convert(c).(hsla.HSLA)
+		h := altcolor.HSLAModel.Convert(c).(altcolor.HSLA)
 		h.H = math.Mod(adj(h.H), 360)
 		return h
 	}
@@ -71,7 +71,7 @@ var Saturation = utils.MapAdjuster(SaturationC)
 
 func SaturationC(adj utils.Adjuster) utils.Composable {
 	return func(c color.Color) color.Color {
-		h := hsla.HSLAModel.Convert(c).(hsla.HSLA)
+		h := altcolor.HSLAModel.Convert(c).(altcolor.HSLA)
 		h.S = adj(h.S)
 		if h.S > 1 { h.S = 1 }
 		if h.S < 0 { h.S = 0 }
