@@ -19,6 +19,7 @@ Long: `
     --hue             # Apply changes to hue channel
     --saturation      # Apply changes to saturation channel
     --lightness       # Apply changes to lightness channel
+    --brightness      # Apply changes to brightness channel
 
     --alpha           # Apply changes to alpha channel
 
@@ -28,7 +29,7 @@ Long: `
 }
 
 var channelRed, channelGreen, channelBlue bool
-var channelHue, channelSaturation, channelLightness bool
+var channelHue, channelSaturation, channelLightness, channelBrightness bool
 var channelAlpha bool
 var channelBy, channelRatio float64
 
@@ -42,6 +43,7 @@ func init() {
 	cmdChannel.Flag.BoolVar(&channelHue,        "hue", false, "")
 	cmdChannel.Flag.BoolVar(&channelSaturation, "saturation", false, "")
 	cmdChannel.Flag.BoolVar(&channelLightness,  "lightness", false, "")
+	cmdChannel.Flag.BoolVar(&channelBrightness, "brightness", false, "")
 
 	cmdChannel.Flag.BoolVar(&channelAlpha,      "alpha", false, "")
 
@@ -59,7 +61,8 @@ func runChannel(cmd *Command, args []string) {
 		adj = utils.Multiplier(channelRatio)
 	}
 
-	if !(channelRed || channelGreen || channelBlue || channelHue || channelSaturation || channelLightness || channelAlpha) {
+	if !(channelRed || channelGreen || channelBlue || channelHue ||
+		channelSaturation || channelLightness || channelBrightness || channelAlpha) {
 		channelRed   = true
 		channelGreen = true
 		channelBlue  = true
@@ -72,6 +75,7 @@ func runChannel(cmd *Command, args []string) {
 	if channelHue        { i = channel.Hue(i, adj) }
 	if channelSaturation { i = channel.Saturation(i, adj) }
 	if channelLightness  { i = channel.Lightness(i, adj) }
+	if channelBrightness { i = channel.Brightness(i, adj) }
 
 	if channelAlpha      { i = channel.Alpha(i, adj) }
 

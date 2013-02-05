@@ -84,10 +84,23 @@ var Lightness = utils.MapAdjuster(LightnessC)
 
 func LightnessC(adj utils.Adjuster) utils.Composable {
 	return func(c color.Color) color.Color {
-		h := hsla.HSLAModel.Convert(c).(hsla.HSLA)
+		h := altcolor.HSLAModel.Convert(c).(altcolor.HSLA)
 		h.L = adj(h.L)
 		if h.L > 1 { h.L = 1 }
 		if h.L < 0 { h.L = 0 }
+		return h
+	}
+}
+
+// Brightness adjusts the brightness of the Image using the function given.
+var Brightness = utils.MapAdjuster(BrightnessC)
+
+func BrightnessC(adj utils.Adjuster) utils.Composable {
+	return func(c color.Color) color.Color {
+		h := altcolor.HSIAModel.Convert(c).(altcolor.HSIA)
+		h.I = adj(h.I)
+		if h.I > 1 { h.I = 1 }
+		if h.I < 0 { h.I = 0 }
 		return h
 	}
 }
