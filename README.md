@@ -37,20 +37,11 @@ $ img blur --style wrap --box --radius 30 < input.png > output.ong
 ![blur](http://hawx.github.com/img/examples/blur.jpg)
 
 
-## brightness
-
-Adjusts the brightness of the given image.
-
-``` bash
-$ img brightness --by -25 < input.png > output.png
-```
-
-![brightness](http://hawx.github.com/img/examples/brightness.jpg)
-
-
 ## channel
 
-Adjust the value of each colour channel individually.
+Adjust the value of each colour channel individually. This tool can modify the
+following channels: red, green, blue, hue, saturation, lightness, brightness and
+alpha.
 
 ``` bash
 $ img channel --red --green --ratio 1.1 < input.png > output.png
