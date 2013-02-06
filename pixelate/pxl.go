@@ -146,9 +146,12 @@ func pxlDo(img image.Image, triangle int, size utils.Dimension, scaleFactor int)
 // Pxl pixelates an Image into right-angled triangles with the dimensions
 // given. The triangle direction can be determined by passing the required value
 // as triangle; either BOTH, LEFT or RIGHT.
-func Pxl(img image.Image, triangle int, size utils.Dimension, aliased bool) image.Image {
-	if aliased {
-		return pxlDo(img, triangle, size, 1)
-	}
+func Pxl(img image.Image, size utils.Dimension, triangle int) image.Image {
 	return halve(pxlDo(img, triangle, size, 2), size)
+}
+
+// AliasedPxl does the same as Pxl, but does not smooth diagonal edges of the
+// triangles. It is faster, but will produce bad results if size is non-square.
+func AliasedPxl(img image.Image, size utils.Dimension, triangle int) image.Image {
+	return pxlDo(img, triangle, size, 1)
 }

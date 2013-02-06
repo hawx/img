@@ -39,6 +39,11 @@ func runPxl(cmd *Command, args []string) {
 	if pxlLeft  { triangle = pixelate.LEFT }
 	if pxlRight { triangle = pixelate.RIGHT }
 
-	i  = pixelate.Pxl(i, triangle, pxlSize, pxlAlias)
+	if pxlAlias {
+		i = pixelate.AliasedPxl(i, pxlSize, triangle)
+	} else {
+		i = pixelate.Pxl(i, pxlSize, triangle)
+	}
+
 	utils.WriteStdout(i)
 }
