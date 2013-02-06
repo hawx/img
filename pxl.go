@@ -20,7 +20,7 @@ Long: `
 }
 
 var pxlAlias bool
-var pxlSize utils.Pixel = utils.Pixel{20, 20}
+var pxlSize utils.Dimension = utils.Dimension{20, 20}
 var pxlLeft, pxlRight, pxlBoth bool
 
 func init() {

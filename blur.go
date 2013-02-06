@@ -22,7 +22,7 @@ Long: `
 }
 
 var blurRadius int
-var blurSize utils.Pixel
+var blurSize utils.Dimension
 var blurStyle string
 
 var blurBox bool
@@ -57,7 +57,7 @@ func runBlur(cmd *Command, args []string) {
 
 	if !utils.FlagVisited("size", cmd.Flag) {
 		diameter := blurRadius * 2 + 1
-		blurSize = utils.Pixel{diameter, diameter}
+		blurSize = utils.Dimension{diameter, diameter}
 	}
 
 	if blurBox {

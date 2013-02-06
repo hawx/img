@@ -16,7 +16,7 @@ Long: `
 `,
 }
 
-var pixelateSize utils.Pixel = utils.Pixel{20, 20}
+var pixelateSize utils.Dimension = utils.Dimension{20, 20}
 
 func init() {
 	cmdPixelate.Run = runPixelate
