@@ -208,22 +208,22 @@ func Convolve2(in image.Image, a, b Kernel, style Style) image.Image {
 }
 
 
-func Box(in image.Image, size utils.Dimension, style Style) image.Image {
+func Box(in image.Image, radius int, style Style) image.Image {
 	f := func(n int) float64 { return 1.0 }
 
-	tall := NewVerticalKernel(size.H, f).Normalised()
-	wide := NewHorizontalKernel(size.W, f).Normalised()
+	tall := NewVerticalKernel(radius, f).Normalised()
+	wide := NewHorizontalKernel(radius, f).Normalised()
 
 	return Convolve2(in, tall, wide, style)
 }
 
-func Gaussian(in image.Image, size utils.Dimension, sigma float64, style Style) image.Image {
+func Gaussian(in image.Image, radius int, sigma float64, style Style) image.Image {
 	f := func(n int) float64 {
 		return math.Exp( -float64(n*n) / (2 * sigma*sigma) )
 	}
 
-	tall := NewVerticalKernel(size.H, f).Normalised()
-	wide := NewHorizontalKernel(size.W, f).Normalised()
+	tall := NewVerticalKernel(radius, f).Normalised()
+	wide := NewHorizontalKernel(radius, f).Normalised()
 
 	return Convolve2(in, tall, wide, style)
 }

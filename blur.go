@@ -12,17 +12,15 @@ var cmdBlur = &Command{
 Long: `
   Blur takes an image from STDIN, and prints a blurred version to STDOUT.
 
-    --radius <r>                 # Set radius of blur (default: 2.0)
-    --size <height>x<width>      # Set size of blur
-    --style <option>             # Either clamp, ignore or wrap (default: ignore)
+    --radius <r>             # Set radius of blur (default: 2.0)
+    --style <option>         # Either clamp, ignore or wrap (default: ignore)
 
-    --box                        # Perform box blur
-    --gaussian <sigma>           # Perform gaussian blur (default: 5.0)
+    --box                    # Perform box blur
+    --gaussian <sigma>       # Perform gaussian blur (default: 5.0)
 `,
 }
 
 var blurRadius int
-var blurSize utils.Dimension
 var blurStyle string
 
 var blurBox bool
@@ -38,7 +36,6 @@ func init() {
 	cmdBlur.Run = runBlur
 
 	cmdBlur.Flag.IntVar(&blurRadius, "radius", 2.0, "")
-	cmdBlur.Flag.Var(&blurSize, "size", "")
 	cmdBlur.Flag.StringVar(&blurStyle, "style", "ignore", "")
 
 	cmdBlur.Flag.BoolVar(&blurBox, "box", false, "")
@@ -55,15 +52,10 @@ func runBlur(cmd *Command, args []string) {
 
 	i := utils.ReadStdin()
 
-	if !utils.FlagVisited("size", cmd.Flag) {
-		diameter := blurRadius * 2 + 1
-		blurSize = utils.Dimension{diameter, diameter}
-	}
-
 	if blurBox {
-		i = blur.Box(i, blurSize, style)
+		i = blur.Box(i, blurRadius, style)
 	} else {
-		i = blur.Gaussian(i, blurSize, blurGaussian, style)
+		i = blur.Gaussian(i, blurRadius, blurGaussian, style)
 	}
 
 	utils.WriteStdout(i)
