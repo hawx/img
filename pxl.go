@@ -15,7 +15,7 @@ Long: `
     --alias         # Do not use antialiasing
     --left          # Use only left triangles
     --right         # Use only right triangles
-    --size [HxW]    # Size of pixel to pxl with (default: 20x20)
+    --size <HxW>    # Size of pixel to pxl with (default: 20x20)
 `,
 }
 
@@ -39,6 +39,6 @@ func runPxl(cmd *Command, args []string) {
 	if pxlLeft  { triangle = pixelate.LEFT }
 	if pxlRight { triangle = pixelate.RIGHT }
 
-	i  = pixelate.Pxl(i, triangle, pxlSize.H, pxlSize.W, pxlAlias)
+	i  = pixelate.Pxl(i, triangle, pxlSize, pxlAlias)
 	utils.WriteStdout(i)
 }

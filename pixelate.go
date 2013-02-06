@@ -12,7 +12,7 @@ Long: `
   Pixelate takes an image from STDIN, pixelates it by averaging the colour in
   large rectangles, and prints the result to STDOUT
 
-    --size [HxW]      # Size of pixel to pixelate with (default: 20x20)
+    --size <HxW>      # Size of pixel to pixelate with (default: 20x20)
 `,
 }
 
@@ -26,6 +26,6 @@ func init() {
 
 func runPixelate(cmd *Command, args []string) {
 	i := utils.ReadStdin()
-	i  = pixelate.Pixelate(i, pixelateSize.H, pixelateSize.W)
+	i  = pixelate.Pixelate(i, pixelateSize)
 	utils.WriteStdout(i)
 }

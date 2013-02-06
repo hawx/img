@@ -13,7 +13,7 @@ const (
 	RIGHT        // Create only right triangles
 )
 
-func halve(img image.Image, pixelHeight, pixelWidth int) image.Image {
+func halve(img image.Image, size utils.Dimension) image.Image {
 	b := img.Bounds()
 	o := image.NewRGBA(image.Rect(0, 0, b.Dx() / 2, b.Dy() / 2))
 
@@ -24,9 +24,9 @@ func halve(img image.Image, pixelHeight, pixelWidth int) image.Image {
 			br := img.At(x * 2 + 1, y * 2 - 1)
 			bl := img.At(x * 2, y * 2 - 1)
 
-			if y % pixelHeight == 0 {
+			if y % size.H == 0 {
 				o.Set(x, y, tl)
-			} else if x % pixelWidth == 0 {
+			} else if x % size.W == 0 {
 				o.Set(x, y, tl)
 			} else {
 				o.Set(x, y, utils.Average(tl, tr, bl, br))
@@ -37,15 +37,15 @@ func halve(img image.Image, pixelHeight, pixelWidth int) image.Image {
 	return o
 }
 
-func pxlDo(img image.Image, triangle, pixelHeight, pixelWidth, scaleFactor int) image.Image {
+func pxlDo(img image.Image, triangle int, size utils.Dimension, scaleFactor int) image.Image {
 
 	b := img.Bounds()
 
-	cols  := b.Dx() / pixelWidth
-	rows  := b.Dy() / pixelHeight
-	ratio := float64(pixelHeight) / float64(pixelWidth)
+	cols  := b.Dx() / size.W
+	rows  := b.Dy() / size.H
+	ratio := float64(size.H) / float64(size.W)
 
-	o := image.NewRGBA(image.Rect(0, 0, pixelWidth * cols * scaleFactor, pixelHeight * rows * scaleFactor))
+	o := image.NewRGBA(image.Rect(0, 0, size.W * cols * scaleFactor, size.H * rows * scaleFactor))
 
 	for col := 0; col < cols; col++ {
 		for row := 0; row < rows; row++ {
@@ -57,14 +57,14 @@ func pxlDo(img image.Image, triangle, pixelHeight, pixelWidth, scaleFactor int) 
 
 			tc := 0; rc := 0; bc := 0; lc := 0
 
-			for y := 0; y < pixelHeight; y++ {
-				for x := 0; x < pixelWidth; x++ {
+			for y := 0; y < size.H; y++ {
+				for x := 0; x < size.W; x++ {
 
-					realY := row * pixelHeight + y
-					realX := col * pixelWidth + x
+					realY := row * size.H + y
+					realX := col * size.W + x
 
-					y_origin := float64(y - pixelHeight / 2)
-					x_origin := float64(x - pixelWidth / 2)
+					y_origin := float64(y - size.H / 2)
+					x_origin := float64(x - size.W / 2)
 
 					if y_origin > ratio * x_origin && y_origin > ratio * -x_origin {
 						tc++
@@ -97,14 +97,14 @@ func pxlDo(img image.Image, triangle, pixelHeight, pixelWidth, scaleFactor int) 
 				top_right   := utils.Average(ato, ari)
 				bottom_left := utils.Average(abo, ale)
 
-				for y := 0; y < pixelHeight * scaleFactor; y++ {
-					for x := 0; x < pixelWidth * scaleFactor; x++ {
+				for y := 0; y < size.H * scaleFactor; y++ {
+					for x := 0; x < size.W * scaleFactor; x++ {
 
-						realY := row * pixelHeight * scaleFactor + y
-						realX := col * pixelWidth * scaleFactor + x
+						realY := row * size.H * scaleFactor + y
+						realX := col * size.W * scaleFactor + x
 
-						y_origin := float64(y - pixelHeight * scaleFactor / 2)
-						x_origin := float64(x - pixelWidth * scaleFactor / 2)
+						y_origin := float64(y - size.H * scaleFactor / 2)
+						x_origin := float64(x - size.W * scaleFactor / 2)
 
 						if y_origin > ratio * x_origin {
 							o.Set(realX, realY, top_right)
@@ -119,14 +119,14 @@ func pxlDo(img image.Image, triangle, pixelHeight, pixelWidth, scaleFactor int) 
 				top_left     := utils.Average(ato, ale)
 				bottom_right := utils.Average(abo, ari)
 
-				for y := 0; y < pixelHeight * scaleFactor; y++ {
-					for x := 0; x < pixelWidth * scaleFactor; x++ {
+				for y := 0; y < size.H * scaleFactor; y++ {
+					for x := 0; x < size.W * scaleFactor; x++ {
 
-						realY := row * pixelHeight * scaleFactor + y
-						realX := col * pixelWidth * scaleFactor + x
+						realY := row * size.H * scaleFactor + y
+						realX := col * size.W * scaleFactor + x
 
-						y_origin := float64(y - pixelHeight * scaleFactor / 2)
-						x_origin := float64(x - pixelWidth * scaleFactor / 2)
+						y_origin := float64(y - size.H * scaleFactor / 2)
+						x_origin := float64(x - size.W * scaleFactor / 2)
 
 						if y_origin >= ratio * -x_origin {
 							o.Set(realX, realY, top_left)
@@ -146,9 +146,9 @@ func pxlDo(img image.Image, triangle, pixelHeight, pixelWidth, scaleFactor int) 
 // Pxl pixelates an Image into right-angled triangles with the dimensions
 // given. The triangle direction can be determined by passing the required value
 // as triangle; either BOTH, LEFT or RIGHT.
-func Pxl(img image.Image, triangle, pixelHeight, pixelWidth int, aliased bool) image.Image {
+func Pxl(img image.Image, triangle int, size utils.Dimension, aliased bool) image.Image {
 	if aliased {
-		return pxlDo(img, triangle, pixelHeight, pixelWidth, 1)
+		return pxlDo(img, triangle, size, 1)
 	}
-	return halve(pxlDo(img, triangle, pixelHeight, pixelWidth, 2), pixelHeight, pixelWidth)
+	return halve(pxlDo(img, triangle, size, 2), size)
 }
