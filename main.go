@@ -99,6 +99,7 @@ var commands = []*Command{
 	cmdPxl,
 	cmdShuffle,
 	cmdTint,
+	cmdVxl,
 }
 
 // Will load these in main
