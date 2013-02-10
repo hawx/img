@@ -25,6 +25,7 @@ var blurStyle string
 
 var blurBox bool
 var blurGaussian float64
+var blurUnsharp bool
 
 var styleNames map[string] blur.Style = map[string] blur.Style {
 	"clamp":  blur.CLAMP,
@@ -40,6 +41,7 @@ func init() {
 
 	cmdBlur.Flag.BoolVar(&blurBox, "box", false, "")
 	cmdBlur.Flag.Float64Var(&blurGaussian, "gaussian", 5.0, "")
+	cmdBlur.Flag.BoolVar(&blurUnsharp, "unsharp", false, "")
 }
 
 func runBlur(cmd *Command, args []string) {
@@ -54,6 +56,8 @@ func runBlur(cmd *Command, args []string) {
 
 	if blurBox {
 		i = blur.Box(i, blurRadius, style)
+	} else if blurUnsharp {
+		i = blur.UnsharpMask(i, 50, 3.0, 3.0, 0.0)
 	} else {
 		i = blur.Gaussian(i, blurRadius, blurGaussian, style)
 	}

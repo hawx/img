@@ -207,23 +207,74 @@ func Convolve2(in image.Image, a, b Kernel, style Style) image.Image {
 	return Convolve(Convolve(in, a, style), b, style)
 }
 
-
+// Box performs a box blur on the Image given.
 func Box(in image.Image, radius int, style Style) image.Image {
 	f := func(n int) float64 { return 1.0 }
 
-	tall := NewVerticalKernel(radius, f).Normalised()
-	wide := NewHorizontalKernel(radius, f).Normalised()
+	tall := NewVerticalKernel(radius*2+1, f).Normalised()
+	wide := NewHorizontalKernel(radius*2+1, f).Normalised()
 
 	return Convolve2(in, tall, wide, style)
 }
 
+// Gaussian performs a gaussian blur on the Image given.
 func Gaussian(in image.Image, radius int, sigma float64, style Style) image.Image {
 	f := func(n int) float64 {
 		return math.Exp( -float64(n*n) / (2 * sigma*sigma) )
 	}
 
-	tall := NewVerticalKernel(radius, f).Normalised()
-	wide := NewHorizontalKernel(radius, f).Normalised()
+	tall := NewVerticalKernel(radius*2+1, f).Normalised()
+	wide := NewHorizontalKernel(radius*2+1, f).Normalised()
 
 	return Convolve2(in, tall, wide, style)
+}
+
+
+func difference(a, b color.Color) float64 {
+	ar,ag,ab,_ := a.RGBA()
+	br,bg,bb,_ := b.RGBA()
+
+	return float64((ar + ag + ab) - (br + bg + bb)) / 255
+}
+
+// UnsharpMask sharpens the given Image using the unsharp mask
+// technique. Basically the image is blurred, then subtracted from the original
+// for differences above the threshold value.
+func UnsharpMask(in image.Image, radius int, sigma, amount, threshold float64) image.Image {
+	blurred := Gaussian(in, radius, sigma, IGNORE)
+	bounds  := in.Bounds()
+	result  := in.(*image.NRGBA)
+
+	diff := func(a,b float64) float64 {
+		if a > b { return a - b}
+		return b - a
+	}
+
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			ar,ag,ab,aa := utils.RatioRGBA(in.At(x,y))
+			br,bg,bb,_  := utils.RatioRGBA(blurred.At(x,y))
+
+			if diff(ar, br) >= threshold {
+				ar = amount * (ar - br) + ar
+			}
+
+			if diff(ag, bg) >= threshold {
+				ag = amount * (ag - bg) + ag
+			}
+
+			if diff(ab, bb) >= threshold {
+				ab = amount * (ab - bb) + ab
+			}
+
+			result.Set(x, y, color.NRGBA{
+				uint8(utils.Truncatef(ar * 255)),
+				uint8(utils.Truncatef(ag * 255)),
+				uint8(utils.Truncatef(ab * 255)),
+				uint8(aa * 255),
+			})
+		}
+	}
+
+	return result
 }
