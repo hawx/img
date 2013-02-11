@@ -25,6 +25,7 @@ func Vxl(img image.Image, height int) image.Image {
 	k := math.Sqrt(3.0) / 3.0
 	o := image.NewRGBA(image.Rect(0, 0, pixelWidth * cols, pixelHeight * rows))
 
+	// See: http://www.flickr.com/photos/hawx-/8466236036/
 	inTopSquare := func(x,y float64) bool {
 		y *= -1
 		return y <= -k*x + c && y >= k*x && y >= -k*x && y <= k*x + c
