@@ -153,6 +153,16 @@ $ img tint --with '#222b6d33' < input.png > output.png
 ![tint](http://hawx.github.com/img/examples/tint.jpg)
 
 
+## vxl
+
+Pixelate an image into isometric cubes with (simplistic) fake lighting.
+
+``` bash
+$ img vxl --rows 14 < input.png > output.png
+```
+
+![vxl](http://hawx.github.com/img/examples/vxl.jpg)
+
 # Composition
 
 These tools have been created to do one task each, and to use standard
