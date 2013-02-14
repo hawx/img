@@ -10,7 +10,7 @@ import (
 
 // Vxl pixelates the Image into isometric cubes. It averages the colours and
 // naïvely darkens and lightens the colours to mimic highlight and shade.
-func Vxl(img image.Image, height int) image.Image {
+	func Vxl(img image.Image, height int, flip bool, top, left, right float64) image.Image {
 	b := img.Bounds()
 
 	pixelHeight := height
@@ -27,17 +27,17 @@ func Vxl(img image.Image, height int) image.Image {
 
 	// See: http://www.flickr.com/photos/hawx-/8466236036/
 	inTopSquare := func(x,y float64) bool {
-		y *= -1
+		if !flip { y *= -1 }
 		return y <= -k*x + c && y >= k*x && y >= -k*x && y <= k*x + c
 	}
 
 	inBottomRight := func(x,y float64) bool {
-		y *= -1
+		if !flip { y *= -1 }
 		return x >= 0 && y <= k*x && y >= k*x - c
 	}
 
 	inBottomLeft := func(x,y float64) bool {
-		y *= -1
+		if !flip { y *= -1 }
 		return x <= 0 && y <= -k*x && y >= -k*x - c
 	}
 
@@ -45,8 +45,9 @@ func Vxl(img image.Image, height int) image.Image {
 		return inTopSquare(x,y) || inBottomRight(x,y) || inBottomLeft(x,y)
 	}
 
-	lighten := channel.LightnessC(utils.Multiplier(2))
-	darken  := channel.LightnessC(utils.Multiplier(0.5))
+	topL   := channel.LightnessC(utils.Multiplier(top))
+	rightL := channel.LightnessC(utils.Multiplier(right))
+	leftL  := channel.LightnessC(utils.Multiplier(left))
 
 	for col := 0; col < cols; col++ {
 		for row := 0; row < rows; row++ {
@@ -80,24 +81,24 @@ func Vxl(img image.Image, height int) image.Image {
 					// This stops white bits showing above the top squares. It does mean
 					// the dimensions aren't perfect, but what did you expect with pixels
 					// and trig. It is inefficient though, maybe fix that later?
-					if y_origin < 0 {
-						o.Set(realX, realY, average)
+						if (!flip && y_origin < 0) || (flip && y_origin > 0) {
+						o.Set(realX, realY, topL(average))
 					} else {
 						if x_origin > 0 {
-							o.Set(realX, realY, lighten(average))
+							o.Set(realX, realY, rightL(average))
 						} else {
-							o.Set(realX, realY, darken(average))
+							o.Set(realX, realY, leftL(average))
 						}
 					}
 
 					if inTopSquare(x_origin, y_origin) {
-						o.Set(realX, realY, average)
+						o.Set(realX, realY, topL(average))
 					}
 					if inBottomRight(x_origin, y_origin) {
-						o.Set(realX, realY, lighten(average))
+						o.Set(realX, realY, rightL(average))
 					}
 					if inBottomLeft(x_origin, y_origin) {
-						o.Set(realX, realY, darken(average))
+						o.Set(realX, realY, leftL(average))
 					}
 				}
 			}
@@ -141,13 +142,13 @@ func Vxl(img image.Image, height int) image.Image {
 					x_origin := float64(x - pixelWidth / 2)
 
 					if inTopSquare(x_origin, y_origin) {
-						o.Set(realX, realY, average)
+						o.Set(realX, realY, topL(average))
 					}
 					if inBottomRight(x_origin, y_origin) {
-						o.Set(realX, realY, lighten(average))
+						o.Set(realX, realY, rightL(average))
 					}
 					if inBottomLeft(x_origin, y_origin) {
-						o.Set(realX, realY, darken(average))
+						o.Set(realX, realY, leftL(average))
 					}
 				}
 			}

@@ -14,16 +14,30 @@ Long: `
 
     --rows <num>        # Split into <num> rows
     --height <h>        # Height of cube to use (default: 20)
+
+    --flip              # Flip orientation of cubes
+
+    --top <ratio>       # Ratio to adjust lightness of top square
+    --left <ratio>      # Ratio to adjust lightness of left part
+    --right <ratio>     # Ratio to adjust lightness of right part
 `,
 }
 
 var vxlHeight, vxlRows int
+var vxlFlip bool
+var vxlTop, vxlLeft, vxlRight float64
 
 func init() {
 	cmdVxl.Run = runVxl
 
-	cmdVxl.Flag.IntVar(&vxlRows, "rows", -1, "")
-	cmdVxl.Flag.IntVar(&vxlHeight, "height", 20, "")
+	cmdVxl.Flag.IntVar(&vxlRows,   "rows",   -1,    "")
+	cmdVxl.Flag.IntVar(&vxlHeight, "height", 20,    "")
+
+	cmdVxl.Flag.BoolVar(&vxlFlip,  "flip",   false, "")
+
+	cmdVxl.Flag.Float64Var(&vxlTop, "top",   1.0,   "")
+	cmdVxl.Flag.Float64Var(&vxlLeft, "left", 2.0,   "")
+	cmdVxl.Flag.Float64Var(&vxlRight, "right", 0.5, "")
 }
 
 func runVxl(cmd *Command, args []string) {
@@ -33,6 +47,6 @@ func runVxl(cmd *Command, args []string) {
 		vxlHeight = utils.SizeForRows(i, vxlRows).H
 	}
 
-	i = pixelate.Vxl(i, vxlHeight)
+	i = pixelate.Vxl(i, vxlHeight, vxlFlip, vxlTop, vxlLeft, vxlRight)
 	utils.WriteStdout(i)
 }
