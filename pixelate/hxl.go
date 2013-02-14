@@ -37,15 +37,25 @@ func Hxl(img image.Image, width int) image.Image {
 
 	o := image.NewRGBA(image.Rect(0, 0, pixelWidth * cols * 2, pixelHeight * rows))
 
+	// Note: "Top" doesn't mean above the x-axis, it means in the triangle
+	// pointing towards the x-axis.
+	inTop := func(x,y float64) bool {
+		return (x >= 0 && y >= x) || (x <= 0 && y >= -x)
+	}
+
+	// Same for "Bottom" this is the triangle below and pointing towards the
+	// x-axis.
+	inBottom := func(x,y float64) bool {
+		return (x >= 0 && y <= -x) || (x <= 0 && y <= x)
+	}
+
 	for col := 0; col < cols; col++ {
 		for row := 0; row < rows; row++ {
-
 			north := []color.Color{}
 			south := []color.Color{}
 
 			for y := 0; y < pixelHeight; y++ {
 				for x := 0; x < pixelWidth; x++ {
-
 					realY := row * pixelHeight + y
 					realX := col * pixelWidth + x
 					pixel := img.At(realX, realY)
@@ -53,18 +63,10 @@ func Hxl(img image.Image, width int) image.Image {
 					y_origin := float64(y - pixelHeight / 2)
 					x_origin := float64(x - pixelWidth / 2)
 
-					if x_origin > 0 && y_origin > x_origin {
-						// north-by-north-east
+					if inTop(x_origin, y_origin) {
 						north = append(north, pixel)
-					} else if x_origin > 0 && y_origin < -x_origin {
-						// south-by-south-east
+					} else if inBottom(x_origin, y_origin) {
 						south = append(south, pixel)
-					} else if x_origin < 0 && y_origin < x_origin {
-						// south-by-south-west
-						south = append(south, pixel)
-					} else if x_origin < 0 && y_origin > -x_origin {
-						// north-by-north-west
-						north = append(north, pixel)
 					}
 				}
 			}
@@ -74,31 +76,16 @@ func Hxl(img image.Image, width int) image.Image {
 
 			for y := 0; y < pixelHeight; y++ {
 				for x := 0; x < pixelWidth * 2; x++ {
-
 					realY := row * pixelHeight + y
 					realX := col * pixelWidth * 2 + x
 
 					y_origin := float64(y - pixelHeight / 2)
 					x_origin := float64(x - pixelWidth * 2 / 2)
 
-					var toSet color.Color
-
-					if x_origin >= 0 && y_origin >= x_origin {
-						// north-by-north-east
-						toSet = top
-					} else if x_origin >= 0 && y_origin <= -x_origin {
-						// south-by-south-east
-						toSet = bot
-					} else if x_origin <= 0 && y_origin <= x_origin {
-						// south-by-south-west
-						toSet = bot
-					} else if x_origin <= 0 && y_origin >= -x_origin {
-						// north-by-north-west
-						toSet = top
-					}
-
-					if toSet != nil {
-						o.Set(realX, realY, toSet)
+					if inTop(x_origin, y_origin) {
+						o.Set(realX, realY, top)
+					} else if inBottom(x_origin, y_origin) {
+						o.Set(realX, realY, bot)
 					}
 				}
 			}
@@ -112,13 +99,11 @@ func Hxl(img image.Image, width int) image.Image {
 
 	for col := -1; col < cols; col++ {
 		for row := -1; row < rows; row++ {
-
 			north := []color.Color{}
 			south := []color.Color{}
 
 			for y := 0; y < pixelHeight; y++ {
 				for x := 0; x < pixelWidth; x++ {
-
 					realY := row * pixelHeight + y + offsetY
 					realX := col * pixelWidth + x + offsetX
 
@@ -128,18 +113,11 @@ func Hxl(img image.Image, width int) image.Image {
 						y_origin := float64(y - pixelHeight / 2)
 						x_origin := float64(x - pixelWidth / 2)
 
-						if x_origin > 0 && y_origin > x_origin {
-							// north-by-north-east
+
+						if inTop(x_origin, y_origin) {
 							north = append(north, pixel)
-						} else if x_origin > 0 && y_origin < -x_origin {
-							// south-by-south-east
+						} else if inBottom(x_origin, y_origin) {
 							south = append(south, pixel)
-						} else if x_origin < 0 && y_origin < x_origin {
-							// south-by-south-west
-							south = append(south, pixel)
-						} else if x_origin < 0 && y_origin > -x_origin {
-							// north-by-north-west
-							north = append(north, pixel)
 						}
 					}
 				}
@@ -150,32 +128,16 @@ func Hxl(img image.Image, width int) image.Image {
 
 			for y := 0; y < pixelHeight; y++ {
 				for x := 0; x < pixelWidth * 2; x++ {
-
 					realY := row * pixelHeight + y + offsetY
 					realX := col * pixelWidth * 2 + x + offsetX * 2
 
 					y_origin := float64(y - pixelHeight / 2)
 					x_origin := float64(x - pixelWidth * 2 / 2)
 
-					var toSet color.Color
-
-					if x_origin >= 0 && y_origin >= x_origin {
-						// north-by-north-east
-						toSet = top
-					} else if x_origin >= 0 && y_origin <= -x_origin {
-						// south-by-south-east
-						toSet = bot
-					} else if x_origin <= 0 && y_origin <= x_origin {
-						// south-by-south-west
-						toSet = bot
-					} else if x_origin <= 0 && y_origin >= -x_origin {
-						// north-by-north-west
-						toSet = top
-					}
-
-					// This needs to set the left and right unpainted zones!
-					if toSet != nil {
-						o.Set(realX, realY, toSet)
+					if inTop(x_origin, y_origin) {
+						o.Set(realX, realY, top)
+					} else if inBottom(x_origin, y_origin) {
+						o.Set(realX, realY, bot)
 					}
 				}
 			}
