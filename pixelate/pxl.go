@@ -47,6 +47,22 @@ func pxlDo(img image.Image, triangle int, size utils.Dimension, scaleFactor int)
 
 	o := image.NewRGBA(image.Rect(0, 0, size.W * cols * scaleFactor, size.H * rows * scaleFactor))
 
+	inTop := func(x,y float64) bool {
+		return (y > ratio * x) && (y > ratio * -x)
+	}
+
+	inRight := func(x,y float64) bool {
+		return (y < ratio * x) && (y > ratio * -x)
+	}
+
+	inBottom := func(x,y float64) bool {
+		return (y < ratio * x) && (y < ratio * -x)
+	}
+
+	inLeft := func(x,y float64) bool {
+		return (y > ratio * x) && (y < ratio * -x)
+	}
+
 	for col := 0; col < cols; col++ {
 		for row := 0; row < rows; row++ {
 
@@ -54,8 +70,6 @@ func pxlDo(img image.Image, triangle int, size utils.Dimension, scaleFactor int)
 			ri := []color.Color{}
 			bo := []color.Color{}
 			le := []color.Color{}
-
-			tc := 0; rc := 0; bc := 0; lc := 0
 
 			for y := 0; y < size.H; y++ {
 				for x := 0; x < size.W; x++ {
@@ -66,20 +80,16 @@ func pxlDo(img image.Image, triangle int, size utils.Dimension, scaleFactor int)
 					y_origin := float64(y - size.H / 2)
 					x_origin := float64(x - size.W / 2)
 
-					if y_origin > ratio * x_origin && y_origin > ratio * -x_origin {
-						tc++
+					if inTop(x_origin, y_origin) {
 						to = append(to, img.At(realX, realY))
 
-					} else if y_origin < ratio * x_origin && y_origin > ratio * -x_origin {
-						rc++
+					} else if inRight(x_origin, y_origin) {
 						ri = append(ri, img.At(realX, realY))
 
-					} else if y_origin < ratio * x_origin && y_origin < ratio * -x_origin {
-						bc++
+					} else if inBottom(x_origin, y_origin) {
 						bo = append(bo, img.At(realX, realY))
 
-					} else if y_origin > ratio * x_origin && y_origin < ratio * -x_origin {
-						lc++
+					} else if inLeft(x_origin, y_origin) {
 						le = append(le, img.At(realX, realY))
 
 					}
