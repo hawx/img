@@ -246,7 +246,7 @@ func UnsharpMask(in image.Image, radius int, sigma, amount, threshold float64) i
 	result  := in.(*image.NRGBA)
 
 	diff := func(a,b float64) float64 {
-		if a > b { return a - b}
+		if a > b { return a - b }
 		return b - a
 	}
 
@@ -255,15 +255,15 @@ func UnsharpMask(in image.Image, radius int, sigma, amount, threshold float64) i
 			ar,ag,ab,aa := utils.RatioRGBA(in.At(x,y))
 			br,bg,bb,_  := utils.RatioRGBA(blurred.At(x,y))
 
-			if diff(ar, br) >= threshold {
+			if diff(ar, br) >= threshold * 255 {
 				ar = amount * (ar - br) + ar
 			}
 
-			if diff(ag, bg) >= threshold {
+			if diff(ag, bg) >= threshold * 255 {
 				ag = amount * (ag - bg) + ag
 			}
 
-			if diff(ab, bb) >= threshold {
+			if diff(ab, bb) >= threshold * 255 {
 				ab = amount * (ab - bb) + ab
 			}
 
