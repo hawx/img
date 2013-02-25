@@ -97,6 +97,7 @@ var commands = []*Command{
 	cmdLevels,
 	cmdPixelate,
 	cmdPxl,
+	cmdSharpen,
 	cmdShuffle,
 	cmdTint,
 	cmdVxl,
