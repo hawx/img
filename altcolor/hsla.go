@@ -25,9 +25,7 @@ func (col HSLA) RGBA() (red, green, blue, alpha uint32) {
 	x := c * (1 - math.Abs(math.Mod(hdash,2) - 1))
 
 	var r, g, b float64
-	if h == 0 {
-		r = 0; g = 0; b = 0
-	} else if hdash < 1 {
+	if hdash < 1 {
 		r = c; g = x; b = 0
 	} else if hdash < 2 {
 		r = x; g = c; b = 0
