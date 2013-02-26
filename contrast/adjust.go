@@ -37,24 +37,52 @@ func Sigmoidal(img image.Image, factor, midpoint float64) image.Image {
 }
 
 func SigmoidalC(factor, midpoint float64) utils.Composable {
-	alpha := midpoint
-	beta  := factor
+	sigmoidal := func(x float64) float64 {
+		return 1.0 / (1.0 + math.Exp(factor * (midpoint - x)))
+	}
 
-	f := func(u float64) float64 {
-		return (
-  		1.0 / (1.0 + math.Exp(beta * (alpha - u))) -
-		  1.0 / (1.0 + math.Exp(beta))) /
-		(
-		  1.0 / (1.0 + math.Exp(beta * (alpha - 1))) -
-		  1.0 / (1.0 + math.Exp(beta * alpha)))
+	// Pre-compute useful terms
+	sig0 := sigmoidal(0.0)
+	sig1 := sigmoidal(1.0)
+
+	epsilon := 1.0e-10
+
+	var scaledSigmoidal func(float64) float64
+
+	if factor == 0 {
+		scaledSigmoidal = func(x float64) float64 {
+			return x
+		}
+
+	} else if factor > 0 {
+		scaledSigmoidal = func(x float64) float64 {
+			return (sigmoidal(x) - sig0) / (sig1 - sig0)
+		}
+
+	} else  {
+		scaledSigmoidal = func(x float64) float64 {
+			argument := (sig1 - sig0) * x + sig0
+			var clamped float64
+			if argument < epsilon {
+				clamped = epsilon
+			} else {
+				if argument > 1 - epsilon {
+					clamped = 1 - epsilon
+				} else {
+					clamped = argument
+				}
+			}
+
+			return midpoint - math.Log(1.0 / clamped - 1.0) / factor
+		}
 	}
 
 	return func(c color.Color) color.Color {
 		r,g,b,a := utils.RatioRGBA(c)
 
-		r = utils.Truncatef(f(r) * 255)
-		g = utils.Truncatef(f(g) * 255)
-		b = utils.Truncatef(f(b) * 255)
+		r = utils.Truncatef(scaledSigmoidal(r) * 255)
+		g = utils.Truncatef(scaledSigmoidal(g) * 255)
+		b = utils.Truncatef(scaledSigmoidal(b) * 255)
 		a = a * 255
 
 		return color.NRGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
