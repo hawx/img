@@ -12,21 +12,21 @@ Long: `
   Contrast takes an image from STDIN, adjusts the contrast and prints the result
   to STDOUT
 
-    --ratio <n>             # Ratio to shift contrast by (default: 3.0)
+    --factor <n>            # Factor to shift contrast by (default: 1.0)
     --midpoint <n>          # Set where midtones fall in image (default: 0.5)
 
-    --linear                # Use linear function (default)
+    --linear                # Use linear function
     --sigmoidal             # Use sigmoidal function
 `,
 }
 
 var contrastLinear, contrastSigmoidal bool
-var contrastRatio, contrastMidpoint float64
+var contrastFactor, contrastMidpoint float64
 
 func init() {
 	cmdContrast.Run = runContrast
 
-	cmdContrast.Flag.Float64Var(&contrastRatio,    "ratio",     3.0,   "")
+	cmdContrast.Flag.Float64Var(&contrastFactor,   "factor",    1.0,   "")
 	cmdContrast.Flag.Float64Var(&contrastMidpoint, "midpoint",  0.5,   "")
 
 	cmdContrast.Flag.BoolVar(&contrastLinear,      "linear",    false, "")
@@ -37,9 +37,11 @@ func runContrast(cmd *Command, args []string) {
 	i := utils.ReadStdin()
 
 	if contrastSigmoidal {
-		i = contrast.Sigmoidal(i, contrastRatio, contrastMidpoint)
+		i = contrast.Sigmoidal(i, contrastFactor, contrastMidpoint)
+	} else if contrastLinear {
+		i  = contrast.Linear(i, contrastFactor)
 	} else {
-		i  = contrast.Adjust(i, contrastRatio)
+		i = contrast.Adjust(i, contrastFactor)
 	}
 
 	utils.WriteStdout(i)
