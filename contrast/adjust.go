@@ -1,21 +1,40 @@
-// Package contrast implements a single function to adjust the contrats of an
-// image.
+// Package contrast implements functions to adjust the contrast of an image.
 package contrast
 
 import (
+	"github.com/hawx/img/altcolor"
 	"github.com/hawx/img/utils"
 	"image"
 	"image/color"
 	"math"
 )
 
-// Adjusts the contrast of the Image by the given value. A value of 0 has no
-// effect.
+const Epsilon = 1.0e-10
+
+// Adjust changes the contrast in the Image. A value of 0 has no effect.
 func Adjust(img image.Image, value float64) image.Image {
 	return utils.MapColor(img, AdjustC(value))
 }
 
 func AdjustC(value float64) utils.Composable {
+	return func(c color.Color) color.Color {
+		d := altcolor.HSIAModel.Convert(c).(altcolor.HSIA)
+
+		d.I += 0.5 * value * (0.5 * (math.Sin(math.Pi * (d.I - 0.5)) + 1.0) - d.I)
+		if d.I > 1.0 { d.I = 1.0 } else if d.I < 0.0 { d.I = 0.0 }
+
+		return d
+	}
+}
+
+
+// Linear adjusts the contrast using a linear function. A value of 1 has no
+// effect, and a value of 0 will return a grey image.
+func Linear(img image.Image, value float64) image.Image {
+	return utils.MapColor(img, LinearC(value))
+}
+
+func LinearC(value float64) utils.Composable {
 	return func(c color.Color) color.Color {
 		r,g,b,a := utils.RatioRGBA(c)
 
@@ -45,8 +64,6 @@ func SigmoidalC(factor, midpoint float64) utils.Composable {
 	sig0 := sigmoidal(0.0)
 	sig1 := sigmoidal(1.0)
 
-	epsilon := 1.0e-10
-
 	var scaledSigmoidal func(float64) float64
 
 	if factor == 0 {
@@ -59,15 +76,15 @@ func SigmoidalC(factor, midpoint float64) utils.Composable {
 			return (sigmoidal(x) - sig0) / (sig1 - sig0)
 		}
 
-	} else  {
+	} else {
 		scaledSigmoidal = func(x float64) float64 {
 			argument := (sig1 - sig0) * x + sig0
 			var clamped float64
-			if argument < epsilon {
-				clamped = epsilon
+			if argument < Epsilon {
+				clamped = Epsilon
 			} else {
-				if argument > 1 - epsilon {
-					clamped = 1 - epsilon
+				if argument > 1 - Epsilon {
+					clamped = 1 - Epsilon
 				} else {
 					clamped = argument
 				}
