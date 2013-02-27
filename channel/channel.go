@@ -1,3 +1,5 @@
+// Package channel provides functions to alter the values of separate color
+// channels in an image.
 package channel
 
 import (

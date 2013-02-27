@@ -1,3 +1,4 @@
+// Package shuffle implements functions to randomly swap pixels in an image.
 package shuffle
 
 import (

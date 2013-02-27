@@ -1,3 +1,4 @@
+// Package blur provides functions for blurring images.
 package blur
 
 import (

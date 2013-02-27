@@ -1,3 +1,5 @@
+// Package utils provides useful helper functions for working with Images and
+// Colors.
 package utils
 
 import (

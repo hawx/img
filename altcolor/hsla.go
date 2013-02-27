@@ -1,3 +1,7 @@
+// Package altcolor includes useful color models absent in the standard
+// library's "image/color" package. These are HSLA (Hue Saturation Lightness
+// Alpha), HSVA (Hue Saturation Value Alpha) and HSIA (Hue Saturation
+// Intensity/Brightness Alpha).
 package altcolor
 
 import (

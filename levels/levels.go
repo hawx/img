@@ -1,3 +1,5 @@
+// Package levels provides functions to alter the distibution of values of a
+// color channel in an image.
 package levels
 
 import (
