@@ -3,14 +3,16 @@
 package utils
 
 import (
+	"flag"
 	"fmt"
 	"os"
-	"flag"
+	"runtime"
 
 	"image"
-	"image/png"
 	"image/color"
+	"image/draw"
 
+	"image/png"
 	_ "image/jpeg"
 	_ "image/gif"
 )
@@ -180,18 +182,40 @@ func EachColor(img image.Image, f func(c color.Color)) {
 
 // MapColor iterates through each pixel of the Image and applies the given
 // function, drawing the returned colour to a new Image which is then returned.
-func MapColor(img image.Image, f func(c color.Color) color.Color) image.Image {
-	b := img.Bounds()
-	o := image.NewRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
+func MapColor(img image.Image, f Composable) image.Image {
+	// Use maximum number of CPUs available
+	nCPU := runtime.NumCPU()
+	runtime.GOMAXPROCS(nCPU)
 
-	for y := b.Min.Y; y < b.Max.Y; y++ {
-		for x := b.Min.X; x < b.Max.X; x++ {
-			result := f(img.At(x, y))
-			o.Set(x, y, result)
+	o := image.NewRGBA(img.Bounds())
+	b := img.Bounds()
+	w := b.Dx()
+
+	subWidth  := w / nCPU
+	lastWidth := subWidth + (w % nCPU)
+
+	for c := 0; c < nCPU; c++ {
+		if c < nCPU - 1 {
+			rect := image.Rect(c * subWidth, b.Min.Y, (c+1) * subWidth, b.Max.Y)
+			go subMapColor(img, f, o, rect)
+		} else {
+			rect := image.Rect(c * subWidth, b.Min.Y, c * subWidth + lastWidth, b.Max.Y)
+			go subMapColor(img, f, o, rect)
 		}
 	}
 
 	return o
+}
+
+// subMapColor is a helper function for working on part of an image. It takes
+// the original image, a function to use, a image to write to, and the bounds of
+// the original (and therefore the final image) to act upon.
+func subMapColor(img image.Image, f Composable, dest draw.Image, bounds image.Rectangle) {
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			dest.Set(x, y, f(img.At(x, y)))
+		}
+	}
 }
 
 
