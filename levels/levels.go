@@ -24,7 +24,7 @@ func Auto(img image.Image, ch Channel) image.Image {
 	lightest = 0.0
 	darkest  = 1.0
 
-	utils.EachColor(img, func(c color.Color) {
+	utils.PEachColor(img, func(c color.Color) {
 		v := ch.Get(c)
 
 		if v > lightest { lightest = v }
@@ -44,7 +44,7 @@ func Auto(img image.Image, ch Channel) image.Image {
 func AutoWhite(img image.Image, ch Channel) image.Image {
 	var lightest float64 = 0.0
 
-	utils.EachColor(img, func(c color.Color) {
+	utils.PEachColor(img, func(c color.Color) {
 		v := ch.Get(c)
 
 		if v > lightest { lightest = v }
@@ -58,7 +58,7 @@ func AutoWhite(img image.Image, ch Channel) image.Image {
 func AutoBlack(img image.Image, ch Channel) image.Image {
 	var darkest float64 = 1.0
 
-	utils.EachColor(img, func(c color.Color) {
+	utils.PEachColor(img, func(c color.Color) {
 		v := ch.Get(c)
 
 		if v < darkest { darkest = v }

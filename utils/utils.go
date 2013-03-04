@@ -168,11 +168,66 @@ func Maxf(ns... float64) (n float64) {
 	return
 }
 
+
+func splitRectangle(b image.Rectangle, parts int) []image.Rectangle {
+	w := b.Dx()
+	h := b.Dy()
+
+	rs := make([]image.Rectangle, parts)
+
+	if w > h {
+		subWidth := w / parts
+		lastWidth := subWidth + (w % parts)
+
+		for i := 0; i < parts; i++ {
+			if i < parts - 1 {
+				rs[i] = image.Rect(i * subWidth, b.Min.Y, (i+1) * subWidth, b.Max.Y)
+			} else {
+				rs[i] = image.Rect(i * subWidth, b.Min.Y, i * subWidth + lastWidth, b.Max.Y)
+			}
+		}
+
+	} else {
+		subHeight := h / parts
+		lastHeight := subHeight + (h % parts)
+
+		for i := 0; i < parts; i++ {
+			if i < parts - 1 {
+				rs[i] = image.Rect(b.Min.X, i * subHeight, b.Max.X, (i+1) * subHeight)
+			} else {
+				rs[i] = image.Rect(b.Min.X, i * subHeight, b.Max.Y, i * subHeight + lastHeight)
+			}
+		}
+	}
+
+	return rs
+}
+
+
 // EachColor iterates through each pixel of the Image, applying the function
 // to each colour.
 func EachColor(img image.Image, f func(c color.Color)) {
 	b := img.Bounds()
 
+	for y := b.Min.Y; y < b.Max.Y; y++ {
+		for x := b.Min.X; x < b.Max.X; x++ {
+			f(img.At(x, y))
+		}
+	}
+}
+// PEachColor is like EachColor, but runs in parallel. This means that order can
+// not be guaranteed.
+func PEachColor(img image.Image, f func(c color.Color)) {
+	nCPU := runtime.NumCPU()
+	runtime.GOMAXPROCS(nCPU)
+
+	for _, r := range splitRectangle(img.Bounds(), nCPU) {
+		go subEachColor(img, f, r)
+	}
+}
+
+// subEachColor is a helper function for working on a part of an image.
+func subEachColor(img image.Image, f func(c color.Color), b image.Rectangle) {
 	for y := b.Min.Y; y < b.Max.Y; y++ {
 		for x := b.Min.X; x < b.Max.X; x++ {
 			f(img.At(x, y))
@@ -188,20 +243,9 @@ func MapColor(img image.Image, f Composable) image.Image {
 	runtime.GOMAXPROCS(nCPU)
 
 	o := image.NewRGBA(img.Bounds())
-	b := img.Bounds()
-	w := b.Dx()
 
-	subWidth  := w / nCPU
-	lastWidth := subWidth + (w % nCPU)
-
-	for c := 0; c < nCPU; c++ {
-		if c < nCPU - 1 {
-			rect := image.Rect(c * subWidth, b.Min.Y, (c+1) * subWidth, b.Max.Y)
-			go subMapColor(img, f, o, rect)
-		} else {
-			rect := image.Rect(c * subWidth, b.Min.Y, c * subWidth + lastWidth, b.Max.Y)
-			go subMapColor(img, f, o, rect)
-		}
+	for _, r := range splitRectangle(img.Bounds(), nCPU) {
+		go subMapColor(img, f, o, r)
 	}
 
 	return o
