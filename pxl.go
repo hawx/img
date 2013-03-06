@@ -13,6 +13,7 @@ Long: `
   rectangles, and prints the result to STDOUT
 
     --alias         # Do not use antialiasing
+    --crop          # Crop final image to exact triangles
     --left          # Use only left triangles
     --right         # Use only right triangles
 
@@ -22,7 +23,7 @@ Long: `
 `,
 }
 
-var pxlAlias, pxlLeft, pxlRight, pxlBoth bool
+var pxlAlias, pxlCrop, pxlLeft, pxlRight, pxlBoth bool
 var pxlSize utils.Dimension = utils.Dimension{20, 20}
 var pxlRows, pxlCols int
 
@@ -30,12 +31,13 @@ func init() {
 	cmdPxl.Run = runPxl
 
 	cmdPxl.Flag.BoolVar(&pxlAlias, "alias", false, "")
+	cmdPxl.Flag.BoolVar(&pxlCrop,  "crop",  false, "")
 	cmdPxl.Flag.BoolVar(&pxlLeft,  "left",  false, "")
 	cmdPxl.Flag.BoolVar(&pxlRight, "right", false, "")
 
-	cmdPxl.Flag.Var(&pxlSize, "size", "")
-	cmdPxl.Flag.IntVar(&pxlRows, "rows", -1, "")
-	cmdPxl.Flag.IntVar(&pxlCols, "cols", -1, "")
+	cmdPxl.Flag.Var(&pxlSize,      "size",         "")
+	cmdPxl.Flag.IntVar(&pxlRows,   "rows",  -1,    "")
+	cmdPxl.Flag.IntVar(&pxlCols,   "cols",  -1,    "")
 }
 
 func runPxl(cmd *Command, args []string) {
@@ -44,6 +46,9 @@ func runPxl(cmd *Command, args []string) {
 	triangle := pixelate.BOTH
 	if pxlLeft  { triangle = pixelate.LEFT }
 	if pxlRight { triangle = pixelate.RIGHT }
+
+	style := pixelate.FITTED
+	if pxlCrop { style = pixelate.CROPPED }
 
 	if pxlRows > 0 && pxlCols > 0 {
 		pxlSize = utils.SizeForRowsAndCols(i, pxlRows, pxlCols)
@@ -54,9 +59,9 @@ func runPxl(cmd *Command, args []string) {
 	}
 
 	if pxlAlias {
-		i = pixelate.AliasedPxl(i, pxlSize, triangle)
+		i = pixelate.AliasedPxl(i, pxlSize, triangle, style)
 	} else {
-		i = pixelate.Pxl(i, pxlSize, triangle)
+		i = pixelate.Pxl(i, pxlSize, triangle, style)
 	}
 
 	utils.WriteStdout(i)

@@ -4,48 +4,24 @@ import (
 	"github.com/hawx/img/utils"
 	"image"
 	"image/color"
+	"image/draw"
+	"runtime"
 )
+
+type Triangle int
 
 const (
 	// Triangle types for Pxl
-	BOTH = iota  // Decide base on closeness of colours in each quadrant
-	LEFT         // Create only left triangles
-	RIGHT        // Create only right triangles
+	BOTH Triangle = iota  // Decide base on closeness of colours in each quadrant
+	LEFT                  // Create only left triangles
+	RIGHT                 // Create only right triangles
 )
 
-func halve(img image.Image, size utils.Dimension) image.Image {
-	b := img.Bounds()
-	o := image.NewRGBA(image.Rect(0, 0, b.Dx() / 2, b.Dy() / 2))
 
-	for y := 0; y < b.Dy() / 2; y++ {
-		for x := 0; x < b.Dx() / 2; x++ {
-			tl := img.At(x * 2, y * 2)
-			tr := img.At(x * 2 + 1, y * 2)
-			br := img.At(x * 2 + 1, y * 2 - 1)
-			bl := img.At(x * 2, y * 2 - 1)
+func pxlWorker(img image.Image, bounds image.Rectangle, dest draw.Image,
+	size utils.Dimension, triangle Triangle, aliased bool) {
 
-			if y % size.H == 0 {
-				o.Set(x, y, tl)
-			} else if x % size.W == 0 {
-				o.Set(x, y, tl)
-			} else {
-				o.Set(x, y, utils.Average(tl, tr, bl, br))
-			}
-		}
-	}
-
-	return o
-}
-
-func pxlDo(img image.Image, triangle int, size utils.Dimension, scaleFactor int) image.Image {
-
-	b := img.Bounds()
-
-	cols  := b.Dx() / size.W
-	rows  := b.Dy() / size.H
 	ratio := float64(size.H) / float64(size.W)
-
-	o := image.NewRGBA(image.Rect(0, 0, size.W * cols * scaleFactor, size.H * rows * scaleFactor))
 
 	inTop := func(x,y float64) bool {
 		return (y > ratio * x) && (y > ratio * -x)
@@ -63,105 +39,134 @@ func pxlDo(img image.Image, triangle int, size utils.Dimension, scaleFactor int)
 		return (y > ratio * x) && (y < ratio * -x)
 	}
 
-	for col := 0; col < cols; col++ {
-		for row := 0; row < rows; row++ {
+	to := []color.Color{}
+	ri := []color.Color{}
+	bo := []color.Color{}
+	le := []color.Color{}
 
-			to := []color.Color{}
-			ri := []color.Color{}
-			bo := []color.Color{}
-			le := []color.Color{}
+	for y := 0; y < bounds.Dy(); y++ {
+		for x := 0; x < bounds.Dx(); x++ {
 
-			for y := 0; y < size.H; y++ {
-				for x := 0; x < size.W; x++ {
+			realY := bounds.Min.Y + y
+			realX := bounds.Min.X + x
 
-					realY := row * size.H + y
-					realX := col * size.W + x
+			yOrigin := float64(y - size.H / 2)
+			xOrigin := float64(x - size.W / 2)
 
-					y_origin := float64(y - size.H / 2)
-					x_origin := float64(x - size.W / 2)
+			if inTop(xOrigin, yOrigin) {
+				to = append(to, img.At(realX, realY))
 
-					if inTop(x_origin, y_origin) {
-						to = append(to, img.At(realX, realY))
+			} else if inRight(xOrigin, yOrigin) {
+				ri = append(ri, img.At(realX, realY))
 
-					} else if inRight(x_origin, y_origin) {
-						ri = append(ri, img.At(realX, realY))
+			} else if inBottom(xOrigin, yOrigin) {
+				bo = append(bo, img.At(realX, realY))
 
-					} else if inBottom(x_origin, y_origin) {
-						bo = append(bo, img.At(realX, realY))
+			} else if inLeft(xOrigin, yOrigin) {
+				le = append(le, img.At(realX, realY))
+			}
+		}
+	}
 
-					} else if inLeft(x_origin, y_origin) {
-						le = append(le, img.At(realX, realY))
+	ato := utils.Average(to...)
+	ari := utils.Average(ri...)
+	abo := utils.Average(bo...)
+	ale := utils.Average(le...)
 
-					}
+	if (triangle != LEFT) && (triangle == RIGHT ||
+		utils.Closeness(ato, ari) > utils.Closeness(ato, ale)) {
+
+		topRight   := utils.Average(ato, ari)
+		bottomLeft := utils.Average(abo, ale)
+		middle      := utils.Average(topRight, bottomLeft)
+
+		for y := 0; y < bounds.Dy(); y++ {
+			for x := 0; x < bounds.Dx(); x++ {
+
+				realY := bounds.Min.Y + y
+				realX := bounds.Min.X + x
+
+				yOrigin := float64(y - size.H / 2)
+				xOrigin := float64(x - size.W / 2)
+
+				if yOrigin > ratio * xOrigin {
+					dest.Set(realX, realY, topRight)
+				} else if yOrigin == ratio * xOrigin && !aliased {
+					dest.Set(realX, realY, middle)
+				} else {
+					dest.Set(realX, realY, bottomLeft)
 				}
 			}
+		}
 
-			ato := utils.Average(to...)
-			ari := utils.Average(ri...)
-			abo := utils.Average(bo...)
-			ale := utils.Average(le...)
+	} else {
 
-			if (triangle != LEFT) && (triangle == RIGHT ||
-				utils.Closeness(ato, ari) > utils.Closeness(ato, ale)) {
+		topLeft     := utils.Average(ato, ale)
+		bottomRight := utils.Average(abo, ari)
+		middle       := utils.Average(topLeft, bottomRight)
 
-				top_right   := utils.Average(ato, ari)
-				bottom_left := utils.Average(abo, ale)
+		for y := 0; y < bounds.Dy(); y++ {
+			for x := 0; x < bounds.Dx(); x++ {
 
-				for y := 0; y < size.H * scaleFactor; y++ {
-					for x := 0; x < size.W * scaleFactor; x++ {
+				realY := bounds.Min.Y + y
+				realX := bounds.Min.X + x
 
-						realY := row * size.H * scaleFactor + y
-						realX := col * size.W * scaleFactor + x
+				yOrigin := float64(y - size.H / 2)
+				xOrigin := float64(x - size.W / 2)
 
-						y_origin := float64(y - size.H * scaleFactor / 2)
-						x_origin := float64(x - size.W * scaleFactor / 2)
-
-						if y_origin > ratio * x_origin {
-							o.Set(realX, realY, top_right)
-						} else {
-							o.Set(realX, realY, bottom_left)
-						}
-					}
-				}
-
-			} else {
-
-				top_left     := utils.Average(ato, ale)
-				bottom_right := utils.Average(abo, ari)
-
-				for y := 0; y < size.H * scaleFactor; y++ {
-					for x := 0; x < size.W * scaleFactor; x++ {
-
-						realY := row * size.H * scaleFactor + y
-						realX := col * size.W * scaleFactor + x
-
-						y_origin := float64(y - size.H * scaleFactor / 2)
-						x_origin := float64(x - size.W * scaleFactor / 2)
-
-						if y_origin >= ratio * -x_origin {
-							o.Set(realX, realY, top_left)
-						} else {
-							o.Set(realX, realY, bottom_right)
-						}
-					}
+				// Do this one opposite to above so that the diagonals line up when
+				// aliased.
+				if yOrigin < ratio * -xOrigin {
+					dest.Set(realX, realY, bottomRight)
+				} else if yOrigin == ratio * -xOrigin && !aliased {
+					dest.Set(realX, realY, middle)
+				} else {
+					dest.Set(realX, realY, topLeft)
 				}
 			}
+		}
+	}
+}
+
+func doPxl(img image.Image, size utils.Dimension, triangle Triangle, style Style, aliased bool) image.Image {
+
+	nCPU := runtime.NumCPU()
+	runtime.GOMAXPROCS(nCPU)
+
+	var o draw.Image
+	b := img.Bounds()
+
+	switch style {
+	case CROPPED:
+		cols := b.Dx() / size.W
+		rows := b.Dy() / size.H
+
+		o = image.NewRGBA(image.Rect(0, 0, size.W * cols, size.H * rows))
+
+		for _, r := range utils.ChopRectangleToSizes(b, size.H, size.W) {
+			go pxlWorker(img, r, o, size, triangle, aliased)
+		}
+
+	case FITTED:
+		o = image.NewRGBA(img.Bounds())
+
+		for _, r := range utils.ChopRectangleToSizesExcess(img.Bounds(), size.H, size.W) {
+			go pxlWorker(img, r, o, size, triangle, aliased)
 		}
 	}
 
 	return o
 }
 
-
 // Pxl pixelates an Image into right-angled triangles with the dimensions
 // given. The triangle direction can be determined by passing the required value
 // as triangle; either BOTH, LEFT or RIGHT.
-func Pxl(img image.Image, size utils.Dimension, triangle int) image.Image {
-	return halve(pxlDo(img, triangle, size, 2), size)
+func Pxl(img image.Image, size utils.Dimension, triangle Triangle, style Style) image.Image {
+	return doPxl(img, size, triangle, style, false)
 }
 
 // AliasedPxl does the same as Pxl, but does not smooth diagonal edges of the
 // triangles. It is faster, but will produce bad results if size is non-square.
-func AliasedPxl(img image.Image, size utils.Dimension, triangle int) image.Image {
-	return pxlDo(img, triangle, size, 1)
+func AliasedPxl(img image.Image, size utils.Dimension, triangle Triangle, style Style) image.Image {
+	return doPxl(img, size, triangle, style, true)
 }
