@@ -5,48 +5,61 @@ import (
 	"github.com/hawx/img/utils"
 	"image"
 	"image/color"
+	"image/draw"
+	"runtime"
 )
+
+type Style int
+
+const (
+	CROPPED Style = iota
+	FITTED
+)
+
+
+func paintAverage(img image.Image, bounds image.Rectangle, dest draw.Image) {
+	values := make([]color.Color, bounds.Dx() * bounds.Dy())
+	count  := 0
+
+	utils.EachColorInRectangle(img, bounds, func(c color.Color) {
+		values[count] = c
+		count++
+	})
+
+	avg := utils.Average(values...)
+
+	utils.MapColorInRectangle(img, bounds, dest, func(c color.Color) color.Color {
+		return avg
+	})
+}
+
 
 // Pixelate takes an Image and pixelates it into rectangles with the dimensions
 // given. The colour values in each region are averaged to produce the resulting
 // colours.
-func Pixelate(img image.Image, size utils.Dimension) image.Image {
+func Pixelate(img image.Image, size utils.Dimension, style Style) image.Image {
+	nCPU := runtime.NumCPU()
+	runtime.GOMAXPROCS(nCPU)
+
+	var o draw.Image
 	b := img.Bounds()
 
-	cols := b.Dx() / size.W
-	rows := b.Dy() / size.H
+	switch style {
+	case CROPPED:
+		cols := b.Dx() / size.W
+		rows := b.Dy() / size.H
 
-	o := image.NewRGBA(image.Rect(0, 0, size.W * cols, size.H * rows))
+		o = image.NewRGBA(image.Rect(0, 0, size.W * cols, size.H * rows))
 
-	for col := 0; col < cols; col++ {
-		for row := 0; row < rows; row++ {
+		for _, r := range utils.ChopRectangleToSizes(b, size.H, size.W) {
+			go paintAverage(img, r, o)
+		}
 
-			values := make([]color.Color, size.H * size.W)
-			count  := 0
+	case FITTED:
+		o = image.NewRGBA(b)
 
-			for y := 0; y < size.H; y++ {
-				for x := 0; x < size.W; x++ {
-
-					realY := row * size.H + y
-					realX := col * size.W + x
-
-					values[count] = img.At(realX, realY)
-					count++
-				}
-			}
-
-			avg := utils.Average(values...)
-
-			for y := 0; y < size.H; y++ {
-				for x := 0; x < size.W; x++ {
-
-					realY := row * size.H + y
-					realX := col * size.W + x
-
-					o.Set(realX, realY, avg)
-				}
-			}
-
+		for _, r := range utils.ChopRectangleToSizesExcess(b, size.H, size.W) {
+			go paintAverage(img, r, o)
 		}
 	}
 

@@ -169,38 +169,113 @@ func Maxf(ns... float64) (n float64) {
 }
 
 
-func splitRectangle(b image.Rectangle, parts int) []image.Rectangle {
-	w := b.Dx()
-	h := b.Dy()
+func ChopRectangle(rect image.Rectangle, cols, rows int) []image.Rectangle {
+	w := rect.Dx()
+	h := rect.Dy()
 
-	rs := make([]image.Rectangle, parts)
+	colWidth  := w / cols
+	rowHeight := h / rows
 
-	if w > h {
-		subWidth := w / parts
-		lastWidth := subWidth + (w % parts)
+	rs := make([]image.Rectangle, cols * rows)
+	i  := 0
 
-		for i := 0; i < parts; i++ {
-			if i < parts - 1 {
-				rs[i] = image.Rect(i * subWidth, b.Min.Y, (i+1) * subWidth, b.Max.Y)
-			} else {
-				rs[i] = image.Rect(i * subWidth, b.Min.Y, i * subWidth + lastWidth, b.Max.Y)
-			}
+	for col := 0; col < cols; col++ {
+		// If in last column, add extra on
+		if cols == col - 1 {
+			colWidth += w % cols
 		}
 
-	} else {
-		subHeight := h / parts
-		lastHeight := subHeight + (h % parts)
-
-		for i := 0; i < parts; i++ {
-			if i < parts - 1 {
-				rs[i] = image.Rect(b.Min.X, i * subHeight, b.Max.X, (i+1) * subHeight)
-			} else {
-				rs[i] = image.Rect(b.Min.X, i * subHeight, b.Max.Y, i * subHeight + lastHeight)
+		for row := 0; row < rows; row++ {
+			// If in last row, add extra on
+			if rows == row - 1 {
+				rowHeight += h % rows
 			}
+
+			rs[i] = image.Rectangle{
+				image.Point{col     * colWidth, row     * rowHeight},
+				image.Point{(col+1) * colWidth, (row+1) * rowHeight},
+			}
+
+			i++
 		}
 	}
 
 	return rs
+}
+
+func ChopRectangleToSizesExcess(rect image.Rectangle, height, width int) []image.Rectangle {
+	w := rect.Dx()
+	h := rect.Dy()
+
+	cols := w / width
+	rows := h / height
+
+	excessHeight := h % (rows * height)
+	excessWidth  := w % (cols * height)
+
+	rs := ChopRectangleToSizes(rect, height, width)
+
+	// Do bottom row
+	if excessHeight > 0 {
+		for col := 0; col < cols; col++ {
+			rs = append(rs, image.Rectangle{
+				image.Point{col     * width, rows * height},
+				image.Point{(col+1) * width, rows * height + excessHeight},
+			})
+		}
+	}
+
+	// Do rightmost column
+	if excessWidth > 0 {
+		for row := 0; row < rows; row++ {
+			rs = append(rs, image.Rectangle{
+				image.Point{cols * width,               row * height},
+				image.Point{cols * width + excessWidth, (row+1) * height},
+			})
+		}
+	}
+
+	// Do bottom-right corner
+	if excessHeight > 0 && excessWidth > 0 {
+		rs = append(rs, image.Rectangle{
+			image.Point{cols * width,               rows * height},
+			image.Point{cols * width + excessWidth, rows * height + excessHeight},
+		})
+	}
+
+	return rs
+}
+
+// Ignores excesss.
+func ChopRectangleToSizes(rect image.Rectangle, height, width int) []image.Rectangle {
+	w := rect.Dx()
+	h := rect.Dy()
+
+	cols := w / width
+	rows := h / height
+
+	rs := make([]image.Rectangle, cols * rows)
+	i  := 0
+
+	for col := 0; col < cols; col++ {
+		for row := 0; row < rows; row++ {
+			rs[i] = image.Rectangle{
+				image.Point{col     * width, row     * height},
+				image.Point{(col+1) * width, (row+1) * height},
+			}
+
+			i++
+		}
+	}
+
+	return rs
+}
+
+func splitRectangle(b image.Rectangle, parts int) []image.Rectangle {
+	if b.Dx() > b.Dy() {
+		return ChopRectangle(b, parts, 1)
+	}
+	return ChopRectangle(b, 1, parts)
 }
 
 
@@ -222,12 +297,12 @@ func PEachColor(img image.Image, f func(c color.Color)) {
 	runtime.GOMAXPROCS(nCPU)
 
 	for _, r := range splitRectangle(img.Bounds(), nCPU) {
-		go subEachColor(img, f, r)
+		go EachColorInRectangle(img, r, f)
 	}
 }
 
-// subEachColor is a helper function for working on a part of an image.
-func subEachColor(img image.Image, f func(c color.Color), b image.Rectangle) {
+// EachColorInRectangle is a helper function for working on a part of an image.
+func EachColorInRectangle(img image.Image, b image.Rectangle, f func(c color.Color)) {
 	for y := b.Min.Y; y < b.Max.Y; y++ {
 		for x := b.Min.X; x < b.Max.X; x++ {
 			f(img.At(x, y))
@@ -245,16 +320,17 @@ func MapColor(img image.Image, f Composable) image.Image {
 	o := image.NewRGBA(img.Bounds())
 
 	for _, r := range splitRectangle(img.Bounds(), nCPU) {
-		go subMapColor(img, f, o, r)
+		go MapColorInRectangle(img, r, o, f)
 	}
 
 	return o
 }
 
-// subMapColor is a helper function for working on part of an image. It takes
-// the original image, a function to use, a image to write to, and the bounds of
-// the original (and therefore the final image) to act upon.
-func subMapColor(img image.Image, f Composable, dest draw.Image, bounds image.Rectangle) {
+// MapColorInRectangle is a helper function for working on part of an image. It
+// takes the original image, a function to use, a image to write to, and the
+// bounds of the original (and therefore the final image) to act upon.
+func MapColorInRectangle(img image.Image, bounds image.Rectangle, dest draw.Image, f Composable) {
+
 	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
 			dest.Set(x, y, f(img.At(x, y)))
