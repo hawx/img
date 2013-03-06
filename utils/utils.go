@@ -99,6 +99,10 @@ func Closeness(one, two color.Color) uint32 {
 
 // Average takes a list of colours and returns the average.
 func Average(cs... color.Color) color.Color {
+	if len(cs) < 1 {
+		return color.Black
+	}
+
 	var red, green, blue, alpha uint32
 	red = 0; green = 0; blue = 0; alpha = 0
 
