@@ -91,6 +91,7 @@ var commands = []*Command{
 	cmdBlur,
 	cmdChannel,
 	cmdContrast,
+	cmdCrop,
 	cmdGamma,
 	cmdGreyscale,
 	cmdHxl,

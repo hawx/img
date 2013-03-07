@@ -1,0 +1,120 @@
+// Package crop provides functions for cropping an image to a smaller size.
+package crop
+
+import (
+	"github.com/hawx/img/utils"
+	"image"
+)
+
+// cropTo draws a new Image with pixels that have coordinates that when passed
+// to the given function returns true.
+func cropTo(img image.Image, in func(x,y int) bool) image.Image {
+	b := img.Bounds()
+	o := image.NewRGBA(b)
+
+	leastX := b.Max.X; leastY := b.Max.Y
+	mostX := 0; mostY := 0
+
+	for y := b.Min.Y; y <= b.Max.Y; y++ {
+		for x := b.Min.X; x <= b.Max.X; x++ {
+			if in(x,y) {
+				if x < leastX { leastX = x }
+				if y < leastY { leastY = y }
+				if x > mostX  { mostX  = x }
+				if y > mostY  { mostY  = y }
+
+				o.Set(x, y, img.At(x, y))
+			}
+		}
+	}
+
+	return o.SubImage(image.Rect(leastX, leastY, mostX, mostY))
+}
+
+// Square crops an Image to a square. It will use the widest possible width if
+// the given width is negative.
+func Square(img image.Image, size int, direction utils.Direction) image.Image {
+	b := img.Bounds()
+
+	if size < 0 {
+		size = b.Dx()
+		if b.Dy() < b.Dx() {
+			size = b.Dy()
+		}
+	}
+
+	// Assume centre
+	minX := (b.Min.X + b.Dx()/2) - size/2
+	maxX := (b.Min.X + b.Dx()/2) + size/2
+	minY := (b.Min.Y + b.Dy()/2) - size/2
+	maxY := (b.Min.Y + b.Dy()/2) + size/2
+
+	switch direction {
+	case utils.TopLeft, utils.Top, utils.TopRight:
+		minY = b.Min.Y
+		maxY = b.Min.Y + size
+
+	case utils.BottomLeft, utils.Bottom, utils.BottomRight:
+		minY = b.Max.Y - size
+		maxY = b.Max.Y
+	}
+
+	switch direction{
+	case utils.TopLeft, utils.Left, utils.BottomLeft:
+		minX = b.Min.X
+		maxX = b.Min.X + size
+
+	case utils.TopRight, utils.Right, utils.BottomRight:
+		minX = b.Max.X - size
+		maxX = b.Max.X
+	}
+
+	in := func(x,y int) bool {
+		return x >= minX && x <= maxX && y >= minY && y <= maxY
+	}
+
+	return cropTo(img, in)
+}
+
+// Circle crops an Image to a circle. It will use the widest possible width if
+// the given width is negative.
+func Circle(img image.Image, size int, direction utils.Direction) image.Image {
+	b := img.Bounds()
+	h := b.Dy()
+	w := b.Dx()
+
+	if size < 0 {
+		size = w
+		if h < w {
+			size = h
+		}
+	}
+	size /= 2
+
+	// Assume centre
+	xOffset := w/2
+	yOffset := h/2
+
+	switch direction {
+	case utils.TopLeft, utils.Top, utils.TopRight:
+		yOffset = size
+
+	case utils.BottomLeft, utils.Bottom, utils.BottomRight:
+		yOffset = (h - size)
+	}
+
+	switch direction {
+	case utils.TopLeft, utils.Left, utils.BottomLeft:
+		xOffset = size
+
+	case utils.TopRight, utils.Right, utils.BottomRight:
+		xOffset = (w - size)
+	}
+
+	in := func(x,y int) bool {
+		x -= xOffset; y -= yOffset
+		return (x*x) + (y*y) < size*size
+	}
+
+	return cropTo(img, in)
+}
