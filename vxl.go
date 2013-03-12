@@ -3,11 +3,12 @@ package main
 import (
 	"github.com/hawx/img/pixelate"
 	"github.com/hawx/img/utils"
+	"github.com/hawx/hadfield"
 )
 
-var cmdVxl = &Command{
-	UsageLine: "vxl [options]",
-	Short:     "vxls image",
+var cmdVxl = &hadfield.Command{
+	Usage: "vxl [options]",
+	Short: "vxls image",
 Long: `
   Vxl takes an image from STDIN, pixelates it into isometric cubes (voxels-ish),
   and prints the result to STDOUT.
@@ -40,7 +41,7 @@ func init() {
 	cmdVxl.Flag.Float64Var(&vxlRight, "right", 0.5, "")
 }
 
-func runVxl(cmd *Command, args []string) {
+func runVxl(cmd *hadfield.Command, args []string) {
 	i := utils.ReadStdin()
 
 	if vxlRows > 0 {

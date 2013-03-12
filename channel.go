@@ -3,11 +3,12 @@ package main
 import (
 	"github.com/hawx/img/channel"
 	"github.com/hawx/img/utils"
+	"github.com/hawx/hadfield"
 )
 
-var cmdChannel = &Command{
-	UsageLine: "channel [options]",
-	Short:     "adjust the value of each colour channel individually",
+var cmdChannel = &hadfield.Command{
+	Usage: "channel [options]",
+	Short: "adjust the value of each colour channel individually",
 Long: `
   Channel allows you to adjust the value of each colour channel (red, green,
   blue or alpha) individually. Defaults to red, green and blue.
@@ -51,7 +52,7 @@ func init() {
 	cmdChannel.Flag.Float64Var(&channelRatio,   "ratio", 1.2, "")
 }
 
-func runChannel(cmd *Command, args []string) {
+func runChannel(cmd *hadfield.Command, args []string) {
 	i := utils.ReadStdin()
 	var adj utils.Adjuster
 

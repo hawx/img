@@ -3,11 +3,12 @@ package main
 import (
 	"github.com/hawx/img/sharpen"
 	"github.com/hawx/img/utils"
+	"github.com/hawx/hadfield"
 )
 
-var cmdSharpen = &Command{
-	UsageLine: "sharpen [options]",
-	Short:     "sharpen an image",
+var cmdSharpen = &hadfield.Command{
+	Usage: "sharpen [options]",
+	Short: "sharpen an image",
 Long: `
   Sharpen takes an image from STDIN, and prints a sharpened version to STDOUT.
 
@@ -37,7 +38,7 @@ func init() {
 	cmdSharpen.Flag.BoolVar(&sharpenUnsharp, "unsharp", false, "")
 }
 
-func runSharpen(cmd *Command, args []string) {
+func runSharpen(cmd *hadfield.Command, args []string) {
 	i := utils.ReadStdin()
 
 	if sharpenUnsharp {

@@ -3,11 +3,12 @@ package main
 import (
 	"github.com/hawx/img/pixelate"
 	"github.com/hawx/img/utils"
+	"github.com/hawx/hadfield"
 )
 
-var cmdPxl = &Command{
-	UsageLine: "pxl [options]",
-	Short:     "pxls image",
+var cmdPxl = &hadfield.Command{
+	Usage: "pxl [options]",
+	Short: "pxls image",
 Long: `
   Pxl takes an image from STDIN, pxls it by averaging the colour in large
   rectangles, and prints the result to STDOUT
@@ -40,7 +41,7 @@ func init() {
 	cmdPxl.Flag.IntVar(&pxlCols,   "cols",  -1,    "")
 }
 
-func runPxl(cmd *Command, args []string) {
+func runPxl(cmd *hadfield.Command, args []string) {
 	i := utils.ReadStdin()
 
 	triangle := pixelate.BOTH

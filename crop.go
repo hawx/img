@@ -3,11 +3,12 @@ package main
 import (
 	"github.com/hawx/img/crop"
 	"github.com/hawx/img/utils"
+	"github.com/hawx/hadfield"
 )
 
-var cmdCrop = &Command{
-	UsageLine: "crop [options]",
-	Short:     "crop an image",
+var cmdCrop = &hadfield.Command{
+	Usage: "crop [options]",
+	Short: "crop an image",
 Long: `
   Crop takes an image fron STDIN, and returns a cropped version to STDOUT. By
   default it will use the largest size possible; that is, if the image is wider
@@ -54,7 +55,7 @@ func init() {
 	cmdCrop.Flag.BoolVar(&cropTopLeft,     "top-left",     false, "")
 }
 
-func runCrop(cmd *Command, args []string) {
+func runCrop(cmd *hadfield.Command, args []string) {
 	i := utils.ReadStdin()
 
 	direction := utils.Centre

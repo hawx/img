@@ -3,12 +3,13 @@ package main
 import (
 	"github.com/hawx/img/levels"
 	"github.com/hawx/img/utils"
+	"github.com/hawx/hadfield"
 	"image"
 )
 
-var cmdLevels = &Command{
-	UsageLine: "levels [options]",
-	Short:     "adjust image levels",
+var cmdLevels = &hadfield.Command{
+	Usage: "levels [options]",
+	Short: "adjust image levels",
 	Long: `
   Levels adjusts the levels of an image. You can set the black/white point or
   give points in a curve to use. It can act on all colour channels (default
@@ -52,7 +53,7 @@ func init() {
 	cmdLevels.Flag.StringVar(&levelsCurve, "curve", "", "")
 }
 
-func runLevels(cmd *Command, args []string) {
+func runLevels(cmd *hadfield.Command, args []string) {
 	i := utils.ReadStdin()
 
 	if !levelsRed && !levelsGreen && !levelsBlue {
@@ -74,7 +75,7 @@ func runLevels(cmd *Command, args []string) {
 	utils.WriteStdout(i)
 }
 
-func runLevelsOnChannel(cmd *Command, args []string, img image.Image,
+func runLevelsOnChannel(cmd *hadfield.Command, args []string, img image.Image,
 	ch levels.Channel) image.Image {
 
 	if levelsAuto {

@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/hawx/img/tint"
 	"github.com/hawx/img/utils"
+	"github.com/hawx/hadfield"
 	"fmt"
 	"image/color"
 	"strconv"
@@ -10,9 +11,9 @@ import (
 	"errors"
 )
 
-var cmdTint = &Command{
-	UsageLine: "tint [options]",
-	Short:     "tint an image with a colour",
+var cmdTint = &hadfield.Command{
+	Usage: "tint [options]",
+	Short: "tint an image with a colour",
 Long: `
   Tint takes an image and tints it using the specified colour, the result is
   printed to STDOUT
@@ -111,7 +112,7 @@ func init() {
 	cmdTint.Flag.Var(&tintWith, "with", "")
 }
 
-func runTint(cmd *Command, args []string) {
+func runTint(cmd *hadfield.Command, args []string) {
 	i := utils.ReadStdin()
 
 	tintColor := color.NRGBA{

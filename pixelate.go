@@ -3,11 +3,12 @@ package main
 import (
 	"github.com/hawx/img/pixelate"
 	"github.com/hawx/img/utils"
+	"github.com/hawx/hadfield"
 )
 
-var cmdPixelate = &Command{
-	UsageLine: "pixelate [options]",
-	Short:     "pixelates image",
+var cmdPixelate = &hadfield.Command{
+	Usage: "pixelate [options]",
+	Short: "pixelates image",
 Long: `
   Pixelate takes an image from STDIN, pixelates it by averaging the colour in
   large rectangles, and prints the result to STDOUT
@@ -32,7 +33,7 @@ func init() {
 	cmdPixelate.Flag.IntVar(&pixelateCols,  "cols", -1, "")
 }
 
-func runPixelate(cmd *Command, args []string) {
+func runPixelate(cmd *hadfield.Command, args []string) {
 	i := utils.ReadStdin()
 
 	// Default

@@ -3,11 +3,12 @@ package main
 import (
 	"github.com/hawx/img/shuffle"
 	"github.com/hawx/img/utils"
+	"github.com/hawx/hadfield"
 )
 
-var cmdShuffle = &Command{
-	UsageLine: "shuffle [options]",
-	Short:     "shuffles pixels of the image",
+var cmdShuffle = &hadfield.Command{
+	Usage: "shuffle [options]",
+	Short: "shuffles pixels of the image",
 Long: `
   Shuffle takes an image, shuffles the pixels of the image, then prints the
   result to STDOUT
@@ -26,7 +27,7 @@ func init() {
 	cmdShuffle.Flag.BoolVar(&shuffleHorizontal, "horizontal", false, "")
 }
 
-func runShuffle(cmd *Command, args []string) {
+func runShuffle(cmd *hadfield.Command, args []string) {
 	i := utils.ReadStdin()
 
 	if (shuffleVertical && !shuffleHorizontal) {

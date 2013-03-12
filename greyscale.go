@@ -3,11 +3,12 @@ package main
 import (
 	"github.com/hawx/img/greyscale"
 	"github.com/hawx/img/utils"
+	"github.com/hawx/hadfield"
 )
 
-var cmdGreyscale = &Command{
-	UsageLine: "greyscale [options]",
-	Short:     "convert image to greyscale",
+var cmdGreyscale = &hadfield.Command{
+	Usage: "greyscale [options]",
+	Short: "convert image to greyscale",
 Long: `
   Greyscale takes an image from STDIN, and prints to STDOUT a greyscale version
 
@@ -41,7 +42,7 @@ func init() {
 	cmdGreyscale.Flag.BoolVar(&greyscalePhotoshop,  "photoshop",  false, "")
 }
 
-func runGreyscale(cmd *Command, args []string) {
+func runGreyscale(cmd *hadfield.Command, args []string) {
 	i := utils.ReadStdin()
 
 	if greyscaleAverage {

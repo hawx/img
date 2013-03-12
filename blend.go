@@ -4,6 +4,7 @@ import (
 	"github.com/nfnt/resize"
 	"github.com/hawx/img/blend"
 	"github.com/hawx/img/utils"
+	"github.com/hawx/hadfield"
 	"strings"
 	"os"
 	"fmt"
@@ -13,9 +14,9 @@ import (
 	_ "image/jpeg"
 )
 
-var cmdBlend = &Command{
-	UsageLine: "blend <other> [options]",
-	Short:     "blends two images together",
+var cmdBlend = &hadfield.Command{
+	Usage: "blend <other> [options]",
+	Short: "blends two images together",
 Long: `
   Blend takes an image file from STDIN (referred to as the 'base image') and
   another given as <other> (referred to as the 'blend image'), and blends them
@@ -123,7 +124,7 @@ func init() {
   cmdBlend.Flag.BoolVar(&blendLuminosity, "luminosity", false, "")
 }
 
-func runBlend(cmd *Command, args []string) {
+func runBlend(cmd *hadfield.Command, args []string) {
 	if blendModes { printModes() }
 
 	a := utils.ReadStdin()

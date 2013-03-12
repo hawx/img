@@ -3,11 +3,12 @@ package main
 import (
 	"github.com/hawx/img/contrast"
 	"github.com/hawx/img/utils"
+	"github.com/hawx/hadfield"
 )
 
-var cmdContrast = &Command{
-	UsageLine: "contrast [options]",
-	Short:     "adjust image contrast",
+var cmdContrast = &hadfield.Command{
+	Usage: "contrast [options]",
+	Short: "adjust image contrast",
 Long: `
   Contrast takes an image from STDIN, adjusts the contrast and prints the result
   to STDOUT
@@ -33,7 +34,7 @@ func init() {
 	cmdContrast.Flag.BoolVar(&contrastSigmoidal,   "sigmoidal", false, "")
 }
 
-func runContrast(cmd *Command, args []string) {
+func runContrast(cmd *hadfield.Command, args []string) {
 	i := utils.ReadStdin()
 
 	if contrastSigmoidal {

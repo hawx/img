@@ -3,12 +3,13 @@ package main
 import (
 	"github.com/hawx/img/blur"
 	"github.com/hawx/img/utils"
+	"github.com/hawx/hadfield"
 	"os"
 )
 
-var cmdBlur = &Command{
-	UsageLine: "blur [options]",
-	Short:     "blur an image",
+var cmdBlur = &hadfield.Command{
+	Usage: "blur [options]",
+	Short: "blur an image",
 Long: `
   Blur takes an image from STDIN, and prints a blurred version to STDOUT.
 
@@ -42,7 +43,7 @@ func init() {
 	cmdBlur.Flag.Float64Var(&blurGaussian, "gaussian", 5.0, "")
 }
 
-func runBlur(cmd *Command, args []string) {
+func runBlur(cmd *hadfield.Command, args []string) {
 	if _, ok := styleNames[blurStyle]; !ok {
 		utils.Warn("--style must be one of 'clamp', 'ignore' or 'wrap'")
 		os.Exit(2)

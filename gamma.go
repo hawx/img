@@ -3,11 +3,12 @@ package main
 import (
 	"github.com/hawx/img/gamma"
 	"github.com/hawx/img/utils"
+	"github.com/hawx/hadfield"
 )
 
-var cmdGamma = &Command{
-	UsageLine: "gamma [options]",
-	Short:     "adjust image gamma",
+var cmdGamma = &hadfield.Command{
+	Usage: "gamma [options]",
+	Short: "adjust image gamma",
 Long: `
   Gamma takes an image from STDIN, adjusts the gamma and prints the result to
   STDOUT
@@ -27,7 +28,7 @@ func init() {
 	cmdGamma.Flag.Float64Var(&gammaBy, "by", 1.8, "")
 }
 
-func runGamma(cmd *Command, args []string) {
+func runGamma(cmd *hadfield.Command, args []string) {
 	i := utils.ReadStdin()
 
 	if gammaAuto {
