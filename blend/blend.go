@@ -17,7 +17,9 @@ import (
 // colour.
 type Blender (func (c, d color.Color) color.Color)
 
-// cb is backdrop colour, cs is source (blend layer) colour
+// BlendPixel implements the actual blending of colours, to form the resultant
+// colour. It combines the backdrop color (cb), the source color (cs) along with
+// the result formed by calling f on these two values.
 func BlendPixel(cb, cs color.Color, f Blender) color.Color {
 	// Uses methods described in "PDF Reference, Third Edition" from Adobe
 	//  see: http://www.adobe.com/devnet/pdf/pdf_reference_archive.html
@@ -57,34 +59,9 @@ func BlendPixels(a, b image.Image, f Blender) image.Image {
 
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
-			// Uses methods described in "PDF Reference, Third Edition" from Adobe
-			//  see: http://www.adobe.com/devnet/pdf/pdf_reference_archive.html
-
-			// backdrop colour
 			cb := a.At(x, y)
-			// source colour
 			cs := b.At(x, y)
-			// result colour
-			cr := f(cb, cs)
-
-			rb, gb, bb, ab := utils.RatioRGBA(cb)
-			rs, gs, bs, as := utils.RatioRGBA(cs)
-			rr, gr, br, _  := utils.RatioRGBA(cr)
-
-			// Color compositing formula, expanded form. (Section 7.2.5)
-			red   := ((1 - as) * ab * rb) + ((1 - ab) * as * rs) + (ab * as * rr)
-			green := ((1 - as) * ab * gb) + ((1 - ab) * as * gs) + (ab * as * gr)
-			blue  := ((1 - as) * ab * bb) + ((1 - ab) * as * bs) + (ab * as * br)
-
-			// Union function. (Section 7.2.6)
-			alpha := ab + as - (ab * as)
-
-			result.Set(x, y, color.RGBA{
-				uint8(utils.Truncatef(red * 255)),
-				uint8(utils.Truncatef(green * 255)),
-				uint8(utils.Truncatef(blue * 255)),
-				uint8(utils.Truncatef(alpha * 255)),
-			})
+			result.Set(x, y, BlendPixel(cb, cs, f))
 		}
 	}
 
