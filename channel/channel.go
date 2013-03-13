@@ -57,7 +57,7 @@ func AlphaC(adj utils.Adjuster) utils.Composable {
 	}
 }
 
-// Hue shifts the hue of the Image using the function given.
+// Hue shifts the hue of the Image using the Adjuster given.
 var Hue = utils.MapAdjuster(HueC)
 
 func HueC(adj utils.Adjuster) utils.Composable {
@@ -68,7 +68,7 @@ func HueC(adj utils.Adjuster) utils.Composable {
 	}
 }
 
-// Saturation adjusts the saturation of the Image using the function given.
+// Saturation adjusts the saturation of the Image using the Adjuster given.
 var Saturation = utils.MapAdjuster(SaturationC)
 
 func SaturationC(adj utils.Adjuster) utils.Composable {
@@ -81,7 +81,7 @@ func SaturationC(adj utils.Adjuster) utils.Composable {
 	}
 }
 
-// Lightness adjusts the lightness of the Image using the function given.
+// Lightness adjusts the lightness of the Image using the Adjuster given.
 var Lightness = utils.MapAdjuster(LightnessC)
 
 func LightnessC(adj utils.Adjuster) utils.Composable {
@@ -94,7 +94,7 @@ func LightnessC(adj utils.Adjuster) utils.Composable {
 	}
 }
 
-// Brightness adjusts the brightness of the Image using the function given.
+// Brightness adjusts the brightness of the Image using the Adjuster given.
 var Brightness = utils.MapAdjuster(BrightnessC)
 
 func BrightnessC(adj utils.Adjuster) utils.Composable {
