@@ -19,7 +19,7 @@ const (
 
 
 func pxlWorker(img image.Image, bounds image.Rectangle, dest draw.Image,
-	size utils.Dimension, triangle Triangle, aliased bool) {
+	size utils.Dimension, triangle Triangle, aliased bool, c chan int) {
 
 	ratio := float64(size.H) / float64(size.W)
 
@@ -126,6 +126,8 @@ func pxlWorker(img image.Image, bounds image.Rectangle, dest draw.Image,
 			}
 		}
 	}
+
+	c <- 1
 }
 
 func doPxl(img image.Image, size utils.Dimension, triangle Triangle, style Style, aliased bool) image.Image {
@@ -135,6 +137,7 @@ func doPxl(img image.Image, size utils.Dimension, triangle Triangle, style Style
 
 	var o draw.Image
 	b := img.Bounds()
+	c := make(chan int, nCPU)
 
 	switch style {
 	case CROPPED:
@@ -144,15 +147,19 @@ func doPxl(img image.Image, size utils.Dimension, triangle Triangle, style Style
 		o = image.NewRGBA(image.Rect(0, 0, size.W * cols, size.H * rows))
 
 		for _, r := range utils.ChopRectangleToSizes(b, size.H, size.W) {
-			go pxlWorker(img, r, o, size, triangle, aliased)
+			go pxlWorker(img, r, o, size, triangle, aliased, c)
 		}
 
 	case FITTED:
 		o = image.NewRGBA(img.Bounds())
 
 		for _, r := range utils.ChopRectangleToSizesExcess(img.Bounds(), size.H, size.W) {
-			go pxlWorker(img, r, o, size, triangle, aliased)
+			go pxlWorker(img, r, o, size, triangle, aliased, c)
 		}
+	}
+
+	for i := 0; i < nCPU; i++ {
+		<-c
 	}
 
 	return o

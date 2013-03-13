@@ -17,7 +17,8 @@ const (
 )
 
 
-func paintAverage(img image.Image, bounds image.Rectangle, dest draw.Image) {
+func paintAverage(img image.Image, bounds image.Rectangle, dest draw.Image,
+	c chan int) {
 	values := make([]color.Color, bounds.Dx() * bounds.Dy())
 	count  := 0
 
@@ -31,6 +32,8 @@ func paintAverage(img image.Image, bounds image.Rectangle, dest draw.Image) {
 	utils.MapColorInRectangle(img, bounds, dest, func(c color.Color) color.Color {
 		return avg
 	})
+
+	c <- 1
 }
 
 
@@ -43,6 +46,7 @@ func Pixelate(img image.Image, size utils.Dimension, style Style) image.Image {
 
 	var o draw.Image
 	b := img.Bounds()
+	c := make(chan int, nCPU)
 
 	switch style {
 	case CROPPED:
@@ -52,15 +56,19 @@ func Pixelate(img image.Image, size utils.Dimension, style Style) image.Image {
 		o = image.NewRGBA(image.Rect(0, 0, size.W * cols, size.H * rows))
 
 		for _, r := range utils.ChopRectangleToSizes(b, size.H, size.W) {
-			go paintAverage(img, r, o)
+			go paintAverage(img, r, o, c)
 		}
 
 	case FITTED:
 		o = image.NewRGBA(b)
 
 		for _, r := range utils.ChopRectangleToSizesExcess(b, size.H, size.W) {
-			go paintAverage(img, r, o)
+			go paintAverage(img, r, o, c)
 		}
+	}
+
+	for i := 0; i < nCPU; i++ {
+		<-c
 	}
 
 	return o
