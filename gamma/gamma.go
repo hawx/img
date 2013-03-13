@@ -1,4 +1,4 @@
-// Package gamma implements a signle function to adjust the gamma of an image.
+// Package gamma implements functions to adjust the gamma of an image.
 package gamma
 
 import (
