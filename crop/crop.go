@@ -4,11 +4,21 @@ package crop
 import (
 	"github.com/hawx/img/utils"
 	"image"
+	"image/color"
 )
 
 // cropTo draws a new Image with pixels that have coordinates that when passed
 // to the given function returns true.
 func cropTo(img image.Image, in func(x,y int) bool) image.Image {
+	return cropToValue(img, func(x,y int) float64 {
+		if in(x,y) {
+			return 1.0
+		}
+		return 0.0
+	})
+}
+
+func cropToValue(img image.Image, in func(x,y int) float64) image.Image {
 	b := img.Bounds()
 	o := image.NewRGBA(b)
 
@@ -17,13 +27,19 @@ func cropTo(img image.Image, in func(x,y int) bool) image.Image {
 
 	for y := b.Min.Y; y <= b.Max.Y; y++ {
 		for x := b.Min.X; x <= b.Max.X; x++ {
-			if in(x,y) {
+			if in(x,y) > 0 {
 				if x < leastX { leastX = x }
 				if y < leastY { leastY = y }
 				if x > mostX  { mostX  = x }
 				if y > mostY  { mostY  = y }
 
-				o.Set(x, y, img.At(x, y))
+				r,g,b,a := utils.NormalisedRGBA(img.At(x, y))
+				o.Set(x, y, color.NRGBA{
+					uint8(r),
+					uint8(g),
+					uint8(b),
+					uint8(float64(a) * in(x,y)),
+				})
 			}
 		}
 	}
@@ -111,10 +127,15 @@ func Circle(img image.Image, size int, direction utils.Direction) image.Image {
 		xOffset = (w - size)
 	}
 
-	in := func(x,y int) bool {
+	in := func(x,y int) float64 {
 		x -= xOffset; y -= yOffset
-		return (x*x) + (y*y) < size*size
+		if (x*x) + (y*y) < (size) * (size-1) {
+			return 1
+		} else if (x*x) + (y*y) <= size*size {
+			return 0.4
+		}
+		return 0
 	}
 
-	return cropTo(img, in)
+	return cropToValue(img, in)
 }
