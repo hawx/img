@@ -303,7 +303,7 @@ func PEachColor(img image.Image, f func(c color.Color)) {
 	c := make(chan int, nCPU)
 
 	for _, r := range splitRectangle(img.Bounds(), nCPU) {
-		go EachColorInRectangle(img, r, f)
+		go peachColorWorker(img, r, f, c)
 	}
 
 	// wait until work is done
