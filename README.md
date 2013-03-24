@@ -62,7 +62,7 @@ func main() {
 
   img = greyscale.Red(img)
   img = contrast.Linear(img, 1.5)
-  img = tint.Tint(img, color.NRGBA{131, 18, 19})
+  img = tint.Tint(img, color.NRGBA{131, 18, 19, 255})
 
   output, _ := os.Create(os.Args[2])
   png.Encode(output, img)
