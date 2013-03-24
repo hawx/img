@@ -55,14 +55,14 @@ func Pixelate(img image.Image, size utils.Dimension, style Style) image.Image {
 
 		o = image.NewRGBA(image.Rect(0, 0, size.W * cols, size.H * rows))
 
-		for _, r := range utils.ChopRectangleToSizes(b, size.H, size.W) {
+		for _, r := range utils.ChopRectangleToSizes(b, size.H, size.W, utils.IGNORE) {
 			go paintAverage(img, r, o, c)
 		}
 
 	case FITTED:
 		o = image.NewRGBA(b)
 
-		for _, r := range utils.ChopRectangleToSizesExcess(b, size.H, size.W) {
+		for _, r := range utils.ChopRectangleToSizes(b, size.H, size.W, utils.SEPARATE) {
 			go paintAverage(img, r, o, c)
 		}
 	}

@@ -146,14 +146,14 @@ func doPxl(img image.Image, size utils.Dimension, triangle Triangle, style Style
 
 		o = image.NewRGBA(image.Rect(0, 0, size.W * cols, size.H * rows))
 
-		for _, r := range utils.ChopRectangleToSizes(b, size.H, size.W) {
+		for _, r := range utils.ChopRectangleToSizes(b, size.H, size.W, utils.IGNORE) {
 			go pxlWorker(img, r, o, size, triangle, aliased, c)
 		}
 
 	case FITTED:
 		o = image.NewRGBA(img.Bounds())
 
-		for _, r := range utils.ChopRectangleToSizesExcess(img.Bounds(), size.H, size.W) {
+		for _, r := range utils.ChopRectangleToSizes(img.Bounds(), size.H, size.W, utils.SEPARATE) {
 			go pxlWorker(img, r, o, size, triangle, aliased, c)
 		}
 	}
