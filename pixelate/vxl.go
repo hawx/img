@@ -45,9 +45,9 @@ import (
 		return inTopSquare(x,y) || inBottomRight(x,y) || inBottomLeft(x,y)
 	}
 
-	topL   := channel.LightnessC(utils.Multiplier(top))
-	rightL := channel.LightnessC(utils.Multiplier(right))
-	leftL  := channel.LightnessC(utils.Multiplier(left))
+	topL   := channel.AdjustC(utils.Multiplier(top),   channel.Lightness)
+	rightL := channel.AdjustC(utils.Multiplier(right), channel.Lightness)
+	leftL  := channel.AdjustC(utils.Multiplier(left),  channel.Lightness)
 
 	for col := 0; col < cols; col++ {
 		for row := 0; row < rows; row++ {

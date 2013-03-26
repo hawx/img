@@ -3,6 +3,7 @@
 package levels
 
 import (
+	"github.com/hawx/img/channel"
 	"github.com/hawx/img/utils"
 	"image"
 	"image/color"
@@ -19,7 +20,7 @@ func Equalise(img image.Image) image.Image {
 	return img
 }
 
-func Auto(img image.Image, ch Channel) image.Image {
+func Auto(img image.Image, ch channel.Channel) image.Image {
 	var lightest, darkest float64
 	lightest = 0.0
 	darkest  = 1.0
@@ -41,7 +42,7 @@ func Auto(img image.Image, ch Channel) image.Image {
 	})
 }
 
-func AutoWhite(img image.Image, ch Channel) image.Image {
+func AutoWhite(img image.Image, ch channel.Channel) image.Image {
 	var lightest float64 = 0.0
 
 	utils.PEachColor(img, func(c color.Color) {
@@ -55,7 +56,7 @@ func AutoWhite(img image.Image, ch Channel) image.Image {
 
 // AutoBlack finds the darkest colour in the image and makes it black, adjusting
 // the colours of every other point to achieve the same distribution.
-func AutoBlack(img image.Image, ch Channel) image.Image {
+func AutoBlack(img image.Image, ch channel.Channel) image.Image {
 	var darkest float64 = 1.0
 
 	utils.PEachColor(img, func(c color.Color) {
@@ -67,11 +68,11 @@ func AutoBlack(img image.Image, ch Channel) image.Image {
 	return SetBlack(img, ch, darkest)
 }
 
-func SetBlack(img image.Image, ch Channel, darkest float64) image.Image {
+func SetBlack(img image.Image, ch channel.Channel, darkest float64) image.Image {
 	return utils.MapColor(img, SetBlackC(ch, darkest))
 }
 
-func SetBlackC(ch Channel, darkest float64) utils.Composable {
+func SetBlackC(ch channel.Channel, darkest float64) utils.Composable {
 	return func(c color.Color) color.Color {
 		v := ch.Get(c)
 		v  = linearScale(v, darkest, 1)
@@ -80,11 +81,11 @@ func SetBlackC(ch Channel, darkest float64) utils.Composable {
 	}
 }
 
-func SetWhite(img image.Image, ch Channel, lightest float64) image.Image {
+func SetWhite(img image.Image, ch channel.Channel, lightest float64) image.Image {
 	return utils.MapColor(img, SetWhiteC(ch, lightest))
 }
 
-func SetWhiteC(ch Channel, lightest float64) utils.Composable {
+func SetWhiteC(ch channel.Channel, lightest float64) utils.Composable {
 	return func(c color.Color) color.Color {
 		v := ch.Get(c)
 		v  = linearScale(v, 0, lightest)
@@ -93,11 +94,11 @@ func SetWhiteC(ch Channel, lightest float64) utils.Composable {
 	}
 }
 
-func SetCurve(img image.Image, ch Channel, curve *Curve) image.Image {
+func SetCurve(img image.Image, ch channel.Channel, curve *Curve) image.Image {
 	return utils.MapColor(img, SetCurveC(ch, curve))
 }
 
-func SetCurveC(ch Channel, curve *Curve) utils.Composable {
+func SetCurveC(ch channel.Channel, curve *Curve) utils.Composable {
 	return func(c color.Color) color.Color {
 		v := ch.Get(c)
 		v  = curve.Value(v)

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/hawx/img/channel"
 	"github.com/hawx/img/levels"
 	"github.com/hawx/img/utils"
 	"github.com/hawx/hadfield"
@@ -61,22 +62,22 @@ func runLevels(cmd *hadfield.Command, args []string) {
 	}
 
 	if levelsRed {
-		i = runLevelsOnChannel(cmd, args, i, levels.RedChannel)
+		i = runLevelsOnChannel(cmd, args, i, channel.Red)
 	}
 
 	if levelsGreen {
-		i = runLevelsOnChannel(cmd, args, i, levels.GreenChannel)
+		i = runLevelsOnChannel(cmd, args, i, channel.Green)
 	}
 
 	if levelsBlue {
-		i = runLevelsOnChannel(cmd, args, i, levels.BlueChannel)
+		i = runLevelsOnChannel(cmd, args, i, channel.Blue)
 	}
 
 	utils.WriteStdout(i)
 }
 
 func runLevelsOnChannel(cmd *hadfield.Command, args []string, img image.Image,
-	ch levels.Channel) image.Image {
+	ch channel.Channel) image.Image {
 
 	if levelsAuto {
 		img = levels.Auto(img, ch)
