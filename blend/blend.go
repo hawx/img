@@ -51,14 +51,11 @@ func BlendPixel(cb, cs color.Color, f Blender) color.Color {
 // BlendPixels takes the base and blend images and applies the given Blender to
 // each of their pixel pairs.
 func BlendPixels(a, b image.Image, f Blender) image.Image {
-	ba := a.Bounds(); bb := b.Bounds()
-	width  := int(utils.Min(uint32(ba.Dx()), uint32(bb.Dx())))
-	height := int(utils.Min(uint32(ba.Dy()), uint32(bb.Dy())))
+	bounds := a.Bounds()
+	result := image.NewRGBA(bounds)
 
-	result := image.NewRGBA(image.Rect(0, 0, width, height))
-
-	for y := 0; y < height; y++ {
-		for x := 0; x < width; x++ {
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
 			cb := a.At(x, y)
 			cs := b.At(x, y)
 			result.Set(x, y, BlendPixel(cb, cs, f))
