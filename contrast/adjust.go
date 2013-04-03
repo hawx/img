@@ -18,10 +18,11 @@ func Adjust(img image.Image, value float64) image.Image {
 
 func AdjustC(value float64) utils.Composable {
 	return func(c color.Color) color.Color {
-		d := altcolor.HSIAModel.Convert(c).(altcolor.HSIA)
+		// Turns out ImageMagick thinks HSB=HSV.
+		d := altcolor.HSVAModel.Convert(c).(altcolor.HSVA)
 
-		d.I += 0.5 * value * (0.5 * (math.Sin(math.Pi * (d.I - 0.5)) + 1.0) - d.I)
-		if d.I > 1.0 { d.I = 1.0 } else if d.I < 0.0 { d.I = 0.0 }
+		d.V += 0.5 * value * (0.5 * (math.Sin(math.Pi * (d.V - 0.5)) + 1.0) - d.V)
+		if d.V > 1.0 { d.V = 1.0 } else if d.V < 0.0 { d.V = 0.0 }
 
 		return d
 	}
