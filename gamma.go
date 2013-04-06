@@ -14,27 +14,32 @@ Long: `
   STDOUT
 
     --auto         # Automatically alter gamma to "best" value (default)
-    --by [n]       # Amount to adjust gamma by
+    --by <n>       # Amount to adjust gamma by
+    --undo         # Adjust by the reciprocal of the amount, instead
 `,
 }
 
-var gammaAuto bool
+var gammaAuto, gammaUndo bool
 var gammaBy float64
 
 func init() {
 	cmdGamma.Run = runGamma
 
-	cmdGamma.Flag.BoolVar(&gammaAuto, "auto", false, "")
-	cmdGamma.Flag.Float64Var(&gammaBy, "by", 1.8, "")
+	cmdGamma.Flag.BoolVar(&gammaAuto,  "auto", false, "")
+	cmdGamma.Flag.Float64Var(&gammaBy, "by",   1.8,   "")
+	cmdGamma.Flag.BoolVar(&gammaUndo,  "undo", false, "")
 }
 
 func runGamma(cmd *hadfield.Command, args []string) {
 	i := utils.ReadStdin()
 
-	if gammaAuto {
-		i = gamma.Auto(i)
-	} else {
+	if gammaUndo { gammaBy = 1.0 / gammaBy }
+
+	if utils.FlagVisited("by", cmd.Flag) {
 		i = gamma.Adjust(i, gammaBy)
+	} else {
+		i = gamma.Auto(i)
 	}
+
 	utils.WriteStdout(i)
 }
