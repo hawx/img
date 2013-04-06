@@ -20,7 +20,6 @@ Long: `
     --red            # Use the values of the red channel
     --green          # Use the values of the green channel
     --blue           # Use the values of the blue channel
-    --photoshop      # Use photoshop luminosity method (default)
 `,
 }
 
@@ -39,7 +38,6 @@ func init() {
 	cmdGreyscale.Flag.BoolVar(&greyscaleRed,        "red",        false, "")
 	cmdGreyscale.Flag.BoolVar(&greyscaleGreen,      "green",      false, "")
 	cmdGreyscale.Flag.BoolVar(&greyscaleBlue,       "blue",       false, "")
-	cmdGreyscale.Flag.BoolVar(&greyscalePhotoshop,  "photoshop",  false, "")
 }
 
 func runGreyscale(cmd *hadfield.Command, args []string) {
@@ -62,7 +60,7 @@ func runGreyscale(cmd *hadfield.Command, args []string) {
 	} else if greyscaleBlue {
 		i = greyscale.Blue(i)
 	} else {
-		i = greyscale.Photoshop(i)
+		i = greyscale.Greyscale(i)
 	}
 
 	utils.WriteStdout(i)

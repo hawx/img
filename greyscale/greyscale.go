@@ -47,15 +47,6 @@ func LightnessC() utils.Composable {
 	})
 }
 
-// Luminosity creates a greyscale version of the Image using the luminosity
-// method. This uses a weighted average to account for human sensitivity to
-// green above other colours.  Formula is R * 0.21 + G * 0.71 + B * 0.07.
-var Luminosity = utils.Map(LuminosityC)
-
-func LuminosityC() utils.Composable {
-	return colorAlterer(luminosityAlterer(0.21, 0.71, 0.07))
-}
-
 // Maximal creates a greyscale version of the Image by taking the maximum of the
 // RGB channels and using that value for each channel. Produces a lighter
 // image.
@@ -102,11 +93,19 @@ func BlueC() utils.Composable {
 	return colorAlterer(luminosityAlterer(0, 0, 1))
 }
 
-// Photoshop creates a greyscale version of the Image using the method
-// (supposedly) used by Adobe Photoshop. It is simply a variation on the
-// Luminosity method.
-var Photoshop = utils.Map(PhotoshopC)
+// Luminosity creates a greyscale version of the Image using a different
+// weighting from the Default method.
+var Luminosity = utils.Map(LuminosityC)
 
-func PhotoshopC() utils.Composable {
-	return colorAlterer(luminosityAlterer(0.299, 0.587, 0.114))
+func LuminosityC() utils.Composable {
+	return colorAlterer(luminosityAlterer(0.2126, 0.7152, 0.0722))
+}
+
+// Greyscale creates a greyscale version of the Image by using a mixture of the
+// colour channels. It accounts for human sensitivity to green above other
+// colours by weighting the amount mixed in.
+var Greyscale = utils.Map(GreyscaleC)
+
+func GreyscaleC() utils.Composable {
+	return colorAlterer(luminosityAlterer(0.298839, 0.586811, 0.114350))
 }
