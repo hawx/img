@@ -10,20 +10,36 @@ import (
 	"image"
 
 	"image/png"
-	_ "image/jpeg"
+	"image/jpeg"
 	_ "image/gif"
+	"code.google.com/p/go.image/tiff"
 )
+
+type output int
+const (
+	PNG output = iota
+	JPEG
+	TIFF
+)
+
+var Output output = PNG
 
 // ReadStdin reads an image file (either PNG, JPEG or GIF) from standard input.
 func ReadStdin() image.Image {
 	img, _, _ := image.Decode(os.Stdin)
-
 	return img
 }
 
 // WriteStdout writes an Image to standard output as a PNG file.
 func WriteStdout(img image.Image) {
-	png.Encode(os.Stdout, img)
+	switch Output {
+	case JPEG:
+		jpeg.Encode(os.Stdout, img, nil)
+	case PNG:
+		png.Encode(os.Stdout, img)
+	case TIFF:
+		tiff.Encode(os.Stdout, img, nil)
+	}
 }
 
 // Warn prints a message to standard error

@@ -1,12 +1,14 @@
 package main
 
 import (
+	"github.com/hawx/img/utils"
 	"github.com/hawx/hadfield"
 	"bytes"
 	"path/filepath"
 	"os/exec"
 	"os"
 	"strings"
+	"flag"
 )
 
 type External struct {
@@ -151,6 +153,18 @@ Help: `{{if .Callable}}Usage: img {{.Usage}}
 func main() {
 	externals := lookupExternals()
 	commands = append(commands, externals...)
+
+	var jpeg, png, tiff bool
+	flag.BoolVar(&jpeg, "jpg",  false, "")
+	flag.BoolVar(&jpeg, "jpeg", false, "")
+	flag.BoolVar(&png,  "png",  false, "")
+	flag.BoolVar(&tiff, "tiff", false, "")
+	flag.BoolVar(&tiff, "tif",  false, "")
+
+	flag.Parse()
+	if jpeg { utils.Output = utils.JPEG }
+	if png  { utils.Output = utils.PNG }
+	if tiff { utils.Output = utils.TIFF }
 
 	hadfield.Run(commands, templates)
 }
