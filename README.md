@@ -1,8 +1,8 @@
 # img
 
 A collection of image manipulation tools. Each tool takes an input file from
-standard input, this needs to be in PNG, JPEG or GIF format. Every tool outputs
-a PNG file, regardless of input type, to standard output.
+standard input, this needs to be in PNG, JPEG or GIF format. They output the
+resulting image (by default in PNG format) to standard output.
 
 This was tested and built with the latest version of Go. Install to
 `$GOPATH/bin` with,
@@ -71,26 +71,6 @@ func main() {
 
 This can then be run like `./example input.png output.png`.
 
-
-## External Scripts
-
-_img_ can be extended with external scripts. They must be named `img-something`,
-and be somewhere on the `$PATH` to be found. They are then expected to respond
-to the following flags:
-
-- `--usage`: the usage string, eg. `"example [args]"`, the first word of
-  which should be the command's name.
-
-- `--short`: a short one-line description of the tool to show in `img
-  help`.
-
-- `--long`: a long, multiline description detailing arguments that the command
-  can take also. Should follow format of other tools and have description
-  indented two spaces, and arguments indented four spaces with a hash separating
-  the description.
-
-To show an example of an external script I have rewritten a lomo effect detailed
-in [Lomography, UNIX Style][tao] in [shell][lomosh] and [Go][lomogo]
 
 
 [lomosh]: https://gist.github.com/hawx/5047389
