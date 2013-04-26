@@ -41,7 +41,7 @@ func init() {
 }
 
 func runGreyscale(cmd *hadfield.Command, args []string) {
-	i := utils.ReadStdin()
+	i, data := utils.ReadStdin()
 
 	if greyscaleAverage {
 		i = greyscale.Average(i)
@@ -63,5 +63,5 @@ func runGreyscale(cmd *hadfield.Command, args []string) {
 		i = greyscale.Greyscale(i)
 	}
 
-	utils.WriteStdout(i)
+	utils.WriteStdout(i, data)
 }

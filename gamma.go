@@ -31,7 +31,7 @@ func init() {
 }
 
 func runGamma(cmd *hadfield.Command, args []string) {
-	i := utils.ReadStdin()
+	i, data := utils.ReadStdin()
 
 	if gammaUndo { gammaBy = 1.0 / gammaBy }
 
@@ -41,5 +41,5 @@ func runGamma(cmd *hadfield.Command, args []string) {
 		i = gamma.Auto(i)
 	}
 
-	utils.WriteStdout(i)
+	utils.WriteStdout(i, data)
 }

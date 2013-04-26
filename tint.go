@@ -59,7 +59,7 @@ func init() {
 }
 
 func runTint(cmd *hadfield.Command, args []string) {
-	i := utils.ReadStdin()
+	i, data := utils.ReadStdin()
 
 	tintColor := color.NRGBA{
 		uint8(tintWith.R),
@@ -69,5 +69,5 @@ func runTint(cmd *hadfield.Command, args []string) {
 	}
 	i = tint.Tint(i, tintColor)
 
-	utils.WriteStdout(i)
+	utils.WriteStdout(i, data)
 }

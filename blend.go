@@ -127,7 +127,7 @@ func init() {
 func runBlend(cmd *hadfield.Command, args []string) {
 	if blendModes { printModes() }
 
-	a := utils.ReadStdin()
+	a,data := utils.ReadStdin()
 
 	path := args[0]
 	file, _ := os.Open(path)
@@ -216,7 +216,7 @@ func runBlend(cmd *hadfield.Command, args []string) {
 		f = blend.Normal
 	}
 
-	utils.WriteStdout(f(a, b))
+	utils.WriteStdout(f(a, b), data)
 }
 
 func printModes() {

@@ -56,7 +56,7 @@ func init() {
 }
 
 func runCrop(cmd *hadfield.Command, args []string) {
-	i := utils.ReadStdin()
+	i, data := utils.ReadStdin()
 
 	direction := utils.Centre
 
@@ -75,5 +75,5 @@ func runCrop(cmd *hadfield.Command, args []string) {
 		i = crop.Square(i, cropSize, direction)
 	}
 
-	utils.WriteStdout(i)
+	utils.WriteStdout(i, data)
 }

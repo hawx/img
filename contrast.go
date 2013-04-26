@@ -35,7 +35,7 @@ func init() {
 }
 
 func runContrast(cmd *hadfield.Command, args []string) {
-	i := utils.ReadStdin()
+	i, data := utils.ReadStdin()
 
 	if contrastSigmoidal {
 		i = contrast.Sigmoidal(i, contrastFactor, contrastMidpoint)
@@ -45,5 +45,5 @@ func runContrast(cmd *hadfield.Command, args []string) {
 		i = contrast.Adjust(i, contrastFactor)
 	}
 
-	utils.WriteStdout(i)
+	utils.WriteStdout(i, data)
 }

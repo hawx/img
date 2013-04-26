@@ -55,7 +55,7 @@ func init() {
 }
 
 func runLevels(cmd *hadfield.Command, args []string) {
-	i := utils.ReadStdin()
+	i, data := utils.ReadStdin()
 
 	if !levelsRed && !levelsGreen && !levelsBlue {
 		levelsRed = true; levelsGreen = true; levelsBlue = true
@@ -73,7 +73,7 @@ func runLevels(cmd *hadfield.Command, args []string) {
 		i = runLevelsOnChannel(cmd, args, i, channel.Blue)
 	}
 
-	utils.WriteStdout(i)
+	utils.WriteStdout(i, data)
 }
 
 func runLevelsOnChannel(cmd *hadfield.Command, args []string, img image.Image,

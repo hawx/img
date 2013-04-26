@@ -42,7 +42,7 @@ func init() {
 }
 
 func runPxl(cmd *hadfield.Command, args []string) {
-	i := utils.ReadStdin()
+	i, data := utils.ReadStdin()
 
 	triangle := pixelate.BOTH
 	if pxlLeft  { triangle = pixelate.LEFT }
@@ -65,5 +65,5 @@ func runPxl(cmd *hadfield.Command, args []string) {
 		i = pixelate.Pxl(i, pxlSize, triangle, style)
 	}
 
-	utils.WriteStdout(i)
+	utils.WriteStdout(i, data)
 }

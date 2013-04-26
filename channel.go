@@ -54,7 +54,7 @@ func init() {
 }
 
 func runChannel(cmd *hadfield.Command, args []string) {
-	i := utils.ReadStdin()
+	i, data := utils.ReadStdin()
 	var adj utils.Adjuster
 
 	if utils.FlagVisited("by", cmd.Flag) {
@@ -81,5 +81,5 @@ func runChannel(cmd *hadfield.Command, args []string) {
 
 	if channelAlpha      { i = channel.Adjust(i, adj, channel.Alpha) }
 
-	utils.WriteStdout(i)
+	utils.WriteStdout(i, data)
 }

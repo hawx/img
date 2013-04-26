@@ -42,12 +42,12 @@ func init() {
 }
 
 func runVxl(cmd *hadfield.Command, args []string) {
-	i := utils.ReadStdin()
+	i, data := utils.ReadStdin()
 
 	if vxlRows > 0 {
 		vxlHeight = utils.SizeForRows(i, vxlRows).H
 	}
 
 	i = pixelate.Vxl(i, vxlHeight, vxlFlip, vxlTop, vxlLeft, vxlRight)
-	utils.WriteStdout(i)
+	utils.WriteStdout(i, data)
 }

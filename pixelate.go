@@ -34,7 +34,7 @@ func init() {
 }
 
 func runPixelate(cmd *hadfield.Command, args []string) {
-	i := utils.ReadStdin()
+	i, data := utils.ReadStdin()
 
 	// Default
 	style := pixelate.FITTED
@@ -52,5 +52,5 @@ func runPixelate(cmd *hadfield.Command, args []string) {
 	}
 
 	i  = pixelate.Pixelate(i, pixelateSize, style)
-	utils.WriteStdout(i)
+	utils.WriteStdout(i, data)
 }

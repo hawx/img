@@ -3,9 +3,14 @@
 package utils
 
 import (
+	"github.com/hawx/img/exif"
 	"flag"
 	"fmt"
 	"os"
+	"log"
+
+	"io/ioutil"
+	"io"
 
 	"image"
 
@@ -25,20 +30,62 @@ const (
 var Output output = PNG
 
 // ReadStdin reads an image file (either PNG, JPEG or GIF) from standard input.
-func ReadStdin() image.Image {
+func ReadStdin() (image.Image, *exif.Exif) {
 	img, _, _ := image.Decode(os.Stdin)
-	return img
+	os.Stdin.Seek(0, 0)
+	data := exif.Decode(os.Stdin)
+	return img, data
 }
 
 // WriteStdout writes an Image to standard output as a PNG file.
-func WriteStdout(img image.Image) {
+func WriteStdout(img image.Image, data *exif.Exif) {
 	switch Output {
 	case JPEG:
-		jpeg.Encode(os.Stdout, img, nil)
+		// Create a temporary file for exiftool to use
+		tmp, _ := ioutil.TempFile("", "img-utils-exif-")
+		path := tmp.Name()
+
+		// Encode the jpeg to this temp file
+		err := jpeg.Encode(tmp, img, nil)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+
+		// Write the exif data to the temp file
+		err = data.Write(path)
+		if err != nil {
+			// // This will generally return an error, and it still works, so can
+			// // probably be ignored.
+			// log.Println(err)
+		}
+
+		// Reopen the temp file. Yes, really. This is due to the fact that, even if
+		// I seek to 0, problems still occur. So this works, I'm leaving it.
+		f, err := os.Open(path)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+
+		io.Copy(os.Stdout, f)
+
+		// Make sure the temp file is deleted after
+		defer func() { os.Remove(path) }()
+
 	case PNG:
-		png.Encode(os.Stdout, img)
+		err := png.Encode(os.Stdout, img)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+
 	case TIFF:
-		tiff.Encode(os.Stdout, img, nil)
+		err := tiff.Encode(os.Stdout, img, nil)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
 	}
 }
 

@@ -28,7 +28,7 @@ func init() {
 }
 
 func runShuffle(cmd *hadfield.Command, args []string) {
-	i := utils.ReadStdin()
+	i, data := utils.ReadStdin()
 
 	if (shuffleVertical && !shuffleHorizontal) {
 		i = shuffle.Vertically(i)
@@ -38,5 +38,5 @@ func runShuffle(cmd *hadfield.Command, args []string) {
 		i = shuffle.Shuffle(i)
 	}
 
-	utils.WriteStdout(i)
+	utils.WriteStdout(i, data)
 }

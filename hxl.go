@@ -28,12 +28,12 @@ func init() {
 }
 
 func runHxl(cmd *hadfield.Command, args []string) {
-	i := utils.ReadStdin()
+	i, data := utils.ReadStdin()
 
 	if hxlCols > 0 {
 		hxlWidth = utils.SizeForCols(i, hxlCols).W
 	}
 
 	i  = pixelate.Hxl(i, hxlWidth)
-	utils.WriteStdout(i)
+	utils.WriteStdout(i, data)
 }

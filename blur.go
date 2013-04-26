@@ -51,7 +51,7 @@ func runBlur(cmd *hadfield.Command, args []string) {
 
 	style, _ := styleNames[blurStyle]
 
-	i := utils.ReadStdin()
+	i, data := utils.ReadStdin()
 
 	if blurBox {
 		i = blur.Box(i, blurRadius, style)
@@ -59,5 +59,5 @@ func runBlur(cmd *hadfield.Command, args []string) {
 		i = blur.Gaussian(i, blurRadius, blurGaussian, style)
 	}
 
-	utils.WriteStdout(i)
+	utils.WriteStdout(i, data)
 }

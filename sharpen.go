@@ -39,7 +39,7 @@ func init() {
 }
 
 func runSharpen(cmd *hadfield.Command, args []string) {
-	i := utils.ReadStdin()
+	i, data := utils.ReadStdin()
 
 	if sharpenUnsharp {
 		i = sharpen.UnsharpMask(i, sharpenRadius, sharpenSigma, sharpenAmount, sharpenThreshold)
@@ -47,5 +47,5 @@ func runSharpen(cmd *hadfield.Command, args []string) {
 		i = sharpen.Sharpen(i, sharpenRadius, sharpenSigma)
 	}
 
-	utils.WriteStdout(i)
+	utils.WriteStdout(i, data)
 }
