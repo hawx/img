@@ -12,7 +12,7 @@ import (
 )
 
 type External struct {
-	Path, Usage, Short, Long string
+	Path, Usage, Short, Long  string
 }
 
 func (e External) String() string {
@@ -43,7 +43,12 @@ func (e *External) Callable() bool {
 }
 
 func (e *External) Call(cmd hadfield.Interface, templates hadfield.Templates, args []string) {
-	ex := exec.Command(e.Path, args[1:]...)
+	// args[0] is set to the executable's name, so we can safely replace it with
+	// the output type. This is always going to be something, so needs to be
+	// checked for, removed, and respected!
+	args[0] = string(utils.Output)
+
+	ex := exec.Command(e.Path, args...)
 	ex.Stdin  = os.Stdin
 	ex.Stdout = os.Stdout
 	ex.Stderr = os.Stderr

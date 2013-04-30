@@ -20,14 +20,28 @@ import (
 	"code.google.com/p/go.image/tiff"
 )
 
-type output int
+// This is a string, and not an int of some kind, so that it is easy to find out
+// which one is set AND have the type niceness. These are the canonical
+// names. Easy.
+type output string
 const (
-	PNG output = iota
-	JPEG
-	TIFF
+	PNG output = "png"
+	JPEG       = "jpeg"
+	TIFF       = "tiff"
 )
 
 var Output output = PNG
+
+// GetOutput takes the os.Args array as input, uses it to set the output format,
+// then returns the new os.Args array.
+//
+//   os.Args = utils.GetOutput(os.Args)
+//   flag.Parse()
+//
+func GetOutput(args []string) []string {
+	Output = output(args[1])
+	return append(args[:1], args[2:]...)
+}
 
 // ReadStdin reads an image file (either PNG, JPEG or GIF) from standard input.
 func ReadStdin() (image.Image, *exif.Exif) {
