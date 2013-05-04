@@ -86,6 +86,7 @@ func runExternal(ext string, flags... string) string {
 func lookupExternals() hadfield.Commands {
 	found := hadfield.Commands{}
 	pathenv := os.Getenv("PATH")
+	output := string(utils.Output)
 
 	for _, dir := range strings.Split(pathenv, ":") {
 		if dir == "" {
@@ -94,9 +95,9 @@ func lookupExternals() hadfield.Commands {
 
 		if exts, err := findExternalsIn(dir); err == nil {
 			for _, ext := range exts {
-				usage := runExternal(ext, "--usage")
-				short := runExternal(ext, "--short")
-				long  := runExternal(ext, "--long")
+				usage := runExternal(ext, output, "--usage")
+				short := runExternal(ext, output, "--short")
+				long  := runExternal(ext, output, "--long")
 
 				found = append(found, &External{ext, usage, short, long})
 			}
