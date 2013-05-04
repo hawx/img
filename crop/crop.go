@@ -5,6 +5,7 @@ import (
 	"github.com/hawx/img/utils"
 	"image"
 	"image/color"
+	"math"
 )
 
 // cropTo draws a new Image with pixels that have coordinates that when passed
@@ -138,4 +139,49 @@ func Circle(img image.Image, size int, direction utils.Direction) image.Image {
 	}
 
 	return cropToValue(img, in)
+}
+
+// Triangle crops an Image to an equilaterla triangle. It will use the widest
+// possible width if the given size is negative.
+func Triangle(img image.Image, size int, direction utils.Direction) image.Image {
+	b := img.Bounds()
+	k := math.Sqrt(3)
+
+	if size < 0 {
+		size = b.Dx()
+	}
+	height := int(k / 2 * float64(size))
+
+	// Assume centre
+	minX := (b.Min.X + b.Dx()/2) - size/2
+	minY := (b.Min.Y + b.Dy()/2) - height/2
+	maxY := (b.Min.Y + b.Dy()/2) + height/2
+
+	switch direction {
+	case utils.TopLeft, utils.Top, utils.TopRight:
+		minY = b.Min.Y
+		maxY = b.Min.Y + height
+
+	case utils.BottomLeft, utils.Bottom, utils.BottomRight:
+		minY = b.Max.Y - height
+		maxY = b.Max.Y
+	}
+
+	switch direction{
+	case utils.TopLeft, utils.Left, utils.BottomLeft:
+		minX = b.Min.X
+
+	case utils.TopRight, utils.Right, utils.BottomRight:
+		minX = b.Max.X - size
+	}
+
+	in := func(x,y int) bool {
+		x -= minX
+
+		return y <= maxY && y >= minY &&
+			y >= int(k * float64(x)) - 2*height + maxY &&
+			y >= int(k * float64(-x)) + maxY
+	}
+
+	return cropTo(img, in)
 }

@@ -16,6 +16,7 @@ Long: `
 
     --square               # Crop to a square (default)
     --circle               # Crop to a circle
+    --triangle             # Crop to an equilateral triangle
 
     --size <pixels>        # Size to crop to (default: largest possible)
 
@@ -31,7 +32,7 @@ Long: `
 `,
 }
 
-var cropSquare, cropCircle bool
+var cropSquare, cropCircle, cropTriangle bool
 var cropSize int
 var cropCentre, cropTop, cropTopRight, cropRight, cropBottomRight, cropBottom,
     cropBottomLeft, cropLeft, cropTopLeft bool
@@ -41,6 +42,7 @@ func init() {
 
 	cmdCrop.Flag.BoolVar(&cropSquare,      "square",       false, "")
 	cmdCrop.Flag.BoolVar(&cropCircle,      "circle",       false, "")
+	cmdCrop.Flag.BoolVar(&cropTriangle,    "triangle",     false, "")
 
 	cmdCrop.Flag.IntVar(&cropSize,         "size",         -1,    "")
 
@@ -71,6 +73,8 @@ func runCrop(cmd *hadfield.Command, args []string) {
 
 	if cropCircle {
 		i = crop.Circle(i, cropSize, direction)
+	} else if cropTriangle {
+		i = crop.Triangle(i, cropSize, direction)
 	} else {
 		i = crop.Square(i, cropSize, direction)
 	}
