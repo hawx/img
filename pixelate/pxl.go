@@ -138,6 +138,7 @@ func doPxl(img image.Image, size utils.Dimension, triangle Triangle, style Style
 	var o draw.Image
 	b := img.Bounds()
 	c := make(chan int, nCPU)
+	i := 0 // number of workers created. there may be a better way...
 
 	switch style {
 	case CROPPED:
@@ -146,19 +147,21 @@ func doPxl(img image.Image, size utils.Dimension, triangle Triangle, style Style
 
 		o = image.NewRGBA(image.Rect(0, 0, size.W * cols, size.H * rows))
 
-		for _, r := range utils.ChopRectangleToSizes(b, size.H, size.W, utils.IGNORE) {
+		for j, r := range utils.ChopRectangleToSizes(b, size.H, size.W, utils.IGNORE) {
 			go pxlWorker(img, r, o, size, triangle, aliased, c)
+			i = j
 		}
 
 	case FITTED:
 		o = image.NewRGBA(img.Bounds())
 
-		for _, r := range utils.ChopRectangleToSizes(img.Bounds(), size.H, size.W, utils.SEPARATE) {
+		for j, r := range utils.ChopRectangleToSizes(img.Bounds(), size.H, size.W, utils.SEPARATE) {
 			go pxlWorker(img, r, o, size, triangle, aliased, c)
+			i = j
 		}
 	}
 
-	for i := 0; i < nCPU; i++ {
+	for j := 0; j < i; j++ {
 		<-c
 	}
 

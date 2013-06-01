@@ -47,6 +47,7 @@ func Pixelate(img image.Image, size utils.Dimension, style Style) image.Image {
 	var o draw.Image
 	b := img.Bounds()
 	c := make(chan int, nCPU)
+	i := 0 // like pxl. this may not be the best way
 
 	switch style {
 	case CROPPED:
@@ -55,19 +56,21 @@ func Pixelate(img image.Image, size utils.Dimension, style Style) image.Image {
 
 		o = image.NewRGBA(image.Rect(0, 0, size.W * cols, size.H * rows))
 
-		for _, r := range utils.ChopRectangleToSizes(b, size.H, size.W, utils.IGNORE) {
+		for j, r := range utils.ChopRectangleToSizes(b, size.H, size.W, utils.IGNORE) {
 			go paintAverage(img, r, o, c)
+			i = j
 		}
 
 	case FITTED:
 		o = image.NewRGBA(b)
 
-		for _, r := range utils.ChopRectangleToSizes(b, size.H, size.W, utils.SEPARATE) {
+		for j, r := range utils.ChopRectangleToSizes(b, size.H, size.W, utils.SEPARATE) {
 			go paintAverage(img, r, o, c)
+			i = j
 		}
 	}
 
-	for i := 0; i < nCPU; i++ {
+	for j := 0; j < i; j++ {
 		<-c
 	}
 
