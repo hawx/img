@@ -130,24 +130,24 @@ var commands = hadfield.Commands{
 var templates = hadfield.Templates{
 Usage: `Usage: img [command] [arguments]
 
-	Img is a set of image manipulation tools. They each take an image from STDIN
-	and print the result to STDOUT (in some cases they may also require a second
-	image, consult the help for the particular command).
+  Img is a set of image manipulation tools. They each take an image from STDIN
+  and print the result to STDOUT (in some cases they may also require a second
+  image, consult the help for the particular command).
 
-	An example usage,
+  An example usage,
 
-		$ img greyscale < input.png > output.png
+    $ img greyscale < input.png > output.png
 
-	As standard input and output are used throughout, commands can be easily
-	chained together using pipes (and parentheses for clarity),
+  As standard input and output are used throughout, commands can be easily
+  chained together using pipes (and parentheses for clarity),
 
-		$ (img greyscale | img pxl | img contrast --by 0.05) < input.png > output.png
+    $ (img greyscale | img pxl | img contrast --by 0.05) < input.png > output.png
 
-	Commands: {{range .}}{{if .Callable}}{{if category . "Command"}}
-		{{.Name | printf "%-15s"}} # {{.Short | trim}}{{end}}{{end}}{{end}}
+  Commands: {{range .}}{{if .Callable}}{{if category . "Command"}}
+    {{.Name | printf "%-15s"}} # {{.Short | trim}}{{end}}{{end}}{{end}}
 
-	External Commands: {{range .}}{{if .Callable}}{{if category . "External"}}
-		{{.Name | printf "%-15s"}} # {{.Short | trim}}{{end}}{{end}}{{end}}
+  External Commands: {{range .}}{{if .Callable}}{{if category . "External"}}
+    {{.Name | printf "%-15s"}} # {{.Short | trim}}{{end}}{{end}}{{end}}
 
 Use "img help [command]" for more information about a command.
 `,
