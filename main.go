@@ -162,13 +162,6 @@ var builtIn = []string{
 }
 
 func isRunningBuiltin(args []string) bool {
-	args = args[1:]
-
-	if args[0] == "--jpg" || args[0] == "--jpeg" || args[0] == "--png" ||
-		args[0] == "--tiff" || args[0] == "--tif" {
-		args = args[1:]
-	}
-
 	for _, v := range builtIn {
 		if args[0] == v { return true }
 	}
@@ -177,11 +170,6 @@ func isRunningBuiltin(args []string) bool {
 }
 
 func main() {
-	if !isRunningBuiltin(os.Args) {
-		externals := lookupExternals()
-		commands = append(commands, externals...)
-	}
-
 	var jpeg, png, tiff bool
 	flag.BoolVar(&jpeg, "jpg",  false, "")
 	flag.BoolVar(&jpeg, "jpeg", false, "")
@@ -193,6 +181,11 @@ func main() {
 	if jpeg { utils.Output = utils.JPEG }
 	if png  { utils.Output = utils.PNG }
 	if tiff { utils.Output = utils.TIFF }
+
+	if !isRunningBuiltin(flag.Args()) {
+		externals := lookupExternals()
+		commands = append(commands, externals...)
+	}
 
 	hadfield.Run(commands, templates)
 }
