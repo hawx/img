@@ -43,6 +43,10 @@ func (e *External) Callable() bool {
 }
 
 func (e *External) Call(cmd hadfield.Interface, templates hadfield.Templates, args []string) {
+	if args[1] == "-h" || args[1] == "--help" {
+		hadfield.PrintUsage(cmd, templates)
+	}
+
 	// args[0] is set to the executable's name, so we can safely replace it with
 	// the output type. This is always going to be something, so needs to be
 	// checked for, removed, and respected!
@@ -162,6 +166,8 @@ var builtIn = []string{
 }
 
 func isRunningBuiltin(args []string) bool {
+	if len(args) == 0 { return false }
+
 	for _, v := range builtIn {
 		if args[0] == v { return true }
 	}
@@ -170,6 +176,11 @@ func isRunningBuiltin(args []string) bool {
 }
 
 func main() {
+	flag.Usage = func() {
+		externals := lookupExternals()
+		hadfield.Usage(append(commands, externals...), templates)
+	}
+
 	var jpeg, png, tiff bool
 	flag.BoolVar(&jpeg, "jpg",  false, "")
 	flag.BoolVar(&jpeg, "jpeg", false, "")
