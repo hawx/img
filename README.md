@@ -4,20 +4,13 @@ A collection of image manipulation tools. Each tool takes an input file from
 standard input, this needs to be in PNG, JPEG or GIF format. They output the
 resulting image (by default in PNG format) to standard output.
 
-This was tested and built with the latest version of Go. Install to
-`$GOPATH/bin` with,
-
-``` bash
-$ go install github.com/hawx/img
-```
-
-You can then run `go help` and `go help [command]` for information.
-
-To use as a Go library, run
+To install run,
 
 ``` bash
 $ go get github.com/hawx/img
 ```
+
+You can then run `go help` and `go help [command]` for information.
 
 Then simply import the required libraries. You can read the documentation on
 GoDoc: <http://godoc.org/github.com/hawx/img>.
