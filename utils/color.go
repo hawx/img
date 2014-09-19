@@ -7,43 +7,43 @@ import (
 // NormalisedRGBA returns the RGBA colour channel values of a Color in a
 // normalised form. The values are in non-premultiplied form and are in the
 // range 0-255.
-func NormalisedRGBA(c color.Color) (rn, gn, bn, an uint32) {
-	d := color.NRGBAModel.Convert(c).(color.NRGBA)
-	r := d.R; g := d.G; b := d.B; a := d.A
+//
+// This is modified from image/color.nrgbaModel
+func NormalisedRGBA(c color.Color) (r, g, b, a uint32) {
+	r, g, b, a = c.RGBA()
 
-	// Need to do some crazy type conversions first
-	rn = uint32(uint8(r))
-	gn = uint32(uint8(g))
-	bn = uint32(uint8(b))
-	an = uint32(uint8(a))
+	r = r >> 8
+	g = g >> 8
+	b = b >> 8
+	a = a >> 8
 
+	if a == 0xff {
+		return
+	}
+
+	if a == 0 {
+		return 0, 0, 0, 0
+	}
+
+	// Since Color.RGBA returns a alpha-premultiplied color, we should have r <= a && g <= a && b <= a.
+	r = (r * 0xff) / a
+	g = (g * 0xff) / a
+	b = (b * 0xff) / a
 	return
 }
 
 // NormalisedRGBAf returns the RGBA colour channel values as floating point
 // numbers with values from 0 to 255.
-func NormalisedRGBAf(c color.Color) (rn, gn, bn, an float64) {
+func NormalisedRGBAf(c color.Color) (float64, float64, float64, float64) {
 	r, g, b, a := NormalisedRGBA(c)
-
-	rn = float64(r)
-	gn = float64(g)
-	bn = float64(b)
-	an = float64(a)
-
-	return
+	return float64(r), float64(g), float64(b), float64(a)
 }
 
 // RatioRGBA returns the RGBA colour channel values as floating point numbers
 // with values from 0 to 1.
-func RatioRGBA(c color.Color) (rn, gn, bn, an float64) {
+func RatioRGBA(c color.Color) (float64, float64, float64, float64) {
 	r, g, b, a := NormalisedRGBAf(c)
-
-	rn = r / 255
-	gn = g / 255
-	bn = b / 255
-	an = a / 255
-
-	return
+	return r / 255, g / 255, b / 255, a / 255
 }
 
 // Truncate takes a colour channel value and forces it into the range 0 to 255
