@@ -128,6 +128,7 @@ var commands = hadfield.Commands{
 	cmdSharpen,
 	cmdShuffle,
 	cmdTint,
+	cmdVibrance,
 	cmdVxl,
 }
 

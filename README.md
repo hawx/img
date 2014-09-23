@@ -63,9 +63,3 @@ func main() {
 ```
 
 This can then be run like `./example input.png output.png`.
-
-
-
-[lomosh]: https://gist.github.com/hawx/5047389
-[lomogo]: https://gist.github.com/hawx/4566266
-[tao]:    http://the.taoofmac.com/space/blog/2005/08/23/2359
