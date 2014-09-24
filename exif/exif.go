@@ -5,7 +5,6 @@ import (
 	"errors"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -54,11 +53,7 @@ func New() *Exif {
 	}
 }
 
-// Load creates a new Exif object, populated with the exif data of the file at
-// the path given.
-func Load(path string) *Exif {
-	if !Exists() { return New() }
-
+func getWritableTags() {
 	if len(writable) == 0 {
 		// Get the writable tags then
 		out, _ := exec.Command("exiftool", "-listw").Output()
@@ -69,11 +64,19 @@ func Load(path string) *Exif {
 			}
 		}
 	}
+}
+
+// Load creates a new Exif object, populated with the exif data of the file at
+// the path given. It will silently fail if any errors are encountered.
+func Load(path string) *Exif {
+	if !Exists() { return New() }
 
 	out, err := exec.Command("exiftool", "-s", path).Output()
 	if err != nil {
-		log.Fatal(err)
+		return New()
 	}
+
+	getWritableTags()
 
 	lines := strings.Split(string(out), "\n")
 	exif  := New()
