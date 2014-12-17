@@ -20,12 +20,12 @@ Long: `
 
     --cols <num>    # Split into <num> columns
     --rows <num>    # Split into <num> rows
-    --size <HxW>    # Size of pixel to pxl with (default: 20x20)
+    --size <HxW>    # Size of pixel to pxl with
 `,
 }
 
 var pxlAlias, pxlCrop, pxlLeft, pxlRight, pxlBoth bool
-var pxlSize utils.Dimension = utils.Dimension{20, 20}
+var pxlSize utils.Dimension = utils.Dimension{-1, -1}
 var pxlRows, pxlCols int
 
 func init() {
@@ -57,6 +57,17 @@ func runPxl(cmd *hadfield.Command, args []string) {
 		pxlSize = utils.SizeForRows(i, pxlRows)
 	} else if pxlCols > 0 {
 		pxlSize = utils.SizeForCols(i, pxlCols)
+	}
+
+	// If no sizes given, guess
+	if pxlSize.H == -1 && pxlSize.W == -1 {
+		bounds := i.Bounds()
+
+		if bounds.Dx() > bounds.Dy() {
+			pxlSize = utils.SizeForCols(i, 20)
+		} else {
+			pxlSize = utils.SizeForRows(i, 20)
+		}
 	}
 
 	if pxlAlias {
