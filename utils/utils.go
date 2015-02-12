@@ -17,7 +17,7 @@ import (
 	"image/png"
 	"image/jpeg"
 	_ "image/gif"
-	"code.google.com/p/go.image/tiff"
+	"golang.org/x/image/tiff"
 )
 
 // This is a string, and not an int of some kind, so that it is easy to find out
