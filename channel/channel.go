@@ -3,11 +3,12 @@
 package channel
 
 import (
-	"github.com/hawx/img/altcolor"
-	"github.com/hawx/img/utils"
 	"image"
 	"image/color"
 	"math"
+
+	"github.com/hawx/img/altcolor"
+	"github.com/hawx/img/utils"
 )
 
 // Adjust applies the given Adjuster to the Image on only the Channels specified.
@@ -37,104 +38,97 @@ type Channel interface {
 	Set(color.Color, float64) color.Color
 }
 
-type channelFuncs struct {
-	g func(color.Color) float64
-	s func(color.Color, float64) color.Color
-}
-
-func (c *channelFuncs) Get(o color.Color) float64 {
-	return c.g(o)
-}
-
-func (c *channelFuncs) Set(o color.Color, v float64) color.Color {
-	return c.s(o, v)
-}
-
-func createChannel(g func(color.Color) float64,
-	s func(color.Color, float64) color.Color) Channel {
-
-	return &channelFuncs{g, s}
-}
-
 var (
-	Red        Channel = createChannel(getRed, setRed)
-	Green      Channel = createChannel(getGreen, setGreen)
-	Blue       Channel = createChannel(getBlue, setBlue)
-	Alpha      Channel = createChannel(getAlpha, setAlpha)
-	Hue        Channel = createChannel(getHue, setHue)
-	Saturation Channel = createChannel(getSaturation, setSaturation)
-	Lightness  Channel = createChannel(getLightness, setLightness)
-	Intensity  Channel = createChannel(getIntensity, setIntensity)
+	Red        = redCh{}
+	Green      = greenCh{}
+	Blue       = blueCh{}
+	Alpha      = alphaCh{}
+	Hue        = hueCh{}
+	Saturation = saturationCh{}
+	Lightness  = lightnessCh{}
+	Intensity  = intensityCh{}
 
 	// Alias
 	Brightness = Intensity
 )
 
-func getRed(c color.Color) float64 {
+type redCh struct{}
+
+func (_ redCh) Get(c color.Color) float64 {
 	r, _, _, _ := utils.RatioRGBA(c)
 	return r
 }
 
-func setRed(c color.Color, v float64) color.Color {
+func (_ redCh) Set(c color.Color, v float64) color.Color {
 	_, g, b, a := utils.NormalisedRGBA(c)
 	v = utils.Truncatef(255 * v)
 
 	return color.NRGBA{uint8(v), uint8(g), uint8(b), uint8(a)}
 }
 
-func getGreen(c color.Color) float64 {
+type greenCh struct{}
+
+func (_ greenCh) Get(c color.Color) float64 {
 	_, g, _, _ := utils.RatioRGBA(c)
 	return g
 }
 
-func setGreen(c color.Color, v float64) color.Color {
+func (_ greenCh) Set(c color.Color, v float64) color.Color {
 	r, _, b, a := utils.NormalisedRGBA(c)
 	v = utils.Truncatef(255 * v)
 
 	return color.NRGBA{uint8(r), uint8(v), uint8(b), uint8(a)}
 }
 
-func getBlue(c color.Color) float64 {
+type blueCh struct{}
+
+func (_ blueCh) Get(c color.Color) float64 {
 	_, _, b, _ := utils.RatioRGBA(c)
 	return b
 }
 
-func setBlue(c color.Color, v float64) color.Color {
+func (_ blueCh) Set(c color.Color, v float64) color.Color {
 	r, g, _, a := utils.NormalisedRGBA(c)
 	v = utils.Truncatef(255 * v)
 
 	return color.NRGBA{uint8(r), uint8(g), uint8(v), uint8(a)}
 }
 
-func getAlpha(c color.Color) float64 {
+type alphaCh struct{}
+
+func (_ alphaCh) Get(c color.Color) float64 {
 	_, _, _, a := utils.RatioRGBA(c)
 	return a
 }
 
-func setAlpha(c color.Color, v float64) color.Color {
+func (_ alphaCh) Set(c color.Color, v float64) color.Color {
 	r, g, b, _ := utils.NormalisedRGBA(c)
 	v = utils.Truncatef(255 * v)
 
 	return color.NRGBA{uint8(r), uint8(g), uint8(b), uint8(v)}
 }
 
-func getHue(c color.Color) float64 {
+type hueCh struct{}
+
+func (_ hueCh) Get(c color.Color) float64 {
 	h := altcolor.HSLAModel.Convert(c).(altcolor.HSLA)
 	return h.H / 360.0 // need value in range [0,1]
 }
 
-func setHue(c color.Color, v float64) color.Color {
+func (_ hueCh) Set(c color.Color, v float64) color.Color {
 	h := altcolor.HSLAModel.Convert(c).(altcolor.HSLA)
 	h.H = math.Mod(v*360, 360) // again, need to scale from [0,1] to [0,360]
 	return h
 }
 
-func getSaturation(c color.Color) float64 {
+type saturationCh struct{}
+
+func (_ saturationCh) Get(c color.Color) float64 {
 	h := altcolor.HSLAModel.Convert(c).(altcolor.HSLA)
 	return h.S
 }
 
-func setSaturation(c color.Color, v float64) color.Color {
+func (_ saturationCh) Set(c color.Color, v float64) color.Color {
 	h := altcolor.HSLAModel.Convert(c).(altcolor.HSLA)
 	h.S = v
 	if h.S > 1 {
@@ -145,12 +139,14 @@ func setSaturation(c color.Color, v float64) color.Color {
 	return h
 }
 
-func getLightness(c color.Color) float64 {
+type lightnessCh struct{}
+
+func (_ lightnessCh) Get(c color.Color) float64 {
 	h := altcolor.HSLAModel.Convert(c).(altcolor.HSLA)
 	return h.L
 }
 
-func setLightness(c color.Color, v float64) color.Color {
+func (_ lightnessCh) Set(c color.Color, v float64) color.Color {
 	h := altcolor.HSLAModel.Convert(c).(altcolor.HSLA)
 	h.L = v
 	if h.L > 1 {
@@ -161,12 +157,14 @@ func setLightness(c color.Color, v float64) color.Color {
 	return h
 }
 
-func getIntensity(c color.Color) float64 {
+type intensityCh struct{}
+
+func (_ intensityCh) Get(c color.Color) float64 {
 	h := altcolor.HSIAModel.Convert(c).(altcolor.HSIA)
 	return h.I
 }
 
-func setIntensity(c color.Color, v float64) color.Color {
+func (_ intensityCh) Set(c color.Color, v float64) color.Color {
 	h := altcolor.HSIAModel.Convert(c).(altcolor.HSIA)
 	h.I = v
 	if h.I > 1 {
