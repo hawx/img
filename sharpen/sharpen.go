@@ -1,3 +1,4 @@
+// Package sharpen provides functions to sharpen an image.
 package sharpen
 
 import (
