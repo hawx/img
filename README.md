@@ -7,7 +7,7 @@ resulting image (by default in PNG format) to standard output.
 To install run,
 
 ``` bash
-$ go get github.com/hawx/img
+$ go install github.com/hawx/img
 ```
 
 You can then run `go help` and `go help [command]` for information.
