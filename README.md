@@ -1,4 +1,4 @@
-# img
+# img [![docs](http://godoc.org/github.com/hawx/img?status.png)](http://godoc.org/github.com/hawx/img)
 
 A collection of image manipulation tools. Each tool takes an input file from
 standard input, this needs to be in PNG, JPEG or GIF format. They output the
@@ -12,8 +12,10 @@ $ go install github.com/hawx/img
 
 You can then run `go help` and `go help [command]` for information.
 
-Then simply import the required libraries. You can read the documentation on
-GoDoc: <http://godoc.org/github.com/hawx/img>.
+> The aim of _img_ is not to be fast, if you want fast use
+> [GraphicsMagick](http://www.graphicsmagick.org/), the aim is to be
+> readable. Diving through endless files of C and C++ to find out how a certain
+> effect is implemented is no fun, reading a single Go file is hopefully better.
 
 
 ## Example (Command Line)
@@ -62,4 +64,4 @@ func main() {
 }
 ```
 
-This can then be run like `./example input.png output.png`.
+This can then be compiled and run like `./example input.png output.png`.
