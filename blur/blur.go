@@ -20,14 +20,15 @@ const (
 	WRAP
 )
 
-
 func abs(num int) int {
-	if num < 0 { return -num }
+	if num < 0 {
+		return -num
+	}
 	return num
 }
 
 func correct(num int) bool {
-	return (num > 0) && (num % 2 != 0)
+	return (num > 0) && (num%2 != 0)
 }
 
 // A Kernel is a 2-dimensional array of ratios. A 1-dimensional, horizontal or
@@ -43,7 +44,7 @@ func NewHorizontalKernel(width int, f func(x int) float64) Kernel {
 	}
 
 	mx := (width - 1) / 2
-	k  := [][]float64{ make([]float64, width) }
+	k := [][]float64{make([]float64, width)}
 
 	for x := 0; x < width; x++ {
 		k[0][x] = f(mx - x)
@@ -59,10 +60,10 @@ func NewVerticalKernel(height int, f func(y int) float64) Kernel {
 	}
 
 	my := (height - 1) / 2
-	k  := make([][]float64, height)
+	k := make([][]float64, height)
 
 	for y := 0; y < height; y++ {
-		k[y] = []float64{ f(my - y) }
+		k[y] = []float64{f(my - y)}
 	}
 
 	return k
@@ -85,7 +86,7 @@ func NewKernel(height, width int, f func(x, y int) float64) Kernel {
 	for y := 0; y < height; y++ {
 		k[y] = make([]float64, width)
 		for x := 0; x < width; x++ {
-			k[y][x] = f(mx - x, my - y)
+			k[y][x] = f(mx-x, my-y)
 		}
 	}
 
@@ -120,13 +121,15 @@ func (k Kernel) Height() int {
 
 // Width returns the width of the Kernel.
 func (k Kernel) Width() int {
-	if k.Height() > 0 { return len(k[0]) }
+	if k.Height() > 0 {
+		return len(k[0])
+	}
 	return 0
 }
 
 // Mid returns the centre Point of the Kernel.
 func (k Kernel) Mid() image.Point {
-	return image.Pt((k.Width() - 1) / 2, (k.Height() - 1) / 2)
+	return image.Pt((k.Width()-1)/2, (k.Height()-1)/2)
 }
 
 func Convolve(in image.Image, weights Kernel, style Style) image.Image {
@@ -141,13 +144,13 @@ func Convolve(in image.Image, weights Kernel, style Style) image.Image {
 			for oy := 0; oy < weights.Height(); oy++ {
 				for ox := 0; ox < weights.Width(); ox++ {
 					factor := weights[oy][ox]
-					pt := image.Pt(x + ox - mid.X, y + oy - mid.Y)
+					pt := image.Pt(x+ox-mid.X, y+oy-mid.Y)
 
 					if pt == weights.Mid() {
 						// Ignore!
 
 					} else if pt.In(bnds) {
-						or,og,ob,oa := in.At(pt.X, pt.Y).RGBA()
+						or, og, ob, oa := in.At(pt.X, pt.Y).RGBA()
 
 						r += float64(or) * factor
 						g += float64(og) * factor
@@ -172,7 +175,7 @@ func Convolve(in image.Image, weights Kernel, style Style) image.Image {
 								pt.Y = bnds.Dy() + pt.Y
 							}
 
-							or,og,ob,oa := in.At(pt.X, pt.Y).RGBA()
+							or, og, ob, oa := in.At(pt.X, pt.Y).RGBA()
 
 							r += float64(or) * factor
 							g += float64(og) * factor
@@ -184,7 +187,7 @@ func Convolve(in image.Image, weights Kernel, style Style) image.Image {
 			}
 
 			if offset != 0 && style == CLAMP {
-				or,og,ob,oa := in.At(x,y).RGBA()
+				or, og, ob, oa := in.At(x, y).RGBA()
 				r += float64(or) * offset
 				g += float64(og) * offset
 				b += float64(ob) * offset
@@ -221,7 +224,7 @@ func Box(in image.Image, radius int, style Style) image.Image {
 // Gaussian performs a gaussian blur on the Image given.
 func Gaussian(in image.Image, radius int, sigma float64, style Style) image.Image {
 	f := func(n int) float64 {
-		return math.Exp( -float64(n*n) / (2 * sigma*sigma) )
+		return math.Exp(-float64(n*n) / (2 * sigma * sigma))
 	}
 
 	tall := NewVerticalKernel(radius*2+1, f).Normalised()

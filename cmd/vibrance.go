@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"github.com/hawx/hadfield"
@@ -6,10 +6,16 @@ import (
 	"github.com/hawx/img/vibrance"
 )
 
-var cmdVibrance = &hadfield.Command{
-	Usage: "vibrance [options]",
-	Short: "adjust the vibrancy of an image",
-	Long: `
+var (
+	vibranceExp bool
+	vibranceBy  float64
+)
+
+func Vibrance() *hadfield.Command {
+	cmd := &hadfield.Command{
+		Usage: "vibrance [options]",
+		Short: "adjust the vibrancy of an image",
+		Long: `
 
 	Vibrance adjusts the saturation of the least-saturated parts of an image to
 	give the image more vibrancy.
@@ -17,16 +23,14 @@ var cmdVibrance = &hadfield.Command{
     --exp        # Use inverse exponential method
     --by [n]     # Amount to adjust vibrancy by (default: 0.5)
 `,
-}
+	}
 
-var vibranceExp bool
-var vibranceBy float64
+	cmd.Run = runVibrance
 
-func init() {
-	cmdVibrance.Run = runVibrance
+	cmd.Flag.BoolVar(&vibranceExp, "exp", false, "")
+	cmd.Flag.Float64Var(&vibranceBy, "by", 0.5, "")
 
-	cmdVibrance.Flag.BoolVar(&vibranceExp, "exp", false, "")
-	cmdVibrance.Flag.Float64Var(&vibranceBy, "by", 0.5, "")
+	return cmd
 }
 
 func runVibrance(cmd *hadfield.Command, args []string) {

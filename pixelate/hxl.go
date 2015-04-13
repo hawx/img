@@ -10,12 +10,12 @@ import (
 // smooth edges.
 func halveWidth(img image.Image) image.Image {
 	b := img.Bounds()
-	o := image.NewRGBA(image.Rect(0, 0, b.Dx() / 2, b.Dy()))
+	o := image.NewRGBA(image.Rect(0, 0, b.Dx()/2, b.Dy()))
 
 	for y := 0; y < b.Dy(); y++ {
-		for x := 0; x < b.Dx() / 2; x++ {
-			l := img.At(x * 2, y)
-			r := img.At(x * 2 + 1, y)
+		for x := 0; x < b.Dx()/2; x++ {
+			l := img.At(x*2, y)
+			r := img.At(x*2+1, y)
 
 			o.Set(x, y, utils.Average(l, r))
 		}
@@ -30,22 +30,22 @@ func Hxl(img image.Image, width int) image.Image {
 	b := img.Bounds()
 
 	pixelHeight := width * 2
-	pixelWidth  := width
+	pixelWidth := width
 
-	cols  := b.Dx() / pixelWidth
-	rows  := b.Dy() / pixelHeight
+	cols := b.Dx() / pixelWidth
+	rows := b.Dy() / pixelHeight
 
-	o := image.NewRGBA(image.Rect(0, 0, pixelWidth * cols * 2, pixelHeight * rows))
+	o := image.NewRGBA(image.Rect(0, 0, pixelWidth*cols*2, pixelHeight*rows))
 
 	// Note: "Top" doesn't mean above the x-axis, it means in the triangle
 	// pointing towards the x-axis.
-	inTop := func(x,y float64) bool {
+	inTop := func(x, y float64) bool {
 		return (x >= 0 && y >= x) || (x <= 0 && y >= -x)
 	}
 
 	// Same for "Bottom" this is the triangle below and pointing towards the
 	// x-axis.
-	inBottom := func(x,y float64) bool {
+	inBottom := func(x, y float64) bool {
 		return (x >= 0 && y <= -x) || (x <= 0 && y <= x)
 	}
 
@@ -56,12 +56,12 @@ func Hxl(img image.Image, width int) image.Image {
 
 			for y := 0; y < pixelHeight; y++ {
 				for x := 0; x < pixelWidth; x++ {
-					realY := row * pixelHeight + y
-					realX := col * pixelWidth + x
+					realY := row*pixelHeight + y
+					realX := col*pixelWidth + x
 					pixel := img.At(realX, realY)
 
-					y_origin := float64(y - pixelHeight / 2)
-					x_origin := float64(x - pixelWidth / 2)
+					y_origin := float64(y - pixelHeight/2)
+					x_origin := float64(x - pixelWidth/2)
 
 					if inTop(x_origin, y_origin) {
 						north = append(north, pixel)
@@ -75,12 +75,12 @@ func Hxl(img image.Image, width int) image.Image {
 			bot := utils.Average(south...)
 
 			for y := 0; y < pixelHeight; y++ {
-				for x := 0; x < pixelWidth * 2; x++ {
-					realY := row * pixelHeight + y
-					realX := col * pixelWidth * 2 + x
+				for x := 0; x < pixelWidth*2; x++ {
+					realY := row*pixelHeight + y
+					realX := col*pixelWidth*2 + x
 
-					y_origin := float64(y - pixelHeight / 2)
-					x_origin := float64(x - pixelWidth * 2 / 2)
+					y_origin := float64(y - pixelHeight/2)
+					x_origin := float64(x - pixelWidth*2/2)
 
 					if inTop(x_origin, y_origin) {
 						o.Set(realX, realY, top)
@@ -104,15 +104,14 @@ func Hxl(img image.Image, width int) image.Image {
 
 			for y := 0; y < pixelHeight; y++ {
 				for x := 0; x < pixelWidth; x++ {
-					realY := row * pixelHeight + y + offsetY
-					realX := col * pixelWidth + x + offsetX
+					realY := row*pixelHeight + y + offsetY
+					realX := col*pixelWidth + x + offsetX
 
 					if realX >= 0 && realX < b.Dx() {
 						pixel := img.At(realX, realY)
 
-						y_origin := float64(y - pixelHeight / 2)
-						x_origin := float64(x - pixelWidth / 2)
-
+						y_origin := float64(y - pixelHeight/2)
+						x_origin := float64(x - pixelWidth/2)
 
 						if inTop(x_origin, y_origin) {
 							north = append(north, pixel)
@@ -127,12 +126,12 @@ func Hxl(img image.Image, width int) image.Image {
 			bot := utils.Average(south...)
 
 			for y := 0; y < pixelHeight; y++ {
-				for x := 0; x < pixelWidth * 2; x++ {
-					realY := row * pixelHeight + y + offsetY
-					realX := col * pixelWidth * 2 + x + offsetX * 2
+				for x := 0; x < pixelWidth*2; x++ {
+					realY := row*pixelHeight + y + offsetY
+					realX := col*pixelWidth*2 + x + offsetX*2
 
-					y_origin := float64(y - pixelHeight / 2)
-					x_origin := float64(x - pixelWidth * 2 / 2)
+					y_origin := float64(y - pixelHeight/2)
+					x_origin := float64(x - pixelWidth*2/2)
 
 					if inTop(x_origin, y_origin) {
 						o.Set(realX, realY, top)

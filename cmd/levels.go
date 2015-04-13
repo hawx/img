@@ -1,17 +1,26 @@
-package main
+package cmd
 
 import (
+	"image"
+
+	"github.com/hawx/hadfield"
 	"github.com/hawx/img/channel"
 	"github.com/hawx/img/levels"
 	"github.com/hawx/img/utils"
-	"github.com/hawx/hadfield"
-	"image"
 )
 
-var cmdLevels = &hadfield.Command{
-	Usage: "levels [options]",
-	Short: "adjust image levels",
-	Long: `
+var (
+	levelsRed, levelsGreen, levelsBlue           bool
+	levelsAuto, levelsAutoBlack, levelsAutoWhite bool
+	levelsBlack, levelsWhite                     float64
+	levelsCurve                                  string
+)
+
+func Levels() *hadfield.Command {
+	cmd := &hadfield.Command{
+		Usage: "levels [options]",
+		Short: "adjust image levels",
+		Long: `
   Levels adjusts the levels of an image. You can set the black/white point or
   give points in a curve to use. It can act on all colour channels (default
   behaviour), or just those you want.
@@ -30,35 +39,33 @@ var cmdLevels = &hadfield.Command{
     --curve [c]       # Set curve. Argument is a list of 'point,value' pairs
                       # delimited by spaces, eg. --curve "0,0 33,40 66,60 100,100"
 `,
-}
+	}
 
-var levelsRed, levelsGreen, levelsBlue bool
-var levelsAuto, levelsAutoBlack, levelsAutoWhite bool
-var levelsBlack, levelsWhite float64
-var levelsCurve string
+	cmd.Run = runLevels
 
-func init() {
-	cmdLevels.Run = runLevels
+	cmd.Flag.BoolVar(&levelsRed, "red", false, "")
+	cmd.Flag.BoolVar(&levelsGreen, "green", false, "")
+	cmd.Flag.BoolVar(&levelsBlue, "blue", false, "")
 
-	cmdLevels.Flag.BoolVar(&levelsRed, "red", false, "")
-	cmdLevels.Flag.BoolVar(&levelsGreen, "green", false, "")
-	cmdLevels.Flag.BoolVar(&levelsBlue, "blue", false, "")
+	cmd.Flag.BoolVar(&levelsAuto, "auto", false, "")
+	cmd.Flag.BoolVar(&levelsAutoBlack, "auto-black", false, "")
+	cmd.Flag.BoolVar(&levelsAutoWhite, "auto-white", false, "")
 
-	cmdLevels.Flag.BoolVar(&levelsAuto, "auto", false, "")
-	cmdLevels.Flag.BoolVar(&levelsAutoBlack, "auto-black", false, "")
-	cmdLevels.Flag.BoolVar(&levelsAutoWhite, "auto-white", false, "")
+	cmd.Flag.Float64Var(&levelsBlack, "black", 0, "")
+	cmd.Flag.Float64Var(&levelsWhite, "white", 100, "")
 
-	cmdLevels.Flag.Float64Var(&levelsBlack, "black", 0, "")
-	cmdLevels.Flag.Float64Var(&levelsWhite, "white", 100, "")
+	cmd.Flag.StringVar(&levelsCurve, "curve", "", "")
 
-	cmdLevels.Flag.StringVar(&levelsCurve, "curve", "", "")
+	return cmd
 }
 
 func runLevels(cmd *hadfield.Command, args []string) {
 	i, data := utils.ReadStdin()
 
 	if !levelsRed && !levelsGreen && !levelsBlue {
-		levelsRed = true; levelsGreen = true; levelsBlue = true
+		levelsRed = true
+		levelsGreen = true
+		levelsBlue = true
 	}
 
 	if levelsRed {

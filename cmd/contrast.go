@@ -1,15 +1,21 @@
-package main
+package cmd
 
 import (
+	"github.com/hawx/hadfield"
 	"github.com/hawx/img/contrast"
 	"github.com/hawx/img/utils"
-	"github.com/hawx/hadfield"
 )
 
-var cmdContrast = &hadfield.Command{
-	Usage: "contrast [options]",
-	Short: "adjust image contrast",
-Long: `
+var (
+	contrastLinear, contrastSigmoidal bool
+	contrastFactor, contrastMidpoint  float64
+)
+
+func Contrast() *hadfield.Command {
+	cmd := &hadfield.Command{
+		Usage: "contrast [options]",
+		Short: "adjust image contrast",
+		Long: `
   Contrast takes an image from STDIN, adjusts the contrast and prints the result
   to STDOUT
 
@@ -19,19 +25,17 @@ Long: `
     --linear                # Use linear function
     --sigmoidal             # Use sigmoidal function
 `,
-}
+	}
 
-var contrastLinear, contrastSigmoidal bool
-var contrastFactor, contrastMidpoint float64
+	cmd.Run = runContrast
 
-func init() {
-	cmdContrast.Run = runContrast
+	cmd.Flag.Float64Var(&contrastFactor, "factor", 1.0, "")
+	cmd.Flag.Float64Var(&contrastMidpoint, "midpoint", 0.5, "")
 
-	cmdContrast.Flag.Float64Var(&contrastFactor,   "factor",    1.0,   "")
-	cmdContrast.Flag.Float64Var(&contrastMidpoint, "midpoint",  0.5,   "")
+	cmd.Flag.BoolVar(&contrastLinear, "linear", false, "")
+	cmd.Flag.BoolVar(&contrastSigmoidal, "sigmoidal", false, "")
 
-	cmdContrast.Flag.BoolVar(&contrastLinear,      "linear",    false, "")
-	cmdContrast.Flag.BoolVar(&contrastSigmoidal,   "sigmoidal", false, "")
+	return cmd
 }
 
 func runContrast(cmd *hadfield.Command, args []string) {
@@ -40,7 +44,7 @@ func runContrast(cmd *hadfield.Command, args []string) {
 	if contrastSigmoidal {
 		i = contrast.Sigmoidal(i, contrastFactor, contrastMidpoint)
 	} else if contrastLinear {
-		i  = contrast.Linear(i, contrastFactor)
+		i = contrast.Linear(i, contrastFactor)
 	} else {
 		i = contrast.Adjust(i, contrastFactor)
 	}

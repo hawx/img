@@ -1,16 +1,25 @@
-package main
+package cmd
 
 import (
+	"os"
+
+	"github.com/hawx/hadfield"
 	"github.com/hawx/img/blur"
 	"github.com/hawx/img/utils"
-	"github.com/hawx/hadfield"
-	"os"
 )
 
-var cmdBlur = &hadfield.Command{
-	Usage: "blur [options]",
-	Short: "blur an image",
-Long: `
+var (
+	blurRadius   int
+	blurStyle    string
+	blurBox      bool
+	blurGaussian float64
+)
+
+func Blur() *hadfield.Command {
+	cmd := &hadfield.Command{
+		Usage: "blur [options]",
+		Short: "blur an image",
+		Long: `
   Blur takes an image from STDIN, and prints a blurred version to STDOUT.
 
     --radius <r>             # Set radius of blur (default: 2.0)
@@ -19,37 +28,33 @@ Long: `
     --box                    # Perform box blur
     --gaussian <sigma>       # Perform gaussian blur (default: 5.0)
 `,
-}
+	}
 
-var blurRadius int
-var blurStyle string
+	cmd.Run = runBlur
 
-var blurBox bool
-var blurGaussian float64
+	cmd.Flag.IntVar(&blurRadius, "radius", 2.0, "")
+	cmd.Flag.StringVar(&blurStyle, "style", "ignore", "")
 
-var styleNames map[string] blur.Style = map[string] blur.Style {
-	"clamp":  blur.CLAMP,
-	"ignore": blur.IGNORE,
-	"wrap":   blur.WRAP,
-}
+	cmd.Flag.BoolVar(&blurBox, "box", false, "")
+	cmd.Flag.Float64Var(&blurGaussian, "gaussian", 5.0, "")
 
-func init() {
-	cmdBlur.Run = runBlur
-
-	cmdBlur.Flag.IntVar(&blurRadius, "radius", 2.0, "")
-	cmdBlur.Flag.StringVar(&blurStyle, "style", "ignore", "")
-
-	cmdBlur.Flag.BoolVar(&blurBox, "box", false, "")
-	cmdBlur.Flag.Float64Var(&blurGaussian, "gaussian", 5.0, "")
+	return cmd
 }
 
 func runBlur(cmd *hadfield.Command, args []string) {
-	if _, ok := styleNames[blurStyle]; !ok {
+	var style blur.Style
+
+	switch blurStyle {
+	case "clamp":
+		style = blur.CLAMP
+	case "ignore":
+		style = blur.IGNORE
+	case "wrap":
+		style = blur.WRAP
+	default:
 		utils.Warn("--style must be one of 'clamp', 'ignore' or 'wrap'")
 		os.Exit(2)
 	}
-
-	style, _ := styleNames[blurStyle]
 
 	i, data := utils.ReadStdin()
 

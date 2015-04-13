@@ -2,8 +2,8 @@
 package gamma
 
 import (
-	"github.com/hawx/img/utils"
 	"github.com/hawx/img/greyscale"
+	"github.com/hawx/img/utils"
 	"image"
 	"image/color"
 	"math"
@@ -36,7 +36,7 @@ func Auto(img image.Image) image.Image {
 	b := luma.Bounds()
 	for y := b.Min.Y; y < b.Max.Y; y++ {
 		for x := b.Min.X; x < b.Max.X; x++ {
-			g,_,_,_ := utils.NormalisedRGBA(luma.At(x, y))
+			g, _, _, _ := utils.NormalisedRGBA(luma.At(x, y))
 			greys = append(greys, g)
 		}
 	}

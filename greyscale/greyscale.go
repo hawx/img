@@ -11,8 +11,8 @@ type pixelAlterer func(r, g, b uint32) uint32
 
 func colorAlterer(f pixelAlterer) utils.Composable {
 	return func(c color.Color) color.Color {
-		r,g,b,a := utils.NormalisedRGBA(c)
-		grey := uint8(f(r,g,b))
+		r, g, b, a := utils.NormalisedRGBA(c)
+		grey := uint8(f(r, g, b))
 
 		return color.NRGBA{grey, grey, grey, uint8(a)}
 	}
@@ -22,17 +22,16 @@ func colorAlterer(f pixelAlterer) utils.Composable {
 // ratios given, returning the value r*rM + g*gM + b*bM.
 func luminosityAlterer(rM, gM, bM float64) pixelAlterer {
 	return func(r, g, b uint32) uint32 {
-		return uint32(float64(r) * rM + float64(g) * gM + float64(b) * bM)
+		return uint32(float64(r)*rM + float64(g)*gM + float64(b)*bM)
 	}
 }
-
 
 // Average creates a greyscale version of the Image using the average method;
 // it simply averages the RGB values.
 var Average = utils.Map(AverageC)
 
 func AverageC() utils.Composable {
-	return colorAlterer(func(r,g,b uint32) uint32 {
+	return colorAlterer(func(r, g, b uint32) uint32 {
 		return (r + g + b) / 3
 	})
 }
@@ -42,7 +41,7 @@ func AverageC() utils.Composable {
 var Lightness = utils.Map(LightnessC)
 
 func LightnessC() utils.Composable {
-	return colorAlterer(func(r,g,b uint32) uint32 {
+	return colorAlterer(func(r, g, b uint32) uint32 {
 		return (utils.Max(r, g, b) + utils.Min(r, g, b)) / 2
 	})
 }

@@ -1,30 +1,34 @@
-package main
+package cmd
 
 import (
+	"github.com/hawx/hadfield"
 	"github.com/hawx/img/pixelate"
 	"github.com/hawx/img/utils"
-	"github.com/hawx/hadfield"
 )
 
-var cmdHxl = &hadfield.Command{
-	Usage: "hxl [options]",
-	Short: "pixelates image into equilateral triangles",
-Long: `
+var (
+	hxlWidth, hxlCols int
+)
+
+func Hxl() *hadfield.Command {
+	cmd := &hadfield.Command{
+		Usage: "hxl [options]",
+		Short: "pixelates image into equilateral triangles",
+		Long: `
   Hxl takes an image from STDIN, pixelates it into equilateral triangles
   forming hexagons, and prints the result to STDOUT
 
     --cols <num>     # Split into <num> columns
     --width <w>      # Width of the base of each triangle (default: 20)
 `,
-}
+	}
 
-var hxlWidth, hxlCols int
+	cmd.Run = runHxl
 
-func init() {
-	cmdHxl.Run = runHxl
+	cmd.Flag.IntVar(&hxlCols, "cols", -1, "")
+	cmd.Flag.IntVar(&hxlWidth, "width", 20, "")
 
-	cmdHxl.Flag.IntVar(&hxlCols, "cols", -1, "")
-	cmdHxl.Flag.IntVar(&hxlWidth, "width", 20, "")
+	return cmd
 }
 
 func runHxl(cmd *hadfield.Command, args []string) {
@@ -34,6 +38,6 @@ func runHxl(cmd *hadfield.Command, args []string) {
 		hxlWidth = utils.SizeForCols(i, hxlCols).W
 	}
 
-	i  = pixelate.Hxl(i, hxlWidth)
+	i = pixelate.Hxl(i, hxlWidth)
 	utils.WriteStdout(i, data)
 }

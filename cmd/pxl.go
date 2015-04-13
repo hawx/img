@@ -1,15 +1,22 @@
-package main
+package cmd
 
 import (
+	"github.com/hawx/hadfield"
 	"github.com/hawx/img/pixelate"
 	"github.com/hawx/img/utils"
-	"github.com/hawx/hadfield"
 )
 
-var cmdPxl = &hadfield.Command{
-	Usage: "pxl [options]",
-	Short: "pxls image",
-Long: `
+var (
+	pxlAlias, pxlCrop, pxlLeft, pxlRight, pxlBoth bool
+	pxlSize                                       utils.Dimension = utils.Dimension{-1, -1}
+	pxlRows, pxlCols                              int
+)
+
+func Pxl() *hadfield.Command {
+	cmd := &hadfield.Command{
+		Usage: "pxl [options]",
+		Short: "pxls image",
+		Long: `
   Pxl takes an image from STDIN, pxls it by averaging the colour in large
   rectangles, and prints the result to STDOUT
 
@@ -22,34 +29,37 @@ Long: `
     --rows <num>    # Split into <num> rows
     --size <HxW>    # Size of pixel to pxl with
 `,
-}
+	}
 
-var pxlAlias, pxlCrop, pxlLeft, pxlRight, pxlBoth bool
-var pxlSize utils.Dimension = utils.Dimension{-1, -1}
-var pxlRows, pxlCols int
+	cmd.Run = runPxl
 
-func init() {
-	cmdPxl.Run = runPxl
+	cmd.Flag.BoolVar(&pxlAlias, "alias", false, "")
+	cmd.Flag.BoolVar(&pxlCrop, "crop", false, "")
+	cmd.Flag.BoolVar(&pxlLeft, "left", false, "")
+	cmd.Flag.BoolVar(&pxlRight, "right", false, "")
 
-	cmdPxl.Flag.BoolVar(&pxlAlias, "alias", false, "")
-	cmdPxl.Flag.BoolVar(&pxlCrop,  "crop",  false, "")
-	cmdPxl.Flag.BoolVar(&pxlLeft,  "left",  false, "")
-	cmdPxl.Flag.BoolVar(&pxlRight, "right", false, "")
+	cmd.Flag.Var(&pxlSize, "size", "")
+	cmd.Flag.IntVar(&pxlRows, "rows", -1, "")
+	cmd.Flag.IntVar(&pxlCols, "cols", -1, "")
 
-	cmdPxl.Flag.Var(&pxlSize,      "size",         "")
-	cmdPxl.Flag.IntVar(&pxlRows,   "rows",  -1,    "")
-	cmdPxl.Flag.IntVar(&pxlCols,   "cols",  -1,    "")
+	return cmd
 }
 
 func runPxl(cmd *hadfield.Command, args []string) {
 	i, data := utils.ReadStdin()
 
 	triangle := pixelate.BOTH
-	if pxlLeft  { triangle = pixelate.LEFT }
-	if pxlRight { triangle = pixelate.RIGHT }
+	if pxlLeft {
+		triangle = pixelate.LEFT
+	}
+	if pxlRight {
+		triangle = pixelate.RIGHT
+	}
 
 	style := pixelate.FITTED
-	if pxlCrop { style = pixelate.CROPPED }
+	if pxlCrop {
+		style = pixelate.CROPPED
+	}
 
 	if pxlRows > 0 && pxlCols > 0 {
 		pxlSize = utils.SizeForRowsAndCols(i, pxlRows, pxlCols)

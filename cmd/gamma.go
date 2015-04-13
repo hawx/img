@@ -1,15 +1,21 @@
-package main
+package cmd
 
 import (
+	"github.com/hawx/hadfield"
 	"github.com/hawx/img/gamma"
 	"github.com/hawx/img/utils"
-	"github.com/hawx/hadfield"
 )
 
-var cmdGamma = &hadfield.Command{
-	Usage: "gamma [options]",
-	Short: "adjust image gamma",
-Long: `
+var (
+	gammaAuto, gammaUndo bool
+	gammaBy              float64
+)
+
+func Gamma() *hadfield.Command {
+	cmd := &hadfield.Command{
+		Usage: "gamma [options]",
+		Short: "adjust image gamma",
+		Long: `
   Gamma takes an image from STDIN, adjusts the gamma and prints the result to
   STDOUT
 
@@ -17,23 +23,23 @@ Long: `
     --by <n>       # Amount to adjust gamma by
     --undo         # Adjust by the reciprocal of the amount, instead
 `,
-}
+	}
 
-var gammaAuto, gammaUndo bool
-var gammaBy float64
+	cmd.Run = runGamma
 
-func init() {
-	cmdGamma.Run = runGamma
+	cmd.Flag.BoolVar(&gammaAuto, "auto", false, "")
+	cmd.Flag.Float64Var(&gammaBy, "by", 1.8, "")
+	cmd.Flag.BoolVar(&gammaUndo, "undo", false, "")
 
-	cmdGamma.Flag.BoolVar(&gammaAuto,  "auto", false, "")
-	cmdGamma.Flag.Float64Var(&gammaBy, "by",   1.8,   "")
-	cmdGamma.Flag.BoolVar(&gammaUndo,  "undo", false, "")
+	return cmd
 }
 
 func runGamma(cmd *hadfield.Command, args []string) {
 	i, data := utils.ReadStdin()
 
-	if gammaUndo { gammaBy = 1.0 / gammaBy }
+	if gammaUndo {
+		gammaBy = 1.0 / gammaBy
+	}
 
 	if utils.FlagVisited("by", cmd.Flag) {
 		i = gamma.Adjust(i, gammaBy)

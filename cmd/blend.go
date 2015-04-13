@@ -1,23 +1,37 @@
-package main
+package cmd
 
 import (
-	"github.com/nfnt/resize"
-	"github.com/hawx/img/blend"
-	"github.com/hawx/img/utils"
-	"github.com/hawx/hadfield"
-	"strings"
-	"os"
 	"fmt"
 	"image"
-	_ "image/png"
 	_ "image/gif"
 	_ "image/jpeg"
+	_ "image/png"
+	"os"
+	"strings"
+
+	"github.com/hawx/hadfield"
+	"github.com/hawx/img/blend"
+	"github.com/hawx/img/utils"
+	"github.com/nfnt/resize"
 )
 
-var cmdBlend = &hadfield.Command{
-	Usage: "blend <other> [options]",
-	Short: "blends two images together",
-Long: `
+var (
+	blendModes, blendFit                                                  bool
+	blendOpacity                                                          float64
+	blendNormal, blendDissolve                                            bool
+	blendDarken, blendMultiply, blendBurn, blendLinearBurn, blendDarker   bool
+	blendLighten, blendScreen, blendDodge, blendLinearDodge, blendLighter bool
+	blendOverlay, blendSoftLight, blendHardLight, blendVividLight         bool
+	blendLinearLight, blendPinLight, blendHardMix                         bool
+	blendDifference, blendExclusion, blendAddition, blendSubtraction      bool
+	blendHue, blendSaturation, blendColor, blendLuminosity                bool
+)
+
+func Blend() *hadfield.Command {
+	cmd := &hadfield.Command{
+		Usage: "blend <other> [options]",
+		Short: "blends two images together",
+		Long: `
   Blend takes an image file from STDIN (referred to as the 'base image') and
   another given as <other> (referred to as the 'blend image'), and blends them
   together using the method selected producing a result image which is printed
@@ -65,69 +79,62 @@ Long: `
     --color          # Uses just the hue and saturation of the blend colour
     --luminosity     # Uses just the luminosity of the blend colour
 `,
-}
+	}
 
-var blendModes, blendFit bool
-var blendOpacity float64
-var blendNormal, blendDissolve bool
-var blendDarken, blendMultiply, blendBurn, blendLinearBurn, blendDarker bool
-var blendLighten, blendScreen, blendDodge, blendLinearDodge, blendLighter bool
-var blendOverlay, blendSoftLight, blendHardLight, blendVividLight bool
-var blendLinearLight, blendPinLight, blendHardMix bool
-var blendDifference, blendExclusion, blendAddition, blendSubtraction bool
-var blendHue, blendSaturation, blendColor, blendLuminosity bool
+	cmd.Run = runBlend
 
-func init() {
-	cmdBlend.Run = runBlend
-
-	cmdBlend.Flag.BoolVar(&blendModes, "modes", false, "")
-  cmdBlend.Flag.Float64Var(&blendOpacity, "opacity", 1.0, "")
-	cmdBlend.Flag.BoolVar(&blendFit, "fit", false, "")
+	cmd.Flag.BoolVar(&blendModes, "modes", false, "")
+	cmd.Flag.Float64Var(&blendOpacity, "opacity", 1.0, "")
+	cmd.Flag.BoolVar(&blendFit, "fit", false, "")
 
 	// BASIC
-  cmdBlend.Flag.BoolVar(&blendNormal, "normal", false, "")
-  cmdBlend.Flag.BoolVar(&blendDissolve, "dissolve", false, "")
+	cmd.Flag.BoolVar(&blendNormal, "normal", false, "")
+	cmd.Flag.BoolVar(&blendDissolve, "dissolve", false, "")
 
 	// DARKEN
-  cmdBlend.Flag.BoolVar(&blendDarken, "darken", false, "")
-  cmdBlend.Flag.BoolVar(&blendMultiply, "multiply", false, "")
-  cmdBlend.Flag.BoolVar(&blendBurn, "burn", false, "")
-	cmdBlend.Flag.BoolVar(&blendLinearBurn, "linear-burn", false, "")
-  cmdBlend.Flag.BoolVar(&blendDarker, "darker", false, "")
+	cmd.Flag.BoolVar(&blendDarken, "darken", false, "")
+	cmd.Flag.BoolVar(&blendMultiply, "multiply", false, "")
+	cmd.Flag.BoolVar(&blendBurn, "burn", false, "")
+	cmd.Flag.BoolVar(&blendLinearBurn, "linear-burn", false, "")
+	cmd.Flag.BoolVar(&blendDarker, "darker", false, "")
 
 	// LIGHTEN
-  cmdBlend.Flag.BoolVar(&blendLighten, "lighten", false, "")
-  cmdBlend.Flag.BoolVar(&blendScreen, "screen", false, "")
-  cmdBlend.Flag.BoolVar(&blendDodge, "dodge", false, "")
-	cmdBlend.Flag.BoolVar(&blendLinearDodge, "linear-dodge", false, "")
-  cmdBlend.Flag.BoolVar(&blendLighter, "lighter", false, "")
+	cmd.Flag.BoolVar(&blendLighten, "lighten", false, "")
+	cmd.Flag.BoolVar(&blendScreen, "screen", false, "")
+	cmd.Flag.BoolVar(&blendDodge, "dodge", false, "")
+	cmd.Flag.BoolVar(&blendLinearDodge, "linear-dodge", false, "")
+	cmd.Flag.BoolVar(&blendLighter, "lighter", false, "")
 
 	// CONTRAST
-  cmdBlend.Flag.BoolVar(&blendOverlay, "overlay", false, "")
-  cmdBlend.Flag.BoolVar(&blendSoftLight, "soft-light", false, "")
-  cmdBlend.Flag.BoolVar(&blendHardLight, "hard-light", false, "")
-	cmdBlend.Flag.BoolVar(&blendVividLight, "vivid-light", false, "")
-	cmdBlend.Flag.BoolVar(&blendLinearLight, "linear-light", false, "")
-	cmdBlend.Flag.BoolVar(&blendPinLight, "pin-light", false, "")
-	cmdBlend.Flag.BoolVar(&blendHardMix, "hard-mix", false, "")
+	cmd.Flag.BoolVar(&blendOverlay, "overlay", false, "")
+	cmd.Flag.BoolVar(&blendSoftLight, "soft-light", false, "")
+	cmd.Flag.BoolVar(&blendHardLight, "hard-light", false, "")
+	cmd.Flag.BoolVar(&blendVividLight, "vivid-light", false, "")
+	cmd.Flag.BoolVar(&blendLinearLight, "linear-light", false, "")
+	cmd.Flag.BoolVar(&blendPinLight, "pin-light", false, "")
+	cmd.Flag.BoolVar(&blendHardMix, "hard-mix", false, "")
 
 	// COMPARATIVE
-  cmdBlend.Flag.BoolVar(&blendDifference, "difference", false, "")
-  cmdBlend.Flag.BoolVar(&blendExclusion, "exclusion", false, "")
-  cmdBlend.Flag.BoolVar(&blendAddition, "addition", false, "") // leave as alias
-  cmdBlend.Flag.BoolVar(&blendSubtraction, "subtraction", false, "")
+	cmd.Flag.BoolVar(&blendDifference, "difference", false, "")
+	cmd.Flag.BoolVar(&blendExclusion, "exclusion", false, "")
+	cmd.Flag.BoolVar(&blendAddition, "addition", false, "") // leave as alias
+	cmd.Flag.BoolVar(&blendSubtraction, "subtraction", false, "")
 
 	// HSL
-	cmdBlend.Flag.BoolVar(&blendHue, "hue", false, "")
-  cmdBlend.Flag.BoolVar(&blendSaturation, "saturation", false, "")
-  cmdBlend.Flag.BoolVar(&blendColor, "color", false, "")
-  cmdBlend.Flag.BoolVar(&blendLuminosity, "luminosity", false, "")
+	cmd.Flag.BoolVar(&blendHue, "hue", false, "")
+	cmd.Flag.BoolVar(&blendSaturation, "saturation", false, "")
+	cmd.Flag.BoolVar(&blendColor, "color", false, "")
+	cmd.Flag.BoolVar(&blendLuminosity, "luminosity", false, "")
+
+	return cmd
 }
 
 func runBlend(cmd *hadfield.Command, args []string) {
-	if blendModes { printModes() }
+	if blendModes {
+		printModes()
+	}
 
-	a,data := utils.ReadStdin()
+	a, data := utils.ReadStdin()
 
 	path := args[0]
 	file, _ := os.Open(path)
@@ -232,6 +239,6 @@ func printModes() {
 
 	msg := strings.Join(modes, "\n")
 
-	fmt.Fprintf(os.Stdout, msg + "\n")
+	fmt.Fprintf(os.Stdout, msg+"\n")
 	os.Exit(0)
 }

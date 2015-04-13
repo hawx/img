@@ -27,29 +27,29 @@ func chopRectangle(rect image.Rectangle, rows, cols, rowHeight, colWidth int, mo
 	width := rect.Dx()
 	height := rect.Dy()
 
-	excessWidth  := width % (cols * colWidth)
+	excessWidth := width % (cols * colWidth)
 	excessHeight := height % (rows * rowHeight)
 
-	rs := make([]image.Rectangle, cols * rows)
-	i  := 0
+	rs := make([]image.Rectangle, cols*rows)
+	i := 0
 
 	for col := 0; col < cols; col++ {
 		localWidth := 0
 		// If in last column, add extra on
-		if mode == ADD && cols == col + 1 {
+		if mode == ADD && cols == col+1 {
 			localWidth = excessWidth
 		}
 
 		for row := 0; row < rows; row++ {
 			localHeight := 0
 			// If in last row, add extra on
-			if mode == ADD && rows == row + 1 {
+			if mode == ADD && rows == row+1 {
 				localHeight = excessHeight
 			}
 
 			rs[i] = image.Rectangle{
-				image.Point{col     * colWidth, row     * rowHeight},
-				image.Point{(col+1) * colWidth + localWidth, (row+1) * rowHeight + localHeight},
+				image.Point{col * colWidth, row * rowHeight},
+				image.Point{(col+1)*colWidth + localWidth, (row+1)*rowHeight + localHeight},
 			}
 
 			i++
@@ -62,8 +62,8 @@ func chopRectangle(rect image.Rectangle, rows, cols, rowHeight, colWidth int, mo
 		if excessHeight > 0 {
 			for col := 0; col < cols; col++ {
 				rs = append(rs, image.Rectangle{
-					image.Point{col     * colWidth, rows * rowHeight},
-					image.Point{(col+1) * colWidth, rows * rowHeight + excessHeight},
+					image.Point{col * colWidth, rows * rowHeight},
+					image.Point{(col + 1) * colWidth, rows*rowHeight + excessHeight},
 				})
 			}
 		}
@@ -72,8 +72,8 @@ func chopRectangle(rect image.Rectangle, rows, cols, rowHeight, colWidth int, mo
 		if excessWidth > 0 {
 			for row := 0; row < rows; row++ {
 				rs = append(rs, image.Rectangle{
-					image.Point{cols * colWidth,               row * rowHeight},
-					image.Point{cols * colWidth + excessWidth, (row+1) * rowHeight},
+					image.Point{cols * colWidth, row * rowHeight},
+					image.Point{cols*colWidth + excessWidth, (row + 1) * rowHeight},
 				})
 			}
 		}
@@ -81,8 +81,8 @@ func chopRectangle(rect image.Rectangle, rows, cols, rowHeight, colWidth int, mo
 		// Do bottom-right corner
 		if excessHeight > 0 && excessWidth > 0 {
 			rs = append(rs, image.Rectangle{
-				image.Point{cols * colWidth,               rows * rowHeight},
-				image.Point{cols * colWidth + excessWidth, rows * rowHeight + excessHeight},
+				image.Point{cols * colWidth, rows * rowHeight},
+				image.Point{cols*colWidth + excessWidth, rows*rowHeight + excessHeight},
 			})
 		}
 	}
@@ -92,10 +92,10 @@ func chopRectangle(rect image.Rectangle, rows, cols, rowHeight, colWidth int, mo
 
 // ChopRectangle splits a Rectangle into the number of rows and columns given.
 func ChopRectangle(rect image.Rectangle, rows, cols int, mode ExcessMode) []image.Rectangle {
-	width  := rect.Dx()
+	width := rect.Dx()
 	height := rect.Dy()
 
-	colWidth  := width / cols
+	colWidth := width / cols
 	rowHeight := height / rows
 
 	return chopRectangle(rect, rows, cols, rowHeight, colWidth, mode)
@@ -104,7 +104,7 @@ func ChopRectangle(rect image.Rectangle, rows, cols int, mode ExcessMode) []imag
 // ChopRectangleToSizes splits a Rectangle into smaller Rectangles with the size
 // given.
 func ChopRectangleToSizes(rect image.Rectangle, rowHeight, colWidth int, mode ExcessMode) []image.Rectangle {
-	width  := rect.Dx()
+	width := rect.Dx()
 	height := rect.Dy()
 
 	cols := width / colWidth

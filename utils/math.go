@@ -1,7 +1,7 @@
 package utils
 
 // Min returns the smallest value in the list of uint32s given.
-func Min(ns... uint32) (n uint32) {
+func Min(ns ...uint32) (n uint32) {
 	if len(ns) > 0 {
 		n = ns[0]
 	}
@@ -14,7 +14,7 @@ func Min(ns... uint32) (n uint32) {
 }
 
 // Minf returns the smallest value in the list of float64s given.
-func Minf(ns... float64) (n float64) {
+func Minf(ns ...float64) (n float64) {
 	if len(ns) > 0 {
 		n = ns[0]
 	}
@@ -27,7 +27,7 @@ func Minf(ns... float64) (n float64) {
 }
 
 // Max returns the largest value in the list of uint32s given.
-func Max(ns... uint32) (n uint32) {
+func Max(ns ...uint32) (n uint32) {
 	if len(ns) > 0 {
 		n = ns[0]
 	}
@@ -40,7 +40,7 @@ func Max(ns... uint32) (n uint32) {
 }
 
 // Maxf returns the largest value in the list of float64s given.
-func Maxf(ns... float64) (n float64) {
+func Maxf(ns ...float64) (n float64) {
 	if len(ns) > 0 {
 		n = ns[0]
 	}

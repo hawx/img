@@ -1,15 +1,22 @@
-package main
+package cmd
 
 import (
+	"github.com/hawx/hadfield"
 	"github.com/hawx/img/pixelate"
 	"github.com/hawx/img/utils"
-	"github.com/hawx/hadfield"
 )
 
-var cmdVxl = &hadfield.Command{
-	Usage: "vxl [options]",
-	Short: "vxls image",
-Long: `
+var (
+	vxlHeight, vxlRows        int
+	vxlFlip                   bool
+	vxlTop, vxlLeft, vxlRight float64
+)
+
+func Vxl() *hadfield.Command {
+	cmd := &hadfield.Command{
+		Usage: "vxl [options]",
+		Short: "vxls image",
+		Long: `
   Vxl takes an image from STDIN, pixelates it into isometric cubes (voxels-ish),
   and prints the result to STDOUT.
 
@@ -22,23 +29,20 @@ Long: `
     --left <ratio>      # Ratio to adjust lightness of left part
     --right <ratio>     # Ratio to adjust lightness of right part
 `,
-}
+	}
 
-var vxlHeight, vxlRows int
-var vxlFlip bool
-var vxlTop, vxlLeft, vxlRight float64
+	cmd.Run = runVxl
 
-func init() {
-	cmdVxl.Run = runVxl
+	cmd.Flag.IntVar(&vxlRows, "rows", -1, "")
+	cmd.Flag.IntVar(&vxlHeight, "height", 20, "")
 
-	cmdVxl.Flag.IntVar(&vxlRows,   "rows",   -1,    "")
-	cmdVxl.Flag.IntVar(&vxlHeight, "height", 20,    "")
+	cmd.Flag.BoolVar(&vxlFlip, "flip", false, "")
 
-	cmdVxl.Flag.BoolVar(&vxlFlip,  "flip",   false, "")
+	cmd.Flag.Float64Var(&vxlTop, "top", 1.0, "")
+	cmd.Flag.Float64Var(&vxlLeft, "left", 2.0, "")
+	cmd.Flag.Float64Var(&vxlRight, "right", 0.5, "")
 
-	cmdVxl.Flag.Float64Var(&vxlTop, "top",   1.0,   "")
-	cmdVxl.Flag.Float64Var(&vxlLeft, "left", 2.0,   "")
-	cmdVxl.Flag.Float64Var(&vxlRight, "right", 0.5, "")
+	return cmd
 }
 
 func runVxl(cmd *hadfield.Command, args []string) {

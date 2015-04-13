@@ -1,15 +1,22 @@
-package main
+package cmd
 
 import (
+	"github.com/hawx/hadfield"
 	"github.com/hawx/img/greyscale"
 	"github.com/hawx/img/utils"
-	"github.com/hawx/hadfield"
 )
 
-var cmdGreyscale = &hadfield.Command{
-	Usage: "greyscale [options]",
-	Short: "convert image to greyscale",
-Long: `
+var (
+	greyscaleAverage, greyscaleLightness, greyscaleLuminosity bool
+	greyscaleRed, greyscaleGreen, greyscaleBlue               bool
+	greyscaleMaximal, greyscaleMinimal, greyscalePhotoshop    bool
+)
+
+func Greyscale() *hadfield.Command {
+	cmd := &hadfield.Command{
+		Usage: "greyscale [options]",
+		Short: "convert image to greyscale",
+		Long: `
   Greyscale takes an image from STDIN, and prints to STDOUT a greyscale version
 
     --average        # Use average method
@@ -21,23 +28,20 @@ Long: `
     --green          # Use the values of the green channel
     --blue           # Use the values of the blue channel
 `,
-}
+	}
 
-var greyscaleAverage, greyscaleLightness, greyscaleLuminosity bool
-var greyscaleRed, greyscaleGreen, greyscaleBlue bool
-var greyscaleMaximal, greyscaleMinimal, greyscalePhotoshop bool
+	cmd.Run = runGreyscale
 
-func init() {
-	cmdGreyscale.Run = runGreyscale
+	cmd.Flag.BoolVar(&greyscaleAverage, "average", false, "")
+	cmd.Flag.BoolVar(&greyscaleLightness, "lightness", false, "")
+	cmd.Flag.BoolVar(&greyscaleLuminosity, "luminosity", false, "")
+	cmd.Flag.BoolVar(&greyscaleMaximal, "maximal", false, "")
+	cmd.Flag.BoolVar(&greyscaleMinimal, "minimal", false, "")
+	cmd.Flag.BoolVar(&greyscaleRed, "red", false, "")
+	cmd.Flag.BoolVar(&greyscaleGreen, "green", false, "")
+	cmd.Flag.BoolVar(&greyscaleBlue, "blue", false, "")
 
-	cmdGreyscale.Flag.BoolVar(&greyscaleAverage,    "average",    false, "")
-	cmdGreyscale.Flag.BoolVar(&greyscaleLightness,  "lightness",  false, "")
-	cmdGreyscale.Flag.BoolVar(&greyscaleLuminosity, "luminosity", false, "")
-	cmdGreyscale.Flag.BoolVar(&greyscaleMaximal,    "maximal",    false, "")
-	cmdGreyscale.Flag.BoolVar(&greyscaleMinimal,    "minimal",    false, "")
-	cmdGreyscale.Flag.BoolVar(&greyscaleRed,        "red",        false, "")
-	cmdGreyscale.Flag.BoolVar(&greyscaleGreen,      "green",      false, "")
-	cmdGreyscale.Flag.BoolVar(&greyscaleBlue,       "blue",       false, "")
+	return cmd
 }
 
 func runGreyscale(cmd *hadfield.Command, args []string) {

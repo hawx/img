@@ -3,7 +3,7 @@ package utils
 // An Adjuster is a function which takes a floating point value, most likely
 // between 0 and 1, and returns another floating point value, again between 0
 // and 1 (though this is not a requirement).
-type Adjuster func (float64) float64
+type Adjuster func(float64) float64
 
 // Adder returns an Adjuster which adds the value with to the returned Adjusters
 // argument.

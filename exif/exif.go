@@ -18,11 +18,11 @@ var writable = map[string]bool{}
 // Set of tags exiftool reports are writable, but aren't/shouldn't be!
 var stupidUnwritableWritableTags = map[string]bool{
 	"PreviewImageLength": true,
-  "PreviewImageStart": true,
-	"ThumbnailLength": true,
-	"ThumbnailOffset": true,
-	"Directory": true,
-	"FileName": true,
+	"PreviewImageStart":  true,
+	"ThumbnailLength":    true,
+	"ThumbnailOffset":    true,
+	"Directory":          true,
+	"FileName":           true,
 }
 
 // This needs working out! Though this seems to be working for now...
@@ -32,9 +32,9 @@ func shellEscape(s string) string {
 }
 
 type Exif struct {
-	path     string
-	data     map[string] string
-	changed  map[string] bool // a poor man's set
+	path    string
+	data    map[string]string
+	changed map[string]bool // a poor man's set
 }
 
 // Exists returns true if "exiftool" is installed anywhere on the user's $PATH.
@@ -48,8 +48,8 @@ func Exists() bool {
 func New() *Exif {
 	return &Exif{
 		path:    "",
-		data:    map[string] string{},
-		changed: map[string] bool{},
+		data:    map[string]string{},
+		changed: map[string]bool{},
 	}
 }
 
@@ -69,7 +69,9 @@ func getWritableTags() {
 // Load creates a new Exif object, populated with the exif data of the file at
 // the path given. It will silently fail if any errors are encountered.
 func Load(path string) *Exif {
-	if !Exists() { return New() }
+	if !Exists() {
+		return New()
+	}
 
 	out, err := exec.Command("exiftool", "-s", path).Output()
 	if err != nil {
@@ -79,7 +81,7 @@ func Load(path string) *Exif {
 	getWritableTags()
 
 	lines := strings.Split(string(out), "\n")
-	exif  := New()
+	exif := New()
 	exif.path = path
 
 	for _, line := range lines[:len(lines)-1] {
@@ -99,7 +101,9 @@ func Load(path string) *Exif {
 // Decode can be used for unnamed files, for example STDIN. It loads the exif
 // data from the file given.
 func Decode(r io.Reader) *Exif {
-	if !Exists() { return New() }
+	if !Exists() {
+		return New()
+	}
 
 	// Create a temporary file for exiftool to read
 	tmp, _ := ioutil.TempFile("", "img-exif-")
@@ -115,7 +119,9 @@ func Decode(r io.Reader) *Exif {
 // Get returns the value for the key given. The key should be in CamelCase form.
 func (e Exif) Get(key string) string {
 	val, ok := e.data[key]
-	if !ok { return "" }
+	if !ok {
+		return ""
+	}
 	return val
 }
 
@@ -139,7 +145,9 @@ func (e Exif) Keys() []string {
 }
 
 func (e Exif) String() string {
-	if len(e.data) == 0 { return "(Exif:empty)" }
+	if len(e.data) == 0 {
+		return "(Exif:empty)"
+	}
 	s := ""
 	for k, v := range e.data {
 		s += k + " = " + v + "\n"

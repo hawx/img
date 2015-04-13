@@ -49,13 +49,21 @@ func RatioRGBA(c color.Color) (float64, float64, float64, float64) {
 // Truncate takes a colour channel value and forces it into the range 0 to 255
 // by setting any value below 0 to 0 and and any above 255 to 255.
 func Truncate(n uint32) uint32 {
-	if n < 0 { return 0 } else if n > 255 { return 255 }
+	if n < 0 {
+		return 0
+	} else if n > 255 {
+		return 255
+	}
 	return n
 }
 
 // Truanctef is identical to Truncate but takes and returns a float64.
 func Truncatef(n float64) float64 {
-	if n < 0 { return 0 } else if n > 255 { return 255 }
+	if n < 0 {
+		return 0
+	} else if n > 255 {
+		return 255
+	}
 	return n
 }
 
@@ -70,24 +78,30 @@ func Closeness(one, two color.Color) uint32 {
 
 // Average takes a list of colours and returns the average. Given an empty list
 // it returns Black.
-func Average(cs... color.Color) color.Color {
+func Average(cs ...color.Color) color.Color {
 	if len(cs) < 1 {
 		return color.Black
 	}
 
 	var red, green, blue, alpha uint32
-	red = 0; green = 0; blue = 0; alpha = 0
+	red = 0
+	green = 0
+	blue = 0
+	alpha = 0
 
 	for i := 0; i < len(cs); i++ {
 		r, g, b, a := NormalisedRGBA(cs[i])
 
-		red += r; green += g; blue += b; alpha += a
+		red += r
+		green += g
+		blue += b
+		alpha += a
 	}
 
 	return color.NRGBA{
-		uint8(red   / uint32(len(cs))),
+		uint8(red / uint32(len(cs))),
 		uint8(green / uint32(len(cs))),
-		uint8(blue  / uint32(len(cs))),
+		uint8(blue / uint32(len(cs))),
 		uint8(alpha / uint32(len(cs))),
 	}
 }

@@ -16,11 +16,10 @@ const (
 	FITTED
 )
 
-
 func paintAverage(img image.Image, bounds image.Rectangle, dest draw.Image,
 	c chan int) {
-	values := make([]color.Color, bounds.Dx() * bounds.Dy())
-	count  := 0
+	values := make([]color.Color, bounds.Dx()*bounds.Dy())
+	count := 0
 
 	utils.EachColorInRectangle(img, bounds, func(c color.Color) {
 		values[count] = c
@@ -35,7 +34,6 @@ func paintAverage(img image.Image, bounds image.Rectangle, dest draw.Image,
 
 	c <- 1
 }
-
 
 // Pixelate takes an Image and pixelates it into rectangles with the dimensions
 // given. The colour values in each region are averaged to produce the resulting
@@ -54,7 +52,7 @@ func Pixelate(img image.Image, size utils.Dimension, style Style) image.Image {
 		cols := b.Dx() / size.W
 		rows := b.Dy() / size.H
 
-		o = image.NewRGBA(image.Rect(0, 0, size.W * cols, size.H * rows))
+		o = image.NewRGBA(image.Rect(0, 0, size.W*cols, size.H*rows))
 
 		for j, r := range utils.ChopRectangleToSizes(b, size.H, size.W, utils.IGNORE) {
 			go paintAverage(img, r, o, c)

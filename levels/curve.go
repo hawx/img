@@ -1,10 +1,10 @@
 package levels
 
 import (
-//	"github.com/hawx/img/utils"
+	//	"github.com/hawx/img/utils"
 	"fmt"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 const (
@@ -12,13 +12,12 @@ const (
 	POINT_DELIM = " "
 )
 
-
 type Point struct {
 	X, Y float64
 }
 
 func (p *Point) String() string {
-	return fmt.Sprintf("%v" + VALUE_DELIM + "%v", p.X, p.Y)
+	return fmt.Sprintf("%v"+VALUE_DELIM+"%v", p.X, p.Y)
 }
 
 func P(x, y float64) *Point {
@@ -32,7 +31,9 @@ type Curve struct {
 func (c *Curve) String() string {
 	s := ""
 	for i, p := range c.Points {
-		if i != 0 { s += POINT_DELIM }
+		if i != 0 {
+			s += POINT_DELIM
+		}
 		s += p.String()
 	}
 
@@ -47,11 +48,11 @@ func (c *Curve) Value(x float64) float64 {
 	// find the points either side of x
 	var left, right *Point
 
-	for i := 0; i < len(c.Points) - 1; i++ {
-		if c.Points[i].X == x * 100.0 {
+	for i := 0; i < len(c.Points)-1; i++ {
+		if c.Points[i].X == x*100.0 {
 			return c.Points[i].X / 100.0
 
-		} else if c.Points[i+1].X == x * 100.0 {
+		} else if c.Points[i+1].X == x*100.0 {
 			return c.Points[i+1].X / 100.0
 
 		} else if c.Points[i].X > x {
@@ -76,11 +77,10 @@ func C(ps [][]float64) *Curve {
 	return &Curve{points}
 }
 
-
 func ParseCurveString(s string) *Curve {
-	pairs  := strings.Split(s, POINT_DELIM)
+	pairs := strings.Split(s, POINT_DELIM)
 	points := make([]*Point, len(pairs))
-	conv   := func(v string) (r float64) { r, _ = strconv.ParseFloat(v, 64); return }
+	conv := func(v string) (r float64) { r, _ = strconv.ParseFloat(v, 64); return }
 
 	for i, p := range pairs {
 		parts := strings.Split(p, VALUE_DELIM)

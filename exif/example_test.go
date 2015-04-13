@@ -1,8 +1,8 @@
 package exif
 
 import (
-	"github.com/hawx/img/exif"
 	"fmt"
+	"github.com/hawx/img/exif"
 )
 
 func ExampleReading() {

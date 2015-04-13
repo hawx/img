@@ -1,15 +1,22 @@
-package main
+package cmd
 
 import (
+	"github.com/hawx/hadfield"
 	"github.com/hawx/img/pixelate"
 	"github.com/hawx/img/utils"
-	"github.com/hawx/hadfield"
 )
 
-var cmdPixelate = &hadfield.Command{
-	Usage: "pixelate [options]",
-	Short: "pixelates image",
-Long: `
+var (
+	pixelateCrop               bool
+	pixelateSize               utils.Dimension = utils.Dimension{20, 20}
+	pixelateRows, pixelateCols int
+)
+
+func Pixelate() *hadfield.Command {
+	cmd := &hadfield.Command{
+		Usage: "pixelate [options]",
+		Short: "pixelates image",
+		Long: `
   Pixelate takes an image from STDIN, pixelates it by averaging the colour in
   large rectangles, and prints the result to STDOUT
 
@@ -18,19 +25,16 @@ Long: `
     --rows <num>      # Split into <num> rows
     --size <HxW>      # Size of pixel to pixelate with (default: 20x20)
 `,
-}
+	}
 
-var pixelateCrop bool
-var pixelateSize utils.Dimension = utils.Dimension{20, 20}
-var pixelateRows, pixelateCols int
+	cmd.Run = runPixelate
 
-func init() {
-	cmdPixelate.Run = runPixelate
+	cmd.Flag.BoolVar(&pixelateCrop, "crop", false, "")
+	cmd.Flag.Var(&pixelateSize, "size", "")
+	cmd.Flag.IntVar(&pixelateRows, "rows", -1, "")
+	cmd.Flag.IntVar(&pixelateCols, "cols", -1, "")
 
-	cmdPixelate.Flag.BoolVar(&pixelateCrop, "crop", false, "")
-	cmdPixelate.Flag.Var(&pixelateSize,     "size", "")
-	cmdPixelate.Flag.IntVar(&pixelateRows,  "rows", -1, "")
-	cmdPixelate.Flag.IntVar(&pixelateCols,  "cols", -1, "")
+	return cmd
 }
 
 func runPixelate(cmd *hadfield.Command, args []string) {
@@ -51,6 +55,6 @@ func runPixelate(cmd *hadfield.Command, args []string) {
 		pixelateSize = utils.SizeForCols(i, pixelateCols)
 	}
 
-	i  = pixelate.Pixelate(i, pixelateSize, style)
+	i = pixelate.Pixelate(i, pixelateSize, style)
 	utils.WriteStdout(i, data)
 }

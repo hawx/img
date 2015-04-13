@@ -1,18 +1,20 @@
 package main
 
 import (
-	"github.com/hawx/img/utils"
-	"github.com/hawx/hadfield"
 	"bytes"
-	"path/filepath"
-	"os/exec"
-	"os"
-	"strings"
 	"flag"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
+
+	"github.com/hawx/hadfield"
+	"github.com/hawx/img/cmd"
+	"github.com/hawx/img/utils"
 )
 
 type External struct {
-	Path, Usage, Short, Long  string
+	Path, Usage, Short, Long string
 }
 
 func (e External) String() string {
@@ -53,7 +55,7 @@ func (e *External) Call(cmd hadfield.Interface, templates hadfield.Templates, ar
 	args[0] = string(utils.Output)
 
 	ex := exec.Command(e.Path, args...)
-	ex.Stdin  = os.Stdin
+	ex.Stdin = os.Stdin
 	ex.Stdout = os.Stdout
 	ex.Stderr = os.Stderr
 	err := ex.Run()
@@ -76,7 +78,7 @@ func findExternalsIn(dir string) ([]string, error) {
 	return found, nil
 }
 
-func runExternal(ext string, flags... string) string {
+func runExternal(ext string, flags ...string) string {
 	cmd := exec.Command(ext, flags...)
 	var out bytes.Buffer
 	cmd.Stdout = &out
@@ -101,7 +103,7 @@ func lookupExternals() hadfield.Commands {
 			for _, ext := range exts {
 				usage := runExternal(ext, output, "--usage")
 				short := runExternal(ext, output, "--short")
-				long  := runExternal(ext, output, "--long")
+				long := runExternal(ext, output, "--long")
 
 				found = append(found, &External{ext, usage, short, long})
 			}
@@ -114,26 +116,26 @@ func lookupExternals() hadfield.Commands {
 // Commands list the available commands and help topics. The order here is the
 // order in which they are printed by 'img help'.
 var commands = hadfield.Commands{
-	cmdBlend,
-	cmdBlur,
-	cmdChannel,
-	cmdContrast,
-	cmdCrop,
-	cmdGamma,
-	cmdGreyscale,
-	cmdHxl,
-	cmdLevels,
-	cmdPixelate,
-	cmdPxl,
-	cmdSharpen,
-	cmdShuffle,
-	cmdTint,
-	cmdVibrance,
-	cmdVxl,
+	cmd.Blend(),
+	cmd.Blur(),
+	cmd.Channel(),
+	cmd.Contrast(),
+	cmd.Crop(),
+	cmd.Gamma(),
+	cmd.Greyscale(),
+	cmd.Hxl(),
+	cmd.Levels(),
+	cmd.Pixelate(),
+	cmd.Pxl(),
+	cmd.Sharpen(),
+	cmd.Shuffle(),
+	cmd.Tint(),
+	cmd.Vibrance(),
+	cmd.Vxl(),
 }
 
 var templates = hadfield.Templates{
-Usage: `Usage: img [command] [arguments]
+	Usage: `Usage: img [command] [arguments]
 
   Img is a set of image manipulation tools. They each take an image from STDIN
   and print the result to STDOUT (in some cases they may also require a second
@@ -156,7 +158,7 @@ Usage: `Usage: img [command] [arguments]
 
 Use "img help [command]" for more information about a command.
 `,
-Help: `{{if .Callable}}Usage: img {{.Usage}}
+	Help: `{{if .Callable}}Usage: img {{.Usage}}
 {{end}}{{.Long}}
 `,
 }
@@ -167,10 +169,14 @@ var builtIn = []string{
 }
 
 func isRunningBuiltin(args []string) bool {
-	if len(args) == 0 { return false }
+	if len(args) == 0 {
+		return false
+	}
 
 	for _, v := range builtIn {
-		if args[0] == v { return true }
+		if args[0] == v {
+			return true
+		}
 	}
 
 	return false
@@ -183,16 +189,22 @@ func main() {
 	}
 
 	var jpeg, png, tiff bool
-	flag.BoolVar(&jpeg, "jpg",  false, "")
+	flag.BoolVar(&jpeg, "jpg", false, "")
 	flag.BoolVar(&jpeg, "jpeg", false, "")
-	flag.BoolVar(&png,  "png",  false, "")
+	flag.BoolVar(&png, "png", false, "")
 	flag.BoolVar(&tiff, "tiff", false, "")
-	flag.BoolVar(&tiff, "tif",  false, "")
+	flag.BoolVar(&tiff, "tif", false, "")
 
 	flag.Parse()
-	if jpeg { utils.Output = utils.JPEG }
-	if png  { utils.Output = utils.PNG }
-	if tiff { utils.Output = utils.TIFF }
+	if jpeg {
+		utils.Output = utils.JPEG
+	}
+	if png {
+		utils.Output = utils.PNG
+	}
+	if tiff {
+		utils.Output = utils.TIFF
+	}
 
 	if !isRunningBuiltin(flag.Args()) {
 		externals := lookupExternals()

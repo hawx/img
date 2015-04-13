@@ -1,24 +1,51 @@
-package main
+package cmd
 
 import (
+	"errors"
+	"fmt"
+	"image/color"
+
+	"github.com/hawx/hadfield"
 	"github.com/hawx/img/altcolor"
 	"github.com/hawx/img/tint"
 	"github.com/hawx/img/utils"
-	"github.com/hawx/hadfield"
-	"fmt"
-	"image/color"
-	"errors"
 )
 
-var cmdTint = &hadfield.Command{
-	Usage: "tint [options]",
-	Short: "tint an image with a colour",
-Long: `
+var (
+	tintWith localNRGBA = localNRGBA{255, 0, 0, 160}
+)
+
+func Tint() *hadfield.Command {
+	cmd := &hadfield.Command{
+		Usage: "tint [options]",
+		Short: "tint an image with a colour",
+		Long: `
   Tint takes an image and tints it using the specified colour, the result is
   printed to STDOUT
 
     --with [colour]       # Colour to tint with (default: #FF0000A0)
 `,
+	}
+
+	cmd.Run = runTint
+
+	cmd.Flag.Var(&tintWith, "with", "")
+
+	return cmd
+}
+
+func runTint(cmd *hadfield.Command, args []string) {
+	i, data := utils.ReadStdin()
+
+	tintColor := color.NRGBA{
+		uint8(tintWith.R),
+		uint8(tintWith.G),
+		uint8(tintWith.B),
+		uint8(tintWith.A),
+	}
+	i = tint.Tint(i, tintColor)
+
+	utils.WriteStdout(i, data)
 }
 
 type localNRGBA struct {
@@ -44,30 +71,8 @@ func (c *localNRGBA) Set(value string) error {
 `)
 	}
 
-	r,g,b,a := utils.NormalisedRGBA(col)
+	r, g, b, a := utils.NormalisedRGBA(col)
 	*c = localNRGBA{uint8(r), uint8(g), uint8(b), uint8(a)}
 
 	return nil
-}
-
-var tintWith localNRGBA = localNRGBA{255, 0, 0, 160}
-
-func init() {
-	cmdTint.Run = runTint
-
-	cmdTint.Flag.Var(&tintWith, "with", "")
-}
-
-func runTint(cmd *hadfield.Command, args []string) {
-	i, data := utils.ReadStdin()
-
-	tintColor := color.NRGBA{
-		uint8(tintWith.R),
-		uint8(tintWith.G),
-		uint8(tintWith.B),
-		uint8(tintWith.A),
-	}
-	i = tint.Tint(i, tintColor)
-
-	utils.WriteStdout(i, data)
 }

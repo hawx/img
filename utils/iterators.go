@@ -7,7 +7,6 @@ import (
 	"runtime"
 )
 
-
 func splitRectangle(b image.Rectangle, parts int) []image.Rectangle {
 	if b.Dx() > b.Dy() {
 		return ChopRectangle(b, parts, 1, ADD)
@@ -26,6 +25,7 @@ func EachColor(img image.Image, f func(c color.Color)) {
 		}
 	}
 }
+
 // PEachColor is like EachColor, but runs in parallel. This means that order can
 // not be guaranteed.
 func PEachColor(img image.Image, f func(c color.Color)) {
@@ -58,7 +58,6 @@ func EachColorInRectangle(img image.Image, b image.Rectangle, f func(c color.Col
 		}
 	}
 }
-
 
 // MapColor iterates through each pixel of the Image and applies the given
 // function, drawing the returned colour to a new Image which is then returned.

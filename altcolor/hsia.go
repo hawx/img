@@ -15,10 +15,12 @@ type HSIA struct {
 	H, S, I, A float64
 }
 
-
 func (col HSIA) RGBA() (red, green, blue, alpha uint32) {
-	var r,g,b float64
-	h := col.H; s := col.S; i := col.I; a := col.A
+	var r, g, b float64
+	h := col.H
+	s := col.S
+	i := col.I
+	a := col.A
 
 	// normalise h
 	h = math.Mod(h, 360)
@@ -37,21 +39,27 @@ func (col HSIA) RGBA() (red, green, blue, alpha uint32) {
 	hrad *= math.Pi / 180
 
 	x := i * (1 - s)
-	y := i * (1 + (s * math.Cos(hrad)) / math.Cos(math.Pi/3 - hrad))
-	z := 3 * i - (x + y)
+	y := i * (1 + (s*math.Cos(hrad))/math.Cos(math.Pi/3-hrad))
+	z := 3*i - (x + y)
 
 	if h < 120 {
-		b = x; r = y; g = z
+		b = x
+		r = y
+		g = z
 	} else if h < 240 {
-		r = x; g = y; b = z
+		r = x
+		g = y
+		b = z
 	} else {
-		g = x; b = y; r = z
+		g = x
+		b = y
+		r = z
 	}
 
-	red   = uint32(utils.Truncatef(r * a * 255)) << 8
-	green = uint32(utils.Truncatef(g * a * 255)) << 8
-	blue  = uint32(utils.Truncatef(b * a * 255)) << 8
-	alpha = uint32(a * 255) << 8
+	red = uint32(utils.Truncatef(r*a*255)) << 8
+	green = uint32(utils.Truncatef(g*a*255)) << 8
+	blue = uint32(utils.Truncatef(b*a*255)) << 8
+	alpha = uint32(a*255) << 8
 
 	return
 }
@@ -65,20 +73,20 @@ func hsiaModel(c color.Color) color.Color {
 
 	r, g, b, a := utils.RatioRGBA(c)
 
-	maxi   := utils.Maxf(r, g, b)
-	mini   := utils.Minf(r, g, b)
+	maxi := utils.Maxf(r, g, b)
+	mini := utils.Minf(r, g, b)
 	chroma := maxi - mini
 
 	// Work out hue
-	hdash  := 0.0
+	hdash := 0.0
 	if chroma == 0 {
 		hdash = 0
-	}else if maxi == r {
-		hdash = math.Mod((g - b) / chroma, 6)
+	} else if maxi == r {
+		hdash = math.Mod((g-b)/chroma, 6)
 	} else if maxi == g {
-		hdash = (b - r) / chroma + 2.0
+		hdash = (b-r)/chroma + 2.0
 	} else if maxi == b {
-		hdash = (r - g) / chroma + 4.0
+		hdash = (r-g)/chroma + 4.0
 	}
 
 	hue := hdash * 60
@@ -93,7 +101,7 @@ func hsiaModel(c color.Color) color.Color {
 	// Work out saturation
 	saturation := 0.0
 	if chroma != 0 {
-		saturation = 1 - mini / intensity
+		saturation = 1 - mini/intensity
 	}
 
 	// prefer positive hues

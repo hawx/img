@@ -23,12 +23,12 @@ func (d *Dimension) String() string {
 func (d *Dimension) Set(value string) error {
 	parts := strings.Split(value, "x")
 
-	h,e := strconv.Atoi(parts[0])
+	h, e := strconv.Atoi(parts[0])
 	if e != nil {
 		return errors.New("Error parsing height: expect HxW where H and W are integers")
 	}
 
-	w,f := strconv.Atoi(parts[1])
+	w, f := strconv.Atoi(parts[1])
 	if f != nil {
 		return errors.New("Error parsing width: expect HxW where H and W are integers")
 	}
@@ -44,7 +44,7 @@ func SizeForRows(img image.Image, rows int) Dimension {
 	b := img.Bounds()
 	h := b.Dy() / rows
 
-	return Dimension{h,h}
+	return Dimension{h, h}
 }
 
 // SizeForCols determines the maximum (square) Dimensions to use that will fit
@@ -53,7 +53,7 @@ func SizeForCols(img image.Image, cols int) Dimension {
 	b := img.Bounds()
 	w := b.Dx() / cols
 
-	return Dimension{w,w}
+	return Dimension{w, w}
 }
 
 // SizeForRowsAndCols determines the maximum (rectangular) Dimensions to use

@@ -2,8 +2,8 @@
 package shuffle
 
 import (
-	"math/rand"
 	"image"
+	"math/rand"
 )
 
 func randBetween(a, b int) int {

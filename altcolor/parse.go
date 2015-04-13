@@ -10,8 +10,8 @@ var (
 	SHORT_HEX = regexp.MustCompile("#([A-Fa-f0-9])([A-Fa-f0-9])([A-Fa-f0-9])([A-Fa-f0-9])?")
 	LONG_HEX  = regexp.MustCompile("#([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})?")
 
-	RGB       = regexp.MustCompile("rgb\\(\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*\\)")
-	RGBA      = regexp.MustCompile("rgba\\(\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*\\)")
+	RGB  = regexp.MustCompile("rgb\\(\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*\\)")
+	RGBA = regexp.MustCompile("rgba\\(\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)\\s*\\)")
 )
 
 func intToInt(s string) uint8 {
@@ -28,7 +28,9 @@ func Parse(str string) color.Color {
 	_parts := SHORT_HEX.FindAllStringSubmatch(str, 5)
 	if _parts != nil {
 		parts := _parts[0]
-		if parts[4] == "" { parts[4] = "F" }
+		if parts[4] == "" {
+			parts[4] = "F"
+		}
 		return color.NRGBA{
 			hexToInt(parts[1] + parts[1]),
 			hexToInt(parts[2] + parts[2]),
@@ -40,7 +42,9 @@ func Parse(str string) color.Color {
 	_parts = LONG_HEX.FindAllStringSubmatch(str, 5)
 	if _parts != nil {
 		parts := _parts[0]
-		if parts[4] == "" { parts[4] = "FF" }
+		if parts[4] == "" {
+			parts[4] = "FF"
+		}
 		return color.NRGBA{
 			hexToInt(parts[1]),
 			hexToInt(parts[2]),

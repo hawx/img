@@ -36,7 +36,7 @@ func MapAdjuster(f func(Adjuster) Composable) func(image.Image, Adjuster) image.
 //   // Only loops through image once!
 //   img = MapColors(img, f)
 //
-func Compose(fs... Composable) Composable {
+func Compose(fs ...Composable) Composable {
 	return func(c color.Color) color.Color {
 		for _, f := range fs {
 			c = f(c)

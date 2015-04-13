@@ -10,36 +10,46 @@ import (
 
 // cropTo draws a new Image with pixels that have coordinates that when passed
 // to the given function returns true.
-func cropTo(img image.Image, in func(x,y int) bool) image.Image {
-	return cropToValue(img, func(x,y int) float64 {
-		if in(x,y) {
+func cropTo(img image.Image, in func(x, y int) bool) image.Image {
+	return cropToValue(img, func(x, y int) float64 {
+		if in(x, y) {
 			return 1.0
 		}
 		return 0.0
 	})
 }
 
-func cropToValue(img image.Image, in func(x,y int) float64) image.Image {
+func cropToValue(img image.Image, in func(x, y int) float64) image.Image {
 	b := img.Bounds()
 	o := image.NewRGBA(b)
 
-	leastX := b.Max.X; leastY := b.Max.Y
-	mostX := 0; mostY := 0
+	leastX := b.Max.X
+	leastY := b.Max.Y
+	mostX := 0
+	mostY := 0
 
 	for y := b.Min.Y; y <= b.Max.Y; y++ {
 		for x := b.Min.X; x <= b.Max.X; x++ {
-			if in(x,y) > 0 {
-				if x < leastX { leastX = x }
-				if y < leastY { leastY = y }
-				if x > mostX  { mostX  = x }
-				if y > mostY  { mostY  = y }
+			if in(x, y) > 0 {
+				if x < leastX {
+					leastX = x
+				}
+				if y < leastY {
+					leastY = y
+				}
+				if x > mostX {
+					mostX = x
+				}
+				if y > mostY {
+					mostY = y
+				}
 
-				r,g,b,a := utils.NormalisedRGBA(img.At(x, y))
+				r, g, b, a := utils.NormalisedRGBA(img.At(x, y))
 				o.Set(x, y, color.NRGBA{
 					uint8(r),
 					uint8(g),
 					uint8(b),
-					uint8(float64(a) * in(x,y)),
+					uint8(float64(a) * in(x, y)),
 				})
 			}
 		}
@@ -76,7 +86,7 @@ func Square(img image.Image, size int, direction utils.Direction) image.Image {
 		maxY = b.Max.Y
 	}
 
-	switch direction{
+	switch direction {
 	case utils.TopLeft, utils.Left, utils.BottomLeft:
 		minX = b.Min.X
 		maxX = b.Min.X + size
@@ -86,7 +96,7 @@ func Square(img image.Image, size int, direction utils.Direction) image.Image {
 		maxX = b.Max.X
 	}
 
-	in := func(x,y int) bool {
+	in := func(x, y int) bool {
 		return x >= minX && x <= maxX && y >= minY && y <= maxY
 	}
 
@@ -109,8 +119,8 @@ func Circle(img image.Image, size int, direction utils.Direction) image.Image {
 	size /= 2
 
 	// Assume centre
-	xOffset := w/2
-	yOffset := h/2
+	xOffset := w / 2
+	yOffset := h / 2
 
 	switch direction {
 	case utils.TopLeft, utils.Top, utils.TopRight:
@@ -128,11 +138,12 @@ func Circle(img image.Image, size int, direction utils.Direction) image.Image {
 		xOffset = (w - size)
 	}
 
-	in := func(x,y int) float64 {
-		x -= xOffset; y -= yOffset
-		if (x*x) + (y*y) < (size) * (size-1) {
+	in := func(x, y int) float64 {
+		x -= xOffset
+		y -= yOffset
+		if (x*x)+(y*y) < (size)*(size-1) {
 			return 1
-		} else if (x*x) + (y*y) <= size*size {
+		} else if (x*x)+(y*y) <= size*size {
 			return 0.4
 		}
 		return 0
@@ -167,7 +178,7 @@ func Triangle(img image.Image, size int, direction utils.Direction) image.Image 
 		maxY = b.Max.Y
 	}
 
-	switch direction{
+	switch direction {
 	case utils.TopLeft, utils.Left, utils.BottomLeft:
 		minX = b.Min.X
 
@@ -175,12 +186,12 @@ func Triangle(img image.Image, size int, direction utils.Direction) image.Image 
 		minX = b.Max.X - size
 	}
 
-	in := func(x,y int) bool {
+	in := func(x, y int) bool {
 		x -= minX
 
 		return y <= maxY && y >= minY &&
-			y >= int(k * float64(x)) - 2*height + maxY &&
-			y >= int(k * float64(-x)) + maxY
+			y >= int(k*float64(x))-2*height+maxY &&
+			y >= int(k*float64(-x))+maxY
 	}
 
 	return cropTo(img, in)

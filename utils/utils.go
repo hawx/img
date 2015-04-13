@@ -3,20 +3,18 @@
 package utils
 
 import (
-	"github.com/hawx/img/exif"
 	"flag"
 	"fmt"
-	"os"
-	"log"
-
-	"io/ioutil"
-	"io"
-
 	"image"
-
-	"image/png"
-	"image/jpeg"
 	_ "image/gif"
+	"image/jpeg"
+	"image/png"
+	"io"
+	"io/ioutil"
+	"log"
+	"os"
+
+	"github.com/hawx/img/exif"
 	"golang.org/x/image/tiff"
 )
 
@@ -24,10 +22,11 @@ import (
 // which one is set AND have the type niceness. These are the canonical
 // names. Easy.
 type output string
+
 const (
-	PNG output = "png"
-	JPEG       = "jpeg"
-	TIFF       = "tiff"
+	PNG  output = "png"
+	JPEG        = "jpeg"
+	TIFF        = "tiff"
 )
 
 var Output output = PNG
@@ -104,22 +103,21 @@ func WriteStdout(img image.Image, data *exif.Exif) {
 }
 
 // Warn prints a message to standard error
-func Warn(s... interface{}) {
+func Warn(s ...interface{}) {
 	fmt.Fprintln(os.Stderr, s...)
 }
 
 // FlagVisited determines whether the named flag has been visited in the FlagSet
 // given. This is helpful if you want to have a flag that triggers an action
 // when given, but is not a boolean flag.
-func FlagVisited(name string, flags flag.FlagSet) bool {
-	didFind := false
-	toFind  := flags.Lookup(name)
+func FlagVisited(name string, flags flag.FlagSet) (didFind bool) {
+	toFind := flags.Lookup(name)
 
-	flags.Visit(func (f *flag.Flag) {
+	flags.Visit(func(f *flag.Flag) {
 		if f == toFind {
 			didFind = true
 		}
 	})
 
-	return didFind
+	return
 }

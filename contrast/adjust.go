@@ -21,13 +21,16 @@ func AdjustC(value float64) utils.Composable {
 		// Turns out ImageMagick thinks HSB=HSV.
 		d := altcolor.HSVAModel.Convert(c).(altcolor.HSVA)
 
-		d.V += 0.5 * value * (0.5 * (math.Sin(math.Pi * (d.V - 0.5)) + 1.0) - d.V)
-		if d.V > 1.0 { d.V = 1.0 } else if d.V < 0.0 { d.V = 0.0 }
+		d.V += 0.5 * value * (0.5*(math.Sin(math.Pi*(d.V-0.5))+1.0) - d.V)
+		if d.V > 1.0 {
+			d.V = 1.0
+		} else if d.V < 0.0 {
+			d.V = 0.0
+		}
 
 		return d
 	}
 }
-
 
 // Linear adjusts the contrast using a linear function. A value of 1 has no
 // effect, and a value of 0 will return a grey image.
@@ -37,7 +40,7 @@ func Linear(img image.Image, value float64) image.Image {
 
 func LinearC(value float64) utils.Composable {
 	return func(c color.Color) color.Color {
-		r,g,b,a := utils.RatioRGBA(c)
+		r, g, b, a := utils.RatioRGBA(c)
 
 		r = utils.Truncatef((((r - 0.5) * value) + 0.5) * 255)
 		g = utils.Truncatef((((g - 0.5) * value) + 0.5) * 255)
@@ -48,7 +51,6 @@ func LinearC(value float64) utils.Composable {
 	}
 }
 
-
 // Sigmoidal adjusts the contrast in a non-linear way. Factor sets how much to
 // increase the contrast, midpoint sets where midtones fall in the resultant
 // image.
@@ -58,7 +60,7 @@ func Sigmoidal(img image.Image, factor, midpoint float64) image.Image {
 
 func SigmoidalC(factor, midpoint float64) utils.Composable {
 	sigmoidal := func(x float64) float64 {
-		return 1.0 / (1.0 + math.Exp(factor * (midpoint - x)))
+		return 1.0 / (1.0 + math.Exp(factor*(midpoint-x)))
 	}
 
 	// Pre-compute useful terms
@@ -79,24 +81,24 @@ func SigmoidalC(factor, midpoint float64) utils.Composable {
 
 	} else {
 		scaledSigmoidal = func(x float64) float64 {
-			argument := (sig1 - sig0) * x + sig0
+			argument := (sig1-sig0)*x + sig0
 			var clamped float64
 			if argument < Epsilon {
 				clamped = Epsilon
 			} else {
-				if argument > 1 - Epsilon {
+				if argument > 1-Epsilon {
 					clamped = 1 - Epsilon
 				} else {
 					clamped = argument
 				}
 			}
 
-			return midpoint - math.Log(1.0 / clamped - 1.0) / factor
+			return midpoint - math.Log(1.0/clamped-1.0)/factor
 		}
 	}
 
 	return func(c color.Color) color.Color {
-		r,g,b,a := utils.RatioRGBA(c)
+		r, g, b, a := utils.RatioRGBA(c)
 
 		r = utils.Truncatef(scaledSigmoidal(r) * 255)
 		g = utils.Truncatef(scaledSigmoidal(g) * 255)

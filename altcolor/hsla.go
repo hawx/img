@@ -19,36 +19,51 @@ type HSLA struct {
 
 // BUG: Conversion is broken _somewhere_, check against IM results.
 func (col HSLA) RGBA() (red, green, blue, alpha uint32) {
-	h := col.H; s := col.S; l := col.L; a := col.A
+	h := col.H
+	s := col.S
+	l := col.L
+	a := col.A
 
 	h = math.Mod(h, 360)
 
-	c := (1.0 - math.Abs(2.0 * l - 1.0)) * s
+	c := (1.0 - math.Abs(2.0*l-1.0)) * s
 
 	hdash := h / 60.0
-	x := c * (1 - math.Abs(math.Mod(hdash,2) - 1))
+	x := c * (1 - math.Abs(math.Mod(hdash, 2)-1))
 
 	var r, g, b float64
 	if hdash < 1 {
-		r = c; g = x; b = 0
+		r = c
+		g = x
+		b = 0
 	} else if hdash < 2 {
-		r = x; g = c; b = 0
+		r = x
+		g = c
+		b = 0
 	} else if hdash < 3 {
-		r = 0; g = c; b = x
+		r = 0
+		g = c
+		b = x
 	} else if hdash < 4 {
-		r = 0; g = x; b = c
+		r = 0
+		g = x
+		b = c
 	} else if hdash < 5 {
-		r = x; g = 0; b = c
+		r = x
+		g = 0
+		b = c
 	} else if hdash < 6 {
-		r = c; g = 0; b = x
+		r = c
+		g = 0
+		b = x
 	}
 
-	m := l - 0.5 * c
+	m := l - 0.5*c
 
-	red   = uint32(utils.Truncatef((r + m) * a * 255)) << 8
-	green = uint32(utils.Truncatef((g + m) * a * 255)) << 8
-	blue  = uint32(utils.Truncatef((b + m) * a * 255)) << 8
-	alpha = uint32(a * 255) << 8
+	red = uint32(utils.Truncatef((r+m)*a*255)) << 8
+	green = uint32(utils.Truncatef((g+m)*a*255)) << 8
+	blue = uint32(utils.Truncatef((b+m)*a*255)) << 8
+	alpha = uint32(a*255) << 8
 
 	return
 }
@@ -62,20 +77,20 @@ func hslaModel(c color.Color) color.Color {
 
 	r, g, b, a := utils.RatioRGBA(c)
 
-	maxi   := utils.Maxf(r, g, b)
-	mini   := utils.Minf(r, g, b)
+	maxi := utils.Maxf(r, g, b)
+	mini := utils.Minf(r, g, b)
 	chroma := maxi - mini
 
 	// Work out hue
-	hdash  := 0.0
+	hdash := 0.0
 	if chroma == 0 {
 		hdash = 0
-	}else if maxi == r {
-		hdash = math.Mod((g - b) / chroma, 6)
+	} else if maxi == r {
+		hdash = math.Mod((g-b)/chroma, 6)
 	} else if maxi == g {
-		hdash = (b - r) / chroma + 2.0
+		hdash = (b-r)/chroma + 2.0
 	} else if maxi == b {
-		hdash = (r - g) / chroma + 4.0
+		hdash = (r-g)/chroma + 4.0
 	}
 
 	hue := hdash * 60
@@ -90,7 +105,7 @@ func hslaModel(c color.Color) color.Color {
 	// Work out saturation
 	saturation := 0.0
 	if chroma != 0 {
-		saturation = chroma / (1 - math.Abs(2 * lightness - 1))
+		saturation = chroma / (1 - math.Abs(2*lightness-1))
 	}
 
 	return HSLA{hue, saturation, lightness, a}

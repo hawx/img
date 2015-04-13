@@ -12,31 +12,30 @@ type Triangle int
 
 const (
 	// Triangle types for Pxl
-	BOTH Triangle = iota  // Decide base on closeness of colours in each quadrant
+	BOTH  Triangle = iota // Decide base on closeness of colours in each quadrant
 	LEFT                  // Create only left triangles
 	RIGHT                 // Create only right triangles
 )
-
 
 func pxlWorker(img image.Image, bounds image.Rectangle, dest draw.Image,
 	size utils.Dimension, triangle Triangle, aliased bool, c chan int) {
 
 	ratio := float64(size.H) / float64(size.W)
 
-	inTop := func(x,y float64) bool {
-		return (y > ratio * x) && (y > ratio * -x)
+	inTop := func(x, y float64) bool {
+		return (y > ratio*x) && (y > ratio*-x)
 	}
 
-	inRight := func(x,y float64) bool {
-		return (y < ratio * x) && (y > ratio * -x)
+	inRight := func(x, y float64) bool {
+		return (y < ratio*x) && (y > ratio*-x)
 	}
 
-	inBottom := func(x,y float64) bool {
-		return (y < ratio * x) && (y < ratio * -x)
+	inBottom := func(x, y float64) bool {
+		return (y < ratio*x) && (y < ratio*-x)
 	}
 
-	inLeft := func(x,y float64) bool {
-		return (y > ratio * x) && (y < ratio * -x)
+	inLeft := func(x, y float64) bool {
+		return (y > ratio*x) && (y < ratio*-x)
 	}
 
 	to := []color.Color{}
@@ -50,8 +49,8 @@ func pxlWorker(img image.Image, bounds image.Rectangle, dest draw.Image,
 			realY := bounds.Min.Y + y
 			realX := bounds.Min.X + x
 
-			yOrigin := float64(y - size.H / 2)
-			xOrigin := float64(x - size.W / 2)
+			yOrigin := float64(y - size.H/2)
+			xOrigin := float64(x - size.W/2)
 
 			if inTop(xOrigin, yOrigin) {
 				to = append(to, img.At(realX, realY))
@@ -76,9 +75,9 @@ func pxlWorker(img image.Image, bounds image.Rectangle, dest draw.Image,
 	if (triangle != LEFT) && (triangle == RIGHT ||
 		utils.Closeness(ato, ari) > utils.Closeness(ato, ale)) {
 
-		topRight   := utils.Average(ato, ari)
+		topRight := utils.Average(ato, ari)
 		bottomLeft := utils.Average(abo, ale)
-		middle      := utils.Average(topRight, bottomLeft)
+		middle := utils.Average(topRight, bottomLeft)
 
 		for y := 0; y < bounds.Dy(); y++ {
 			for x := 0; x < bounds.Dx(); x++ {
@@ -86,12 +85,12 @@ func pxlWorker(img image.Image, bounds image.Rectangle, dest draw.Image,
 				realY := bounds.Min.Y + y
 				realX := bounds.Min.X + x
 
-				yOrigin := float64(y - size.H / 2)
-				xOrigin := float64(x - size.W / 2)
+				yOrigin := float64(y - size.H/2)
+				xOrigin := float64(x - size.W/2)
 
-				if yOrigin > ratio * xOrigin {
+				if yOrigin > ratio*xOrigin {
 					dest.Set(realX, realY, topRight)
-				} else if yOrigin == ratio * xOrigin && !aliased {
+				} else if yOrigin == ratio*xOrigin && !aliased {
 					dest.Set(realX, realY, middle)
 				} else {
 					dest.Set(realX, realY, bottomLeft)
@@ -101,9 +100,9 @@ func pxlWorker(img image.Image, bounds image.Rectangle, dest draw.Image,
 
 	} else {
 
-		topLeft     := utils.Average(ato, ale)
+		topLeft := utils.Average(ato, ale)
 		bottomRight := utils.Average(abo, ari)
-		middle       := utils.Average(topLeft, bottomRight)
+		middle := utils.Average(topLeft, bottomRight)
 
 		for y := 0; y < bounds.Dy(); y++ {
 			for x := 0; x < bounds.Dx(); x++ {
@@ -111,14 +110,14 @@ func pxlWorker(img image.Image, bounds image.Rectangle, dest draw.Image,
 				realY := bounds.Min.Y + y
 				realX := bounds.Min.X + x
 
-				yOrigin := float64(y - size.H / 2)
-				xOrigin := float64(x - size.W / 2)
+				yOrigin := float64(y - size.H/2)
+				xOrigin := float64(x - size.W/2)
 
 				// Do this one opposite to above so that the diagonals line up when
 				// aliased.
-				if yOrigin < ratio * -xOrigin {
+				if yOrigin < ratio*-xOrigin {
 					dest.Set(realX, realY, bottomRight)
-				} else if yOrigin == ratio * -xOrigin && !aliased {
+				} else if yOrigin == ratio*-xOrigin && !aliased {
 					dest.Set(realX, realY, middle)
 				} else {
 					dest.Set(realX, realY, topLeft)
@@ -145,7 +144,7 @@ func doPxl(img image.Image, size utils.Dimension, triangle Triangle, style Style
 		cols := b.Dx() / size.W
 		rows := b.Dy() / size.H
 
-		o = image.NewRGBA(image.Rect(0, 0, size.W * cols, size.H * rows))
+		o = image.NewRGBA(image.Rect(0, 0, size.W*cols, size.H*rows))
 
 		for j, r := range utils.ChopRectangleToSizes(b, size.H, size.W, utils.IGNORE) {
 			go pxlWorker(img, r, o, size, triangle, aliased, c)

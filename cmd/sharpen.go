@@ -1,15 +1,22 @@
-package main
+package cmd
 
 import (
+	"github.com/hawx/hadfield"
 	"github.com/hawx/img/sharpen"
 	"github.com/hawx/img/utils"
-	"github.com/hawx/hadfield"
 )
 
-var cmdSharpen = &hadfield.Command{
-	Usage: "sharpen [options]",
-	Short: "sharpen an image",
-Long: `
+var (
+	sharpenRadius                                 int
+	sharpenSigma, sharpenAmount, sharpenThreshold float64
+	sharpenUnsharp                                bool
+)
+
+func Sharpen() *hadfield.Command {
+	cmd := &hadfield.Command{
+		Usage: "sharpen [options]",
+		Short: "sharpen an image",
+		Long: `
   Sharpen takes an image from STDIN, and prints a sharpened version to STDOUT.
 
     --radius <num>      # The radius of the Gaussian, not including center pixel
@@ -19,23 +26,20 @@ Long: `
 
     --unsharp
 `,
-}
+	}
 
-var sharpenRadius int
-var sharpenSigma, sharpenAmount, sharpenThreshold float64
-var sharpenUnsharp bool
-
-func init() {
-	cmdSharpen.Run = runSharpen
+	cmd.Run = runSharpen
 
 	// width=GetOptimalKernelWidth2D(radius,sigma);
 
-	cmdSharpen.Flag.IntVar(&sharpenRadius, "radius", 1, "")
-	cmdSharpen.Flag.Float64Var(&sharpenSigma, "sigma", 1.0, "")
-	cmdSharpen.Flag.Float64Var(&sharpenAmount, "amount", 1.0, "")
-	cmdSharpen.Flag.Float64Var(&sharpenThreshold, "threshold", 0.05, "")
+	cmd.Flag.IntVar(&sharpenRadius, "radius", 1, "")
+	cmd.Flag.Float64Var(&sharpenSigma, "sigma", 1.0, "")
+	cmd.Flag.Float64Var(&sharpenAmount, "amount", 1.0, "")
+	cmd.Flag.Float64Var(&sharpenThreshold, "threshold", 0.05, "")
 
-	cmdSharpen.Flag.BoolVar(&sharpenUnsharp, "unsharp", false, "")
+	cmd.Flag.BoolVar(&sharpenUnsharp, "unsharp", false, "")
+
+	return cmd
 }
 
 func runSharpen(cmd *hadfield.Command, args []string) {
