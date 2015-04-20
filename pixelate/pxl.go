@@ -6,7 +6,7 @@ import (
 	"image/draw"
 	"runtime"
 
-	"github.com/hawx/img/utils"
+	"hawx.me/code/img/utils"
 )
 
 // Triangle types for Pxl

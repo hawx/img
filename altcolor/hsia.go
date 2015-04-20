@@ -1,9 +1,10 @@
 package altcolor
 
 import (
-	"github.com/hawx/img/utils"
 	"image/color"
 	"math"
+
+	"hawx.me/code/img/utils"
 )
 
 // HSIA represents a colour with hue, saturation, intensity and alpha channels.

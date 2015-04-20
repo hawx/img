@@ -2,11 +2,12 @@
 package gamma
 
 import (
-	"github.com/hawx/img/greyscale"
-	"github.com/hawx/img/utils"
 	"image"
 	"image/color"
 	"math"
+
+	"hawx.me/code/img/greyscale"
+	"hawx.me/code/img/utils"
 )
 
 // Adjusts the gamma of the Image by the given value. A value less than 1.0

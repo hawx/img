@@ -2,11 +2,12 @@
 package contrast
 
 import (
-	"github.com/hawx/img/altcolor"
-	"github.com/hawx/img/utils"
 	"image"
 	"image/color"
 	"math"
+
+	"hawx.me/code/img/altcolor"
+	"hawx.me/code/img/utils"
 )
 
 const Epsilon = 1.0e-10

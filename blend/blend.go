@@ -5,12 +5,13 @@
 package blend
 
 import (
-	"github.com/hawx/img/altcolor"
-	"github.com/hawx/img/utils"
 	"image"
 	"image/color"
 	"math"
 	"math/rand"
+
+	"hawx.me/code/img/altcolor"
+	"hawx.me/code/img/utils"
 )
 
 // Blender takes two colours (base and blend, respectively) and returns another

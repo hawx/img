@@ -2,11 +2,12 @@
 package blur
 
 import (
-	"github.com/hawx/img/utils"
 	"image"
 	"image/color"
 	"math"
 	"os"
+
+	"hawx.me/code/img/utils"
 )
 
 type Style float64

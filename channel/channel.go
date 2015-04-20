@@ -7,8 +7,8 @@ import (
 	"image/color"
 	"math"
 
-	"github.com/hawx/img/altcolor"
-	"github.com/hawx/img/utils"
+	"hawx.me/code/img/altcolor"
+	"hawx.me/code/img/utils"
 )
 
 // Adjust applies the given Adjuster to the Image on only the Channels specified.

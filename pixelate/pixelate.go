@@ -2,11 +2,12 @@
 package pixelate
 
 import (
-	"github.com/hawx/img/utils"
 	"image"
 	"image/color"
 	"image/draw"
 	"runtime"
+
+	"hawx.me/code/img/utils"
 )
 
 type Style int

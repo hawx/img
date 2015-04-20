@@ -5,8 +5,8 @@ import (
 	"image/color"
 	"math"
 
-	"github.com/hawx/img/channel"
-	"github.com/hawx/img/utils"
+	"hawx.me/code/img/channel"
+	"hawx.me/code/img/utils"
 )
 
 // Vxl pixelates the Image into isometric cubes. It averages the colours and

@@ -3,8 +3,9 @@
 package greyscale
 
 import (
-	"github.com/hawx/img/utils"
 	"image/color"
+
+	"hawx.me/code/img/utils"
 )
 
 type pixelAlterer func(r, g, b uint32) uint32

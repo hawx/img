@@ -2,8 +2,8 @@
 package sharpen
 
 import (
-	"github.com/hawx/img/blur"
-	"github.com/hawx/img/utils"
+	"hawx.me/code/img/blur"
+	"hawx.me/code/img/utils"
 
 	"image"
 	"image/color"

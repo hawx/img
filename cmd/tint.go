@@ -6,9 +6,9 @@ import (
 	"image/color"
 
 	"github.com/hawx/hadfield"
-	"github.com/hawx/img/altcolor"
-	"github.com/hawx/img/tint"
-	"github.com/hawx/img/utils"
+	"hawx.me/code/img/altcolor"
+	"hawx.me/code/img/tint"
+	"hawx.me/code/img/utils"
 )
 
 var (

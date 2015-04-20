@@ -2,10 +2,11 @@
 package crop
 
 import (
-	"github.com/hawx/img/utils"
 	"image"
 	"image/color"
 	"math"
+
+	"hawx.me/code/img/utils"
 )
 
 // cropTo draws a new Image with pixels that have coordinates that when passed

@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"github.com/hawx/hadfield"
-	"github.com/hawx/img/cmd"
-	"github.com/hawx/img/utils"
+	"hawx.me/code/img/cmd"
+	"hawx.me/code/img/utils"
 )
 
 type External struct {

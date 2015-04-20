@@ -10,9 +10,9 @@ import (
 	"strings"
 
 	"github.com/hawx/hadfield"
-	"github.com/hawx/img/blend"
-	"github.com/hawx/img/utils"
 	"github.com/nfnt/resize"
+	"hawx.me/code/img/blend"
+	"hawx.me/code/img/utils"
 )
 
 var (

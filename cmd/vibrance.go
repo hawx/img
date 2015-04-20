@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"github.com/hawx/hadfield"
-	"github.com/hawx/img/utils"
-	"github.com/hawx/img/vibrance"
+	"hawx.me/code/img/utils"
+	"hawx.me/code/img/vibrance"
 )
 
 var (

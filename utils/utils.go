@@ -14,8 +14,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/hawx/img/exif"
 	"golang.org/x/image/tiff"
+	"hawx.me/code/img/exif"
 )
 
 // This is a string, and not an int of some kind, so that it is easy to find out

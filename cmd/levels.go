@@ -4,9 +4,9 @@ import (
 	"image"
 
 	"github.com/hawx/hadfield"
-	"github.com/hawx/img/channel"
-	"github.com/hawx/img/levels"
-	"github.com/hawx/img/utils"
+	"hawx.me/code/img/channel"
+	"hawx.me/code/img/levels"
+	"hawx.me/code/img/utils"
 )
 
 var (
