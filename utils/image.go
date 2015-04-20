@@ -4,6 +4,8 @@ import (
 	"image"
 )
 
+// ExcessMode specifies how excess space is dealt with for tools that may
+// produce results with different dimensions to the input image.
 type ExcessMode int
 
 const (

@@ -1,20 +1,26 @@
 package pixelate
 
 import (
-	"github.com/hawx/img/utils"
 	"image"
 	"image/color"
 	"image/draw"
 	"runtime"
+
+	"github.com/hawx/img/utils"
 )
 
+// Triangle types for Pxl
 type Triangle int
 
 const (
-	// Triangle types for Pxl
-	BOTH  Triangle = iota // Decide base on closeness of colours in each quadrant
-	LEFT                  // Create only left triangles
-	RIGHT                 // Create only right triangles
+	// Decide base on closeness of colours in each quadrant
+	BOTH Triangle = iota
+
+	// Create only left triangles
+	LEFT
+
+	// Create only right triangles
+	RIGHT
 )
 
 func pxlWorker(img image.Image, bounds image.Rectangle, dest draw.Image,

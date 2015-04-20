@@ -57,7 +57,7 @@ func Truncate(n uint32) uint32 {
 	return n
 }
 
-// Truanctef is identical to Truncate but takes and returns a float64.
+// Truncatef is identical to Truncate but takes and returns a float64.
 func Truncatef(n float64) float64 {
 	if n < 0 {
 		return 0

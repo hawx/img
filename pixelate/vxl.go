@@ -1,11 +1,12 @@
 package pixelate
 
 import (
-	"github.com/hawx/img/channel"
-	"github.com/hawx/img/utils"
 	"image"
 	"image/color"
 	"math"
+
+	"github.com/hawx/img/channel"
+	"github.com/hawx/img/utils"
 )
 
 // Vxl pixelates the Image into isometric cubes. It averages the colours and
@@ -65,10 +66,10 @@ func Vxl(img image.Image, height int, flip bool, top, left, right float64) image
 					realX := col*pixelWidth + x
 					pixel := img.At(realX, realY)
 
-					y_origin := float64(y - pixelHeight/2)
-					x_origin := float64(x - pixelWidth/2)
+					yOrigin := float64(y - pixelHeight/2)
+					xOrigin := float64(x - pixelWidth/2)
 
-					if inHexagon(x_origin, y_origin) {
+					if inHexagon(xOrigin, yOrigin) {
 						seen = append(seen, pixel)
 					}
 				}
@@ -81,29 +82,29 @@ func Vxl(img image.Image, height int, flip bool, top, left, right float64) image
 					realY := row*(pixelHeight+int(c)) + y
 					realX := col*pixelWidth + x
 
-					y_origin := float64(y - pixelHeight/2)
-					x_origin := float64(x - pixelWidth/2)
+					yOrigin := float64(y - pixelHeight/2)
+					xOrigin := float64(x - pixelWidth/2)
 
 					// This stops white bits showing above the top squares. It does mean
 					// the dimensions aren't perfect, but what did you expect with pixels
 					// and trig. It is inefficient though, maybe fix that later?
-					if (!flip && y_origin < 0) || (flip && y_origin > 0) {
+					if (!flip && yOrigin < 0) || (flip && yOrigin > 0) {
 						o.Set(realX, realY, topL(average))
 					} else {
-						if x_origin > 0 {
+						if xOrigin > 0 {
 							o.Set(realX, realY, rightL(average))
 						} else {
 							o.Set(realX, realY, leftL(average))
 						}
 					}
 
-					if inTopSquare(x_origin, y_origin) {
+					if inTopSquare(xOrigin, yOrigin) {
 						o.Set(realX, realY, topL(average))
 					}
-					if inBottomRight(x_origin, y_origin) {
+					if inBottomRight(xOrigin, yOrigin) {
 						o.Set(realX, realY, rightL(average))
 					}
-					if inBottomLeft(x_origin, y_origin) {
+					if inBottomLeft(xOrigin, yOrigin) {
 						o.Set(realX, realY, leftL(average))
 					}
 				}
@@ -126,10 +127,10 @@ func Vxl(img image.Image, height int, flip bool, top, left, right float64) image
 					if image.Pt(realX, realY).In(b) {
 						pixel := img.At(realX, realY)
 
-						y_origin := float64(y - pixelHeight/2)
-						x_origin := float64(x - pixelWidth/2)
+						yOrigin := float64(y - pixelHeight/2)
+						xOrigin := float64(x - pixelWidth/2)
 
-						if inHexagon(x_origin, y_origin) {
+						if inHexagon(xOrigin, yOrigin) {
 							seen = append(seen, pixel)
 						}
 					}
@@ -146,16 +147,16 @@ func Vxl(img image.Image, height int, flip bool, top, left, right float64) image
 					realY := row*(pixelHeight+int(c)) + y + offsetY
 					realX := col*pixelWidth + x + offsetX
 
-					y_origin := float64(y - pixelHeight/2)
-					x_origin := float64(x - pixelWidth/2)
+					yOrigin := float64(y - pixelHeight/2)
+					xOrigin := float64(x - pixelWidth/2)
 
-					if inTopSquare(x_origin, y_origin) {
+					if inTopSquare(xOrigin, yOrigin) {
 						o.Set(realX, realY, topL(average))
 					}
-					if inBottomRight(x_origin, y_origin) {
+					if inBottomRight(xOrigin, yOrigin) {
 						o.Set(realX, realY, rightL(average))
 					}
-					if inBottomLeft(x_origin, y_origin) {
+					if inBottomLeft(xOrigin, yOrigin) {
 						o.Set(realX, realY, leftL(average))
 					}
 				}

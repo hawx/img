@@ -3,10 +3,11 @@
 package levels
 
 import (
-	"github.com/hawx/img/channel"
-	"github.com/hawx/img/utils"
 	"image"
 	"image/color"
+
+	"github.com/hawx/img/channel"
+	"github.com/hawx/img/utils"
 )
 
 // linearScale scales the value given so that the range min to max is scaled to
@@ -47,7 +48,7 @@ func Auto(img image.Image, ch channel.Channel) image.Image {
 }
 
 func AutoWhite(img image.Image, ch channel.Channel) image.Image {
-	var lightest float64 = 0.0
+	lightest := 0.0
 
 	utils.PEachColor(img, func(c color.Color) {
 		v := ch.Get(c)
@@ -63,7 +64,7 @@ func AutoWhite(img image.Image, ch channel.Channel) image.Image {
 // AutoBlack finds the darkest colour in the image and makes it black, adjusting
 // the colours of every other point to achieve the same distribution.
 func AutoBlack(img image.Image, ch channel.Channel) image.Image {
-	var darkest float64 = 1.0
+	darkest := 1.0
 
 	utils.PEachColor(img, func(c color.Color) {
 		v := ch.Get(c)

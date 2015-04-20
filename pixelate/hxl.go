@@ -1,9 +1,10 @@
 package pixelate
 
 import (
-	"github.com/hawx/img/utils"
 	"image"
 	"image/color"
+
+	"github.com/hawx/img/utils"
 )
 
 // Halves the width of the double-width image created by hxl to produce nice
@@ -60,12 +61,12 @@ func Hxl(img image.Image, width int) image.Image {
 					realX := col*pixelWidth + x
 					pixel := img.At(realX, realY)
 
-					y_origin := float64(y - pixelHeight/2)
-					x_origin := float64(x - pixelWidth/2)
+					yOrigin := float64(y - pixelHeight/2)
+					xOrigin := float64(x - pixelWidth/2)
 
-					if inTop(x_origin, y_origin) {
+					if inTop(xOrigin, yOrigin) {
 						north = append(north, pixel)
-					} else if inBottom(x_origin, y_origin) {
+					} else if inBottom(xOrigin, yOrigin) {
 						south = append(south, pixel)
 					}
 				}
@@ -79,12 +80,12 @@ func Hxl(img image.Image, width int) image.Image {
 					realY := row*pixelHeight + y
 					realX := col*pixelWidth*2 + x
 
-					y_origin := float64(y - pixelHeight/2)
-					x_origin := float64(x - pixelWidth*2/2)
+					yOrigin := float64(y - pixelHeight/2)
+					xOrigin := float64(x - pixelWidth*2/2)
 
-					if inTop(x_origin, y_origin) {
+					if inTop(xOrigin, yOrigin) {
 						o.Set(realX, realY, top)
-					} else if inBottom(x_origin, y_origin) {
+					} else if inBottom(xOrigin, yOrigin) {
 						o.Set(realX, realY, bot)
 					}
 				}
@@ -110,12 +111,12 @@ func Hxl(img image.Image, width int) image.Image {
 					if realX >= 0 && realX < b.Dx() {
 						pixel := img.At(realX, realY)
 
-						y_origin := float64(y - pixelHeight/2)
-						x_origin := float64(x - pixelWidth/2)
+						yOrigin := float64(y - pixelHeight/2)
+						xOrigin := float64(x - pixelWidth/2)
 
-						if inTop(x_origin, y_origin) {
+						if inTop(xOrigin, yOrigin) {
 							north = append(north, pixel)
-						} else if inBottom(x_origin, y_origin) {
+						} else if inBottom(xOrigin, yOrigin) {
 							south = append(south, pixel)
 						}
 					}
@@ -130,12 +131,12 @@ func Hxl(img image.Image, width int) image.Image {
 					realY := row*pixelHeight + y + offsetY
 					realX := col*pixelWidth*2 + x + offsetX*2
 
-					y_origin := float64(y - pixelHeight/2)
-					x_origin := float64(x - pixelWidth*2/2)
+					yOrigin := float64(y - pixelHeight/2)
+					xOrigin := float64(x - pixelWidth*2/2)
 
-					if inTop(x_origin, y_origin) {
+					if inTop(xOrigin, yOrigin) {
 						o.Set(realX, realY, top)
-					} else if inBottom(x_origin, y_origin) {
+					} else if inBottom(xOrigin, yOrigin) {
 						o.Set(realX, realY, bot)
 					}
 				}

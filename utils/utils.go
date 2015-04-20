@@ -23,13 +23,16 @@ import (
 // names. Easy.
 type output string
 
+// Formats that can be created by img.
 const (
 	PNG  output = "png"
 	JPEG        = "jpeg"
 	TIFF        = "tiff"
 )
 
-var Output output = PNG
+// Output is the currently selected output type, and shouldn't be modified by
+// anything other than GetOutput.
+var Output = PNG
 
 // GetOutput takes the os.Args array as input, uses it to set the output format,
 // then returns the new os.Args array.
