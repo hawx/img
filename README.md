@@ -1,4 +1,4 @@
-# img [![docs](http://godoc.org/github.com/hawx/img?status.svg)](http://godoc.org/github.com/hawx/img)
+# img [![docs](http://godoc.org/hawx.me/code/img?status.svg)](http://godoc.org/hawx.me/code/img)
 
 A collection of image manipulation tools. Each tool takes an input file from
 standard input, this needs to be in PNG, JPEG or GIF format. They output the
