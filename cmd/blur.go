@@ -3,7 +3,7 @@ package cmd
 import (
 	"os"
 
-	"github.com/hawx/hadfield"
+	"hawx.me/code/hadfield"
 	"hawx.me/code/img/blur"
 	"hawx.me/code/img/utils"
 )

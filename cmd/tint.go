@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"image/color"
 
-	"github.com/hawx/hadfield"
+	"hawx.me/code/hadfield"
 	"hawx.me/code/img/altcolor"
 	"hawx.me/code/img/tint"
 	"hawx.me/code/img/utils"

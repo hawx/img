@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hawx/hadfield"
+	"hawx.me/code/hadfield"
 	"hawx.me/code/img/cmd"
 	"hawx.me/code/img/utils"
 )

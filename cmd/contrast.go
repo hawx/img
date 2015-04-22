@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/hawx/hadfield"
+	"hawx.me/code/hadfield"
 	"hawx.me/code/img/contrast"
 	"hawx.me/code/img/utils"
 )

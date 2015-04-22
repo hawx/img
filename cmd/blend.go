@@ -9,8 +9,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/hawx/hadfield"
 	"github.com/nfnt/resize"
+	"hawx.me/code/hadfield"
 	"hawx.me/code/img/blend"
 	"hawx.me/code/img/utils"
 )
