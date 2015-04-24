@@ -46,7 +46,7 @@ func (e *External) Callable() bool {
 
 func (e *External) Call(cmd hadfield.Interface, templates hadfield.Templates, args []string) {
 	if args[1] == "-h" || args[1] == "--help" {
-		hadfield.PrintUsage(cmd, templates)
+		hadfield.CommandUsage(cmd, templates)
 	}
 
 	// args[0] is set to the executable's name, so we can safely replace it with
@@ -135,7 +135,7 @@ var commands = hadfield.Commands{
 }
 
 var templates = hadfield.Templates{
-	Usage: `Usage: img [command] [arguments]
+	Help: `Usage: img [command] [arguments]
 
   Img is a set of image manipulation tools. They each take an image from STDIN
   and print the result to STDOUT (in some cases they may also require a second
@@ -150,15 +150,15 @@ var templates = hadfield.Templates{
 
     $ (img greyscale | img pxl | img contrast --by 0.05) < input.png > output.png
 
-  Commands: {{range .}}{{if .Callable}}{{if category . "Command"}}
-    {{.Name | printf "%-15s"}} # {{.Short | trim}}{{end}}{{end}}{{end}}
+  Commands: {{range .}}{{if eq .Category "Command"}}
+    {{.Name | printf "%-15s"}} # {{.Short | trim}}{{end}}{{end}}
 
-  External Commands: {{range .}}{{if .Callable}}{{if category . "External"}}
-    {{.Name | printf "%-15s"}} # {{.Short | trim}}{{end}}{{end}}{{end}}
+  External Commands: {{range .}}{{if eq .Category "External"}}
+    {{.Name | printf "%-15s"}} # {{.Short | trim}}{{end}}{{end}}
 
 Use "img help [command]" for more information about a command.
 `,
-	Help: `{{if .Callable}}Usage: img {{.Usage}}
+	Command: `{{if .Callable}}Usage: img {{.Usage}}
 {{end}}{{.Long}}
 `,
 }
