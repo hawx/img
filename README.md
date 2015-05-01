@@ -7,7 +7,7 @@ resulting image (by default in PNG format) to standard output.
 To install run,
 
 ``` bash
-$ go install github.com/hawx/img
+$ go install hawx.me/code/img
 ```
 
 You can then run `go help` and `go help [command]` for information.
@@ -43,9 +43,9 @@ example as,
 package main
 
 import (
-  "github.com/hawx/img/contrast"
-  "github.com/hawx/img/greyscale"
-  "github.com/hawx/img/tint"
+  "hawx.me/code/img/contrast"
+  "hawx.me/code/img/greyscale"
+  "hawx.me/code/img/tint"
 
   "image/png"
   "os"
